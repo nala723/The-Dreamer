@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-### Did today
+## What I did today
 
 - 
 
-### Felt today 
+## What I feel today 
 
 - 항목별로 적어주세요.
 
@@ -19,6 +19,6 @@ assignees: ''
 // 코드를 첨부해도 좋습니다.
 ```
 
-### Will do tomorrow
+## What I Will do tomorrow
 
 - [ ] Todo 형식으로 기록해주세요.
