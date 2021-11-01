@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-### 오늘 한 일
+### Did today
 
 - 
 
-### 오늘 느낀 점
+### Felt today 
 
 - 항목별로 적어주세요.
 
@@ -19,6 +19,6 @@ assignees: ''
 // 코드를 첨부해도 좋습니다.
 ```
 
-### 내일 할 일
+### Will do tomorrow
 
 - [ ] Todo 형식으로 기록해주세요.
