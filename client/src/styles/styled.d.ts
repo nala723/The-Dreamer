@@ -6,6 +6,7 @@ declare module 'styled-components' {
   // 우리가 아는 타입지정을 여기서 다해주고 불러서 쓰기
   // 1. 인터페이스 지정
   export interface DefaultTheme {
+    imgsrc: string;
      fontS: string;
      fontM: string;
     fontL: string;
@@ -14,11 +15,13 @@ declare module 'styled-components' {
     fontLight: number;
     fontNormal: number;
     fontBold: number;
+    toggle: string;
+    toggleicon: string;
        darktext: string;
        dream: string;
        back: string;
        landing:  string;
-       defalut: string;
+       default: string;
        text: string;
        transp: string;
        moretransp: string;

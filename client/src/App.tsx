@@ -14,14 +14,16 @@ const Horoscope = lazy(() => import('./pages/Horoscope'));
 const SearchDream = lazy(() => import('./pages/SearchDream'));
 const MyPage = lazy(() => import('./pages/MyPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const Header = lazy(() => import('./components/Header'));
 
-function App(): JSX.Element {
+function App() {
   return (
     <>
       <ThemeProvider theme={darkTheme}>
         <GlobalStyle />
         <Router>
           <Suspense fallback={<div>Loading...</div>}>
+            <Header />
             <Switch>
               <Route exact path="/" component={Landing} />
               <Route path="/searchdream" component={SearchDream} />
