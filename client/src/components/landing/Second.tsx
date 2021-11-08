@@ -12,9 +12,8 @@ function SecondSection() {
 
   const writings = [
     '"미래는 꿈의 아름다움을 믿는 사람들에게 주어진다."' + '-엘리노어 루즈벨트-',
-    '어젯 밤 꾼 당신의 꿈을 풀이해드립니다.검색 결과로 나오는 여러가지 풀이 중 원하는 풀이를 선택하세요.',
+    '어젯 밤 꾼 당신의 꿈을 풀이해드립니다.' + '검색 결과로 나오는 여러가지 풀이 중 원하는 풀이를 선택하세요.',
     '또, 소중한 꿈이 날아가지 않도록 꿈을 그려보세요.',
-    // ' '
   ]
 
   useEffect(() => {
@@ -87,6 +86,7 @@ function SecondSection() {
     }
   };
   // 섹션 반씩 나눠서..타임라인 적용
+  // 만약 + 포함한다면 그 전까지의 문자열, 다음 문자열 나눠서 배치. <br>혹은 그런거.
   return (
     <>
        <Section top='calc(100vh - 4.375rem)'>
@@ -97,7 +97,14 @@ function SecondSection() {
                     <Pin key={idx}>
                       <Content ref={addToRefs}>
                         <div>
-                          <h1>{el}</h1>
+                            {el.includes('-')? 
+                              <h1>{el.slice(0,(el.indexOf('-')))}<p></p>{el.slice((el.indexOf('-')))}</h1>
+                              :
+                              el.includes('.') && el.length > el.indexOf('.') ? 
+                                <h1>{el.slice(0,(el.indexOf('.')+1))}<p></p>{el.slice((el.indexOf('.')+1))}</h1>
+                                : 
+                              <h1>{el}</h1>
+                            }
                         </div>
                       </Content>
                     </Pin>
@@ -144,10 +151,12 @@ const Content = styled.div`
   height: 100vh;
   /* border: 1px solid yellow; */
   > div {
-    ${props=>props.theme.flexRow}
+    ${props=>props.theme.flexColumn};
     padding: 4rem 0;
     > h1 {
       transform-origin: 0 0 -500px;
+      line-height: 5rem;
+      text-align: center;
     }
   }
 `;
