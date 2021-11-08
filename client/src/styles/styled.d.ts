@@ -7,12 +7,13 @@ declare module 'styled-components' {
   // 1. 인터페이스 지정
   export interface DefaultTheme {
     imgsrc: string;
+    textBlur: string;
+    searchBlur: string;
      fontS: string;
      fontM: string;
     fontL: string;
     fontXL: string;
     fontXXL: string;
-    fontLight: number;
     fontNormal: number;
     fontBold: number;
     toggle: string;

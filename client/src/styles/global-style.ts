@@ -22,8 +22,20 @@ const GlobalStyles = createGlobalStyle`
         background: ${props=>props.theme.default};
     }
     ol, ul, li {
-    list-style: none;
+        list-style: none;
    }
+    input {
+        text-indent: 1.5rem;
+        outline: none;
+        border: transparent;
+        border-radius: 0.4rem;
+        padding: 0;
+        margin: 0;        
+    }
+    h1 {
+        ${props=>props.theme.textBlur};
+        letter-spacing: 0.3rem;
+    }
  
 `;
 

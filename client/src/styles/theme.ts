@@ -17,12 +17,19 @@ export const darkTheme: DefaultTheme = {
     width: 100%;
   `,
   imgsrc: `/images/darklogo.svg;`,
+  textBlur: `
+    color: rgb(255,255,255,0.8);
+    font-size: 2.25rem;
+    text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.8);
+  `,
+  searchBlur: `
+    filter: drop-shadow(4px 4px 10px rgba(255, 255, 255, 0.6))
+  `,
   fontS: calcRem(14),
   fontM: calcRem(18),
   fontL: calcRem(24),
   fontXL: calcRem(36),
   fontXXL: calcRem(55),
-  fontLight: 100,
   fontNormal: 400,
   fontBold: 700,
   toggle: '#002F75',
@@ -71,12 +78,19 @@ export const lightTheme: DefaultTheme = {
     width: 100%;
   `,
   imgsrc: `/images/darklogo.svg;`,
+  textBlur: `
+    color: #494161;
+    font-size: 2.25rem;
+    text-shadow: 4px 4px 10px rgba(73, 65, 97, 0.5);
+  `,
+  searchBlur: `
+    filter: drop-shadow(4px 4px 10px rgba(73, 65, 97, 0.5))
+  `,  
   fontS: calcRem(14),
   fontM: calcRem(18),
   fontL: calcRem(24),
   fontXL: calcRem(36),
   fontXXL: calcRem(55),
-  fontLight: 100,
   fontNormal: 400,
   fontBold: 700,
   toggle: '#002F75',

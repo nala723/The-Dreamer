@@ -40,7 +40,7 @@ const MidBox = styled.div`
 const MenuList = styled.ul`
   ${props=> props.theme.flexRow};
   color: ${props=> props.theme.text};
-  flex: 5;
+  width:70%;
   font-size: 20px;
   justify-content: space-evenly;
    > li{
@@ -50,7 +50,7 @@ const MenuList = styled.ul`
 const LogoBox = styled.div`
  ${props=> props.theme.flexColumn};
   gap:1rem;
-  flex:1;
+  width:30%;
   align-items: flex-end;
     >img {
       transform: scale(1.2);
