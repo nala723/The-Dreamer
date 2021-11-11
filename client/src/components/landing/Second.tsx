@@ -51,7 +51,7 @@ function SecondSection() {
       tl.fromTo(
         textBoxRef.current[index],
         { opacity: 1, y: 0 },
-        { opacity: 0, y: -100, duration: 1.2, delay: 0.2 },
+        { opacity: 0, y: -100, duration: 1, delay: 0.1 },
          ">" // 그냥 이것만 했더니 시작부분 오래떠있게됨!
       );
     };
@@ -59,7 +59,7 @@ function SecondSection() {
       tl.fromTo(
         textBoxRef.current[index],
         { opacity: 0 },
-        { opacity: 1, duration: 1.2, delay: 0.2 }, 
+        { opacity: 1, duration: 1, delay: 0.1 }, 
          ">"
       );
       if(index === 2){
@@ -83,7 +83,7 @@ function SecondSection() {
         trigger: mainRef.current,
         animation: tl,
         start: "top top",
-        end: "+=7000", 
+        end: "+=6500", 
         scrub: 1,
         pin: true,
         pinSpacing: false,
@@ -94,7 +94,7 @@ function SecondSection() {
       scrollTrigger: {
         trigger: SecondRef.current,
         start: "top top",
-        end: "+=3000", 
+        end: "+=3300", 
         scrub: 1,
         pin: true,
         pinSpacing: false,
@@ -108,7 +108,7 @@ function SecondSection() {
       )
       // .fromTo(circleRef.current,{scale: 20,opacity: 1},
       //   {scale: 20, duration: 3,opacity: 1})
-      .to(circleRef.current,{scale: 0, opacity: 0, delay:5, ease: "circ.in"
+      .to(circleRef.current,{scale: 0, opacity: 0, delay:6, ease: "circ.in"
       ,duration: 3, })  
       // .reversed(!tl2.reversed());
 
@@ -202,6 +202,14 @@ function SecondSection() {
                 {/* </Pin> */}   
             </GifBox>
             <FinalBox>
+              <ContentsBox >
+                <h1 data-aos="fade-down" data-aos-delay="200">The-Dreamer 안에서<p></p> 당신의 꿈을 더욱 아름답게 가꿔보세요.</h1>
+                <SearchBox data-aos="fade-up">
+                  <img src="/images/search-icon.svg" alt="search"/>
+                  <SearchBar placeholder= 'Search your dream..' type="search">
+                  </SearchBar>
+                </SearchBox>
+              </ContentsBox >
             </FinalBox> 
          </SectionInner>
        </Section>  
@@ -252,7 +260,7 @@ const Content = styled.div`
   }
 `;
 const CircScrollBox = styled(ScrollBox)`
-  top: 237.25rem; // 400vh 였음, 이 문제는 아닌듯...
+  top: 210rem; // 400vh 였음, 이 문제는 아닌듯...
 `;
 const CircleBox = styled.div`
    ${props=>props.theme.flexRow};
@@ -311,5 +319,53 @@ const Introdct = styled.div`
 `;
 const FinalBox = styled(GifBox)`
  justify-content: center;
- height: 100%;
+ height: 150vh;
+  /* border: 1px solid yellow; */
+`;
+const ContentsBox = styled.div`
+   ${props=>props.theme.flexColumn};
+    height: auto;
+    gap: 3rem;
+    > h1 {
+      letter-spacing: 0.4rem;
+      text-align: center;
+      line-height: 4rem;
+    }
+`;
+const SearchBox = styled.div`
+  position: relative;
+  width:40%;
+  min-width: 40.25rem;
+  height:auto;
+  ${props=>props.theme.searchBlur};
+    >img {
+      position: absolute;
+      cursor: pointer;
+      right: 2%;
+      bottom: 30%;
+    }
+`;  
+const SearchBar = styled.input`
+  background-color: ${props=> props.theme.transp};
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 4.688rem;
+  padding-right: 3.7rem;
+  padding-bottom: 0.3rem;
+  font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
+  font-size: ${props=>props.theme.fontL};
+    ::placeholder{
+      color: #555562;
+    }
+    ::-ms-clear,
+    ::-ms-reveal{
+      display:none;width:0;height:0;
+    }
+    ::-webkit-search-decoration,
+    ::-webkit-search-cancel-button,
+    ::-webkit-search-results-button,
+    ::-webkit-search-results-decoration{
+      display:none;
+    }
 `;

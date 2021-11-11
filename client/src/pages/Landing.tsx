@@ -38,10 +38,7 @@ function Landing() {
             </SearchBox>
           </ContentsBox >
         </MainSection>
-        <SecondSection />
-        <FinalSection>
-          <h1>여섯번째</h1>
-        </FinalSection>  
+        <SecondSection /> 
         <Footer />
       </Container>
   );
@@ -58,7 +55,8 @@ const Container = styled.div`                /* 메인 컬러 그냥 white로 �
   flex-direction: column;
   width: 100%;
   /* height: 376.75rem; */
-  height: 1250rem;
+  height: 728.24rem;
+  background: ${props=> props.theme.landing};
 `;
 const MainSection = styled.section`
   position: absolute; 
@@ -117,7 +115,7 @@ const SearchBar = styled.input`
       display:none;
     }
 `;
-const FinalSection = styled(MainSection)`
-  top: 650rem;
-  height: 100vh;
-`;
+// const FinalSection = styled(MainSection)`
+//   top: 650rem;
+//   height: 100vh;
+// `;
