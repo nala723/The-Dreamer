@@ -7,7 +7,8 @@ function Landing() {
   const txt = '오늘, 어떤 꿈을 꿨나요 ?';
   const [text, setText] = useState('');
   const [count, setCount] = useState(0);
-  
+  const [fadeIn, setFadeIn] = useState(false);
+
   //부드러운 스크롤 구현할것
 
   //타이핑 효과 function
@@ -16,19 +17,21 @@ function Landing() {
       setText(text + txt[count]); 
       setCount(count + 1); 
     }, 145);
+    if(count === txt.length-2){
+      setFadeIn(true); 
+    }
     if(count === txt.length){  
-        clearInterval(interval); 
+      clearInterval(interval);
     } 
     return () => clearInterval(interval); 
-  });  // 느낌 보고 나중에 다른 효과로 바꾸던지 하자
-
+  },);  // 느낌 보고 나중에 다른 효과로 바꾸던지 하자 ex)https://www.moooi.com/eu/ 부드럽게 한그자씩
 
   return (
       <Container>
         <MainSection> 
           <ContentsBox >
             <h1>{text}</h1>
-            <SearchBox>
+            <SearchBox  className={fadeIn? 'fadein': ''}>
               <img src="/images/search-icon.svg" alt="search"/>
               <SearchBar placeholder= 'Search your dream..' type="search">
               </SearchBar>
@@ -36,9 +39,9 @@ function Landing() {
           </ContentsBox >
         </MainSection>
         <SecondSection />
-        <Section top='calc(500vh - 4.375rem)'>
-          여섯번째
-        </Section>  
+        <FinalSection>
+          <h1>여섯번째</h1>
+        </FinalSection>  
         <Footer />
       </Container>
   );
@@ -46,6 +49,7 @@ function Landing() {
 
 
 export default Landing;
+
 
 const Container = styled.div`                /* 메인 컬러 그냥 white로 할까 */
   position: relative;
@@ -75,6 +79,13 @@ const SearchBox = styled.div`
   min-width: 40.25rem;
   height:auto;
   ${props=>props.theme.searchBlur};
+  opacity: 0;
+  top: 20px;
+      &.fadein{
+        opacity: 1;
+        top: 0px;
+        transition: all 1.5s ease-in-out;
+      }
     >img {
       position: absolute;
       cursor: pointer;
@@ -106,14 +117,7 @@ const SearchBar = styled.input`
       display:none;
     }
 `;
-const Section = styled(MainSection)<{ top: string }>`
-  top: ${props=> props.top};
+const FinalSection = styled(MainSection)`
+  top: 650rem;
   height: 100vh;
 `;
-// 반응형 할때 밑 섹션 다시 만들어야할지도! 다 짜면 한번 미리 만들어보기
-// const ThdSection = styled(ScdSection)`
-// `;
-// const FrthSection = styled(ScdSection)`
-// `;
-// const FinalSection = styled(ScdSection)`
-// `;

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 function DrawDream() {
   return (
     <>
-      <div>this is DrawDream!!</div>
+      <h1>this is DrawDream!!</h1>
     </>
   );
 }

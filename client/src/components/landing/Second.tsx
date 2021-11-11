@@ -2,12 +2,19 @@ import React, { useEffect, useRef } from "react";
 import styled from 'styled-components';
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import AOS from 'aos';
+import 'aos/dist/aos.css'; 
+
 
 gsap.registerPlugin(ScrollTrigger);
 
 function SecondSection() {
   const mainRef = useRef(null);
-  const textBoxRef = useRef<HTMLDivElement[]>([]);// DOM을 다룰 때 반드시 초깃값은 null로 설정한다.안되면 여기두확인
+  const textBoxRef = useRef<HTMLDivElement[]>([]);
+  const SecondRef = useRef(null)
+  const circleRef = useRef(null);
+  // const GifBoxRef = useRef(null); 
+  // const gifRef = useRef(null);
   textBoxRef.current = [];
 
   const writings = [
@@ -17,12 +24,21 @@ function SecondSection() {
   ]
 
   useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: false
+    });
     gsap.set(mainRef.current, {
-      height: `${(textBoxRef.current.length - 1) * 100}vh` 
+      height: `${(textBoxRef.current.length - 1) * 100}vh` //여기 때문에 타임라인 나누기 안됬을수도? 
+    });
+    gsap.set(SecondRef.current, {
+      height: `150rem` //여기 때문에 타임라인 나누기 안됬을수도? 
     });
     const tl = gsap.timeline();
     // 시작과 끝 타임라인을 길게 하고 싶은데 duration이 잘 안된다. 길이를 길게 해봐도.. -> 알고보니 길이는 충분,
     // 두번째 방법으로도 글자 나오게 해보기 시간날때
+
+    //타임라인으로 잇는 방법으로 다시 해보기(코드 줄이기,정리)
 
     const hide = (index: number) => {
       if (index === 0) {
@@ -35,7 +51,7 @@ function SecondSection() {
       tl.fromTo(
         textBoxRef.current[index],
         { opacity: 1, y: 0 },
-        { opacity: 0, y: -100, duration: 1.5, delay: 0.5 },
+        { opacity: 0, y: -100, duration: 1.2, delay: 0.2 },
          ">" // 그냥 이것만 했더니 시작부분 오래떠있게됨!
       );
     };
@@ -43,7 +59,7 @@ function SecondSection() {
       tl.fromTo(
         textBoxRef.current[index],
         { opacity: 0 },
-        { opacity: 1, duration: 1.5, delay: 0.5 }, 
+        { opacity: 1, duration: 1.2, delay: 0.2 }, 
          ">"
       );
       if(index === 2){
@@ -67,16 +83,58 @@ function SecondSection() {
         trigger: mainRef.current,
         animation: tl,
         start: "top top",
-        end: "+=7000", //스크롤 종료 길이 길어짐 ->마지막에 더 길게 할 수 있는지 함수 알아보자
+        end: "+=7000", 
         scrub: 1,
         pin: true,
         pinSpacing: false,
         markers: true
       });
     });
+    const tl2 = gsap.timeline({
+      scrollTrigger: {
+        trigger: SecondRef.current,
+        start: "top top",
+        end: "+=3000", 
+        scrub: 1,
+        pin: true,
+        pinSpacing: false,
+        markers: true
+      }
+    })
+    tl2.fromTo(circleRef.current,
+      { scale: 0.5 , opacity: 0,},
+      { scale: 20,  opacity: 1, ease: "circ.inOut"
+      ,duration: 3, }
+      )
+      // .fromTo(circleRef.current,{scale: 20,opacity: 1},
+      //   {scale: 20, duration: 3,opacity: 1})
+      .to(circleRef.current,{scale: 0, opacity: 0, delay:5, ease: "circ.in"
+      ,duration: 3, })  
+      // .reversed(!tl2.reversed());
+
+    /*gif 부분 타임라인. 일단은 넘어가고 다시 보자  https://codepen.io/GreenSock/pen/pojzxwZ 스크롤트리거, 함수 이용 투명도 조절 혹은 클래스 갖고 놀기면 가능*/  
+    // const tl3 = gsap.timeline({
+    //   scrollTrigger: {
+    //     trigger: GifBoxRef.current,
+    //     start:"top top",
+    //     end: "+=4000", //이건 밑에 있는데..
+    //     scrub: 1,
+    //     pin: true,
+    //     pinSpacing: false,
+    //     markers: true
+    //   }
+    // })
+    //  tl3.fromTo(gifRef.current,
+    //   { x: 0, y: 1000, opacity: 0},
+    //   { x: 500, y: 500, opacity: 1,duration: 1}//몬까 됬다안됬다 함 ㅠㅠ
+    //   )
+    //   .fromTo(gifRef.current,{x: 500, y: 500},
+    //   { x: 0,  y: -500, opacity:0,duration: 1, delay: 1})
 
     return () => {
       tl.kill();
+      tl2.kill();
+      // tl3.kill();
     };
   }, []);
 
@@ -85,8 +143,7 @@ function SecondSection() {
       textBoxRef.current.push(el);
     }
   };
-  // 섹션 반씩 나눠서..타임라인 적용
-  // 만약 + 포함한다면 그 전까지의 문자열, 다음 문자열 나눠서 배치. <br>혹은 그런거.
+  
   return (
     <>
        <Section top='calc(100vh - 4.375rem)'>
@@ -111,6 +168,41 @@ function SecondSection() {
                   )
                 })}
             </ScrollBox> 
+            <CircScrollBox ref={SecondRef}> 
+              <Pin>
+              <CircleBox >
+                <Circle ref={circleRef}/>
+              </CircleBox>
+              </Pin>
+            </CircScrollBox> 
+            <GifBox>{/*ref={GifBoxRef}*/}
+                {/* <Pin> */}
+                <GifContent>
+                  <Gif  data-aos="fade-up-right">{/*ref={gifRef}*/}
+                    <p>자료입니당</p>
+                  </Gif>
+                  <Introdct >
+                    <p data-aos="fade-up">‘꿈 알아가기’페이지에서 검색한 꿈에 대한 여러가지 풀이를 볼 수 있습니다. </p>
+                    <p data-aos="fade-up" data-aos-delay="150"> 카테고리, 인기 태그로도 검색이 가능합니다.(원하는 풀이를 선택 저장 어쩌고)</p>
+                  </Introdct>
+                </GifContent>
+                {/* </Pin> */}
+                {/* <Pin> */}
+                <GifContent>
+                  <Introdct>
+                    <p data-aos="fade-up" >
+                      ‘‘꿈 그리기’ 페이지에서는 그림판을 이용해 꿈을 그리고, 저장할 수 있습니다.</p>
+                    <p data-aos="fade-up" data-aos-delay="150">
+                      또, 여러 색상과 브러쉬 크기 조절이 가능합니다.(다른사람의 꿈../ 날아가지 않도록 어쩌고저쩌고,..)</p>
+                  </Introdct>
+                  <Gif  data-aos="fade-up-left">{/*ref={gifRef}*/}
+                    <p>자료입니당</p>
+                  </Gif>
+                </GifContent>
+                {/* </Pin> */}   
+            </GifBox>
+            <FinalBox>
+            </FinalBox> 
          </SectionInner>
        </Section>  
     </>
@@ -122,7 +214,7 @@ export default SecondSection;
 const Section = styled.section<{ top: string }>`
   position: absolute;
   top: ${props=> props.top};
-  height: 118.625rem; // 안되면 다시 개별루..
+  height: 350rem; // 안되면 다시 개별루..118.625
   width: 100%;
 `;
 const SectionInner = styled.div`
@@ -133,7 +225,6 @@ const SectionInner = styled.div`
 const ScrollBox = styled.div`
   position: relative;
   width: 100%;
-    /* margin-bottom: 100vh; //아마 밑에 여백 주려고..? */
   overflow: visible;
   /* border: 1px solid red; */
 `;
@@ -143,11 +234,11 @@ const Pin = styled.div`
   left: 0;
   width: 100%;
   height: 100vh;
-  /* border: 1px solid greenyellow; */
+  /* border: 1px solid aquamarine; */
 `;
 const Content = styled.div`
-  position: absolute;
-  ${props=>props.theme.flexRow};
+  /* position: absolute; //안해도상관없네 */
+  ${props=>props.theme.flexRow}
   height: 100vh;
   /* border: 1px solid yellow; */
   > div {
@@ -159,4 +250,66 @@ const Content = styled.div`
       text-align: center;
     }
   }
+`;
+const CircScrollBox = styled(ScrollBox)`
+  top: 237.25rem; // 400vh 였음, 이 문제는 아닌듯...
+`;
+const CircleBox = styled.div`
+   ${props=>props.theme.flexRow};
+   height: 100%;
+   /* border: 1px solid yellow; */
+`;
+const Circle = styled.div`
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 100%;
+  background-color: white;//일단 이색으로
+`;
+// const GifBox = styled.div`      //######################### 타임라인 3 위한
+//   position: relative; //pin 고정시키기 위해
+//   width: 100vw;
+//   height: 200vh;
+//   top: 120rem;
+//   z-index:5;
+//   border: 1px solid black;
+// `;
+// const Gif = styled.div`
+//   /* position: absolute; */
+//   width: 200px;
+//   height: 200px;
+//   background-color: yellow;
+// `;
+
+const GifBox = styled.div`
+  position: relative; //pin 고정시키기 위해
+  height: 220vh;
+  top: 160rem;
+  z-index:5;
+  /* border: 1px solid black; */
+  ${props=>props.theme.flexColumn}
+  justify-content: space-between;
+`;
+const GifContent = styled.div`
+  ${props=>props.theme.flexRow}
+  height: 100vh;
+  justify-content: space-around;
+`;
+const Gif = styled.div`
+  /* position: absolute; */
+  width: 50rem;
+  height: 40rem;
+  background-color: grey;
+  
+`;
+const Introdct = styled.div`
+  ${props=>props.theme.flexColumn}
+  width: 33.313rem;
+  height: 21.625rem;
+  border: 1px solid ${props=>props.theme.moretransp};
+  font-size: ${props=>props.theme.fontL}
+`;
+const FinalBox = styled(GifBox)`
+ justify-content: center;
+ height: 100%;
 `;

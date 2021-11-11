@@ -5,6 +5,7 @@ import './App.css';
 import GlobalStyle from './styles/global-style';
 import { ThemeProvider } from 'styled-components';
 import { darkTheme, lightTheme } from './styles/theme';
+import ParticlesConfig from './config/particle-config';
 
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
@@ -34,6 +35,7 @@ function App() {
               <Route path="/mypage" component={MyPage} />
               <Route path="*" component={NotFound} />
             </Switch>
+                    <ParticlesConfig />
           </Suspense>
         </Router>
       </ThemeProvider>
