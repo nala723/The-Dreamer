@@ -1,15 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Footer from '../components/Footer';
 import SecondSection from '../components/landing/Second';
+import { keyframes } from 'styled-components';
 
 function Landing() {
   const txt = '오늘, 어떤 꿈을 꿨나요 ?';
   const [text, setText] = useState('');
   const [count, setCount] = useState(0);
   const [fadeIn, setFadeIn] = useState(false);
+  const [scrollTop, setScrollTop] = useState(false);
+  const [scrollY, setScrollY] = useState(0)
 
-  //부드러운 스크롤 구현할것
+//부드러운 스크롤 구현할것 + 페이지 넘어갈때 부드러운 화면 전환
 
   //타이핑 효과 function
   useEffect(() => {
@@ -26,9 +29,35 @@ function Landing() {
     return () => clearInterval(interval); 
   },);  // 느낌 보고 나중에 다른 효과로 바꾸던지 하자 ex)https://www.moooi.com/eu/ 부드럽게 한그자씩
 
+  const handleScrollBtn = () => {
+    setScrollY(window.pageYOffset); // window 스크롤 값을 ScrollY에 저장
+    if (scrollY > 1200) {
+      setScrollTop(true);
+    }else {
+      setScrollTop(false);
+    }
+  }
+  const handleScroll = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+    setScrollY(0);
+    setScrollTop(false);
+  }
+  useEffect(() => {
+    const watch = () => {
+      window.addEventListener("scroll", handleScrollBtn);
+    };
+    watch(); // addEventListener 함수를 실행
+    return () => {
+      window.removeEventListener("scroll", handleScrollBtn);
+    }; // addEventListener 함수를 삭제! 꼭 필요하다!
+  });
+
   return (
       <Container>
-        <MainSection> 
+        <MainSection>
           <ContentsBox >
             <h1>{text}</h1>
             <SearchBox  className={fadeIn? 'fadein': ''}>
@@ -37,9 +66,17 @@ function Landing() {
               </SearchBar>
             </SearchBox>
           </ContentsBox >
+          <ScrollDown>
+            <span></span><span></span><span></span>
+            <p>Scroll</p>
+          </ScrollDown> 
         </MainSection>
-        <SecondSection /> 
+        <SecondSection />
         <Footer />
+        <ScrollTop active={scrollTop} onClick={handleScroll}>
+          <span></span><span></span><span></span>
+          <p>맨 위로</p>
+        </ScrollTop> 
       </Container>
   );
 }
@@ -47,6 +84,21 @@ function Landing() {
 
 export default Landing;
 
+
+const ScrollAni = (start: string, end: string) => keyframes`
+  0% {
+    transform: rotate(-45deg) translate(${start});
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-45deg) translate(${end});
+    opacity: 0;
+  }
+
+`;
 
 const Container = styled.div`                /* 메인 컬러 그냥 white로 할까 */
   position: relative;
@@ -101,6 +153,7 @@ const SearchBar = styled.input`
   padding-bottom: 0.3rem;
   font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
   font-size: ${props=>props.theme.fontL};
+  color: #494161;
     ::placeholder{
       color: #555562;
     }
@@ -115,7 +168,64 @@ const SearchBar = styled.input`
       display:none;
     }
 `;
-// const FinalSection = styled(MainSection)`
-//   top: 650rem;
-//   height: 100vh;
-// `;
+const ScrollDown = styled.span`
+  position: absolute;
+  bottom: 5%;
+  width: 40px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity:0.6;
+  > span{
+    width: 24px; 
+    height: 22px;
+    margin-left: -12px;
+    border-left: 1px solid ${props=> props.theme.anker};
+    border-bottom: 1px solid ${props=> props.theme.anker};
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    animation: ${ScrollAni((`0,0`),(`-10px, 10px`))} 1.5s infinite;
+    /* -webkit-animation: sdb 1.5s infinite;
+    animation: sdb 1.5s infinite; */
+    :nth-child(1){
+      animation-delay: 0s;
+    }
+    :nth-child(2){
+      animation-delay: 0.15s;
+    }
+    :nth-child(3){
+      animation-delay: 0.3s;
+    }
+  }
+  > P{
+    margin-top: 2rem;
+    margin-left: -12px;
+    color: ${props=> props.theme.anker};
+    font-size: 20px;
+    }
+`;
+const ScrollTop = styled(ScrollDown)<{active: boolean}>`
+  position: fixed;
+  right: 40px;
+  cursor: pointer;
+  z-index: -10;
+  opacity: 0;
+  font-weight: bold;
+  > span {
+    width: 20px; 
+    height: 18px;
+    border-right: 1px solid ${props=> props.theme.anker};
+    border-top: 1px solid ${props=> props.theme.anker};  
+    border-left: none;
+    border-bottom: none;
+    animation: ${ScrollAni((`-10px, 10px`),(`0px, 0px`))} 1.5s infinite;  
+  }
+  ${(props)=> props.active && css`
+      z-index: 100;
+      opacity: 0.6;
+    `}
+  > p{
+    font-size:14px;
+  }  
+`;

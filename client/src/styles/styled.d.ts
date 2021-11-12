@@ -18,14 +18,15 @@ declare module 'styled-components' {
     fontBold: number;
     toggle: string;
     toggleicon: string;
-       darktext: string;
        dream: string;
-       back: string;
+       circle: string;
        landing:  string;
        default: string;
+       reverse: string;
        text: string;
        transp: string;
        moretransp: string;
+       anker: string;
        tagtext: string;
        point: string;
        flexRow: string;

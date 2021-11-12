@@ -87,7 +87,7 @@ function SecondSection() {
         scrub: 1,
         pin: true,
         pinSpacing: false,
-        markers: true
+        // markers: true
       });
     });
     const tl2 = gsap.timeline({
@@ -98,7 +98,7 @@ function SecondSection() {
         scrub: 1,
         pin: true,
         pinSpacing: false,
-        markers: true
+        // markers: true
       }
     })
     tl2.fromTo(circleRef.current,
@@ -272,7 +272,7 @@ const Circle = styled.div`
   width: 200px;
   height: 200px;
   border-radius: 100%;
-  background-color: white;//일단 이색으로
+  background: ${props=> props.theme.circle};
 `;
 // const GifBox = styled.div`      //######################### 타임라인 3 위한
 //   position: relative; //pin 고정시키기 위해
@@ -308,6 +308,9 @@ const Gif = styled.div`
   width: 50rem;
   height: 40rem;
   background-color: grey;
+  >p {
+  color: ${props=> props.theme.reverse};
+  }
   
 `;
 const Introdct = styled.div`
@@ -315,7 +318,10 @@ const Introdct = styled.div`
   width: 33.313rem;
   height: 21.625rem;
   border: 1px solid ${props=>props.theme.moretransp};
-  font-size: ${props=>props.theme.fontL}
+  font-size: ${props=>props.theme.fontL};
+  >p {
+  color: ${props=> props.theme.reverse};
+  }  
 `;
 const FinalBox = styled(GifBox)`
  justify-content: center;

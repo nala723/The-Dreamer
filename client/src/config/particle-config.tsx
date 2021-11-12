@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { DefaultTheme, ThemeProps } from 'styled-components';
 import Particles from 'react-tsparticles';
 
 
-export default function ParticlesConfig() {
+export default function ParticlesConfig({t} :{ t : string;}) {
 
   return(
       <Particles options={{
@@ -38,7 +38,9 @@ export default function ParticlesConfig() {
         },
         particles: {
           color: {
-            value: "#ffffff"
+            value: `${t === 'light' ?  "#ffdb3c" :  "#ffdf6b"}`
+            // 어두울때 저색 괜찮다..???? 일단 테마색 밝은것 어두운것 이렇게 가고 후에 또 수정
+            // value: "#ffffff"
           },
           links: {
             color: {
@@ -116,6 +118,3 @@ export default function ParticlesConfig() {
       }}/>
   )
 };
-
-
- 

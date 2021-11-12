@@ -1,23 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-function Header(){
-  const menulist = [ '꿈 알아보기', '꿈 그리기', '별자리운세', '로그인'];
+function Header (props: { themeToggler: () => void; t: any; }){
+  const {themeToggler,t} = props;
+  const menulist = [ 
+    { menu: '꿈 알아보기', url: '/searchdream'},
+    { menu: '꿈 그리기', url: '/drawdream'},
+    { menu: '별자리운세', url: '/horoscope'}, 
+    { menu: '로그인', url: '/login'}
+  ];
+  const toggleicon = ['🌞', '🌙'];
+
   return (
     <>
       <Container>
           <LogoBox to='/'>
-            <img src="/images/darklogo.png" alt="darklogo"/>
+            <Logo />
           </LogoBox>
           <RightBox>
             <Menu>
                {menulist.map((menu,idx)=>{
-                 return <li key={idx}>{menu}</li>
+                 return <LinkMenu to={menu.url} key={idx}>{menu.menu}</LinkMenu>
                })}
             </Menu> 
-            <Toggle>
-              <Circle/>
+            <Toggle onClick={themeToggler} t={t}>
+              <Circle t={t}/>
+              <p>{t === 'light' ? toggleicon[1] : toggleicon[0]}</p>
             </Toggle>   
           </RightBox>
       </Container>
@@ -37,6 +46,10 @@ const Container = styled.div`
 `;
 const LogoBox = styled(Link)`
 `;
+const Logo = styled.img.attrs((props) => {
+ return {src: props.theme.imgsrc}
+})``;
+
 const RightBox = styled.div`
  display: flex;
  width: 30.5rem;
@@ -50,16 +63,50 @@ const Menu = styled.ul`
   width: 100%;
   height: inherit;
   justify-content: space-around;
-    > li{
-      color: ${props=> props.theme.text};
-      font-size: ${props=> props.theme.fontS};
-      cursor: pointer;
-    }
-    > li:nth-child(4) {
-      color: ${props=> props.theme.point};
-    }
 `;
-const Toggle = styled.div`
+const LinkMenu = styled(Link)`
+  color: ${props=> props.theme.text};
+  font-size: ${props=> props.theme.fontS};
+  position: relative;
+  cursor: pointer;
+  :nth-child(4) {
+    color: ${props=> props.theme.point};
+    :hover:after{
+      background-color: ${props=> props.theme.point};
+    }
+    :hover{
+      color: ${props=> props.theme.point};
+      text-shadow: 4px -4px 10px ${props=> props.theme.point};
+    }
+  }
+  :after {
+    content: "";
+    position: absolute;
+    left: -4px;
+    bottom: -10px;
+    width: 0px;
+    height: 1.5px;
+    margin: 5px 0 0;
+    transition: all 0.5s ease-in-out;
+    transition-duration: 0.3s;
+    opacity: 0;
+    background-color: ${props=> props.theme.anker};
+  }
+  /* :hover{
+    background-color: ${props=> props.theme.moretransp};
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 0 30px 2px  ${props=> props.theme.anker};
+  }  요 효과는 나중 생각.. 배경칼라를 박스 쉐도우와 비슷하게 맞추면 될것 같기두*/
+  :hover{
+    color: ${props=> props.theme.anker};
+    text-shadow: 4px 4px 10px ${props=> props.theme.anker};
+  }
+  :hover:after{
+    width: 120%;
+    opacity: 1;
+  }
+`;
+const Toggle = styled.div<{t: string}>`
   position:relative;
   display: flex;
   align-items: center;
@@ -68,8 +115,16 @@ const Toggle = styled.div`
   border: 1px solid #898989;
   border-radius: 2rem;
   background-color: ${props=> props.theme.toggle};
+   >p  {
+    position: absolute;
+    font-size: 14px;
+    ${props=> props.t === 'dark' ? (css`
+      right: 3px;
+      `) : (css`
+      left: 3px;`)};
+    }
 `;
-const Circle = styled.div`
+const Circle = styled.div<{t : string}>`
   position:absolute;
   width: 1.275rem;
   height: 1.275rem;
@@ -77,6 +132,10 @@ const Circle = styled.div`
   background-color: white;
   transition: all .3s ease-in-out;
   cursor: pointer;
-  left:1px;
+  ${props=> props.t === 'light' ? (css`
+    left: 1.8rem;
+    right:1px;`) : (css`
+    left:1px;`)
+    };
 `; 
-// 토글에 달,해 넣는 법 theme으로 안되면 다르게 가능-https://react.vlpt.us/styling/03-styled-components.html
+

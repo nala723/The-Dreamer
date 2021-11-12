@@ -26,6 +26,14 @@
         "prettier"
     ],
     "rules": {
-        "prettier/prettier": 0 // Means error
+        "prettier/prettier": 0, // Means error
+        "react/prop-types": [
+            0,
+            {
+                "ignore": ["ignore"],
+                "customVacustomValidators" : ["customValidator"], 
+                "skipUndeclared": true
+            }
+        ]
     }
 }

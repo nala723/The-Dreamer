@@ -12,7 +12,7 @@ function Footer() {
             })}
         </MenuList>
         <LogoBox>
-          <img src="/images/darklogo.png" alt="logo"/>
+          <Logo />
           <p>@ Copyright 2021 Bitnara Lee.
               All right reserved.</p>
         </LogoBox>    
@@ -52,14 +52,15 @@ const LogoBox = styled.div`
   gap:1rem;
   width:30%;
   align-items: flex-end;
-    >img {
-      transform: scale(1.2);
-      padding-right: 1rem;
-    }
     >p {
       color: ${props=> props.theme.text};
       text-align: start;
       width: 12rem;
     }
-  
+`;
+const Logo = styled.img.attrs((props) => {
+  return {src: props.theme.imgsrc}
+ })`
+  transform: scale(1.2);
+  padding-right: 1rem;
 `;

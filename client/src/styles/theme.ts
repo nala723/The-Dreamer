@@ -16,7 +16,7 @@ export const darkTheme: DefaultTheme = {
     align-items: center;
     width: 100%;
   `,
-  imgsrc: `/images/darklogo.svg;`,
+  imgsrc: `/images/darklogo.svg`,
   textBlur: `
     color: rgb(255,255,255,0.8);
     font-size: 2.25rem;
@@ -34,9 +34,8 @@ export const darkTheme: DefaultTheme = {
   fontBold: 700,
   toggle: '#002F75',
   toggleicon: '🌙',
-  darktext: '#494161',
   dream: `linear-gradient(#ffb9c5 10%, #ff9fc2 30%, #ffbfba 80%, #fffcac)`,
-  back: '#000729',
+  circle: `white`,
   landing: `linear-gradient(
       #000729 0%,
       rgb(209,155,161,0.95) 15%,
@@ -48,9 +47,11 @@ export const darkTheme: DefaultTheme = {
   default: `linear-gradient(
       #000729, 45%, #40344E, 90%,rgb(209,155,161,0.95) 100%
     )`,
+  reverse: `#494161`,  
   text: 'rgb(255,255,255,0.8)',
   transp: 'rgba(255, 255, 255, 0.6)',
   moretransp: 'rgba(255, 255, 255, 0.2)',
+  anker: 'rgba(255, 255, 255)',
   tagtext: '#DDC9FF',
   point: '#FFFA81',
   mobileS: `@media only screen and (max-width: 320px)`,
@@ -77,7 +78,7 @@ export const lightTheme: DefaultTheme = {
     align-items: center;
     width: 100%;
   `,
-  imgsrc: `/images/darklogo.svg;`,
+  imgsrc: `/images/lightlogo.svg`,
   textBlur: `
     color: #494161;
     font-size: 2.25rem;
@@ -93,16 +94,19 @@ export const lightTheme: DefaultTheme = {
   fontXXL: calcRem(55),
   fontNormal: 400,
   fontBold: 700,
-  toggle: '#002F75',
+  toggle: '#76DEFF',
   toggleicon: '☀️',
-  darktext: '#494161',
   dream: `linear-gradient(#ffb9c5 10%, #ff9fc2 30%, #ffbfba 80%, #fffcac)`,
-  back: 'white',
+  circle: `linear-gradient(
+    #000729, 45%, #40344E, 90%,rgb(209,155,161,0.95) 100%
+  )`,
   landing: 'white',
   default: 'white',
+  reverse: 'rgb(255,255,255,0.8)',
   text: '#494161',
   transp: 'rgba(211, 204, 221, 0.6)',
   moretransp: 'rgba(255, 206, 79, 0.2)',
+  anker: 'rgba(147, 133, 168)',
   tagtext: '#674043',
   point: '#3C95FF',
   mobileS: `@media only screen and (max-width: 320px)`,
