@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import Footer from '../components/Footer';
 import SecondSection from '../components/landing/Second';
 import { keyframes } from 'styled-components';
+import SearchBar from '../components/reusable/SearchBar';
 
 function Landing() {
   const txt = '오늘, 어떤 꿈을 꿨나요 ?';
@@ -61,9 +62,7 @@ function Landing() {
           <ContentsBox >
             <h1>{text}</h1>
             <SearchBox  className={fadeIn? 'fadein': ''}>
-              <img src="/images/search-icon.svg" alt="search"/>
-              <SearchBar placeholder= 'Search your dream..' type="search">
-              </SearchBar>
+              <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem'/>
             </SearchBox>
           </ContentsBox >
           <ScrollDown>
@@ -136,38 +135,8 @@ const SearchBox = styled.div`
         top: 0px;
         transition: all 1.5s ease-in-out;
       }
-    >img {
-      position: absolute;
-      cursor: pointer;
-      right: 2%;
-      bottom: 30%;
-    }
 `;  
-const SearchBar = styled.input`
-  background-color: ${props=> props.theme.transp};
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 4.688rem;
-  padding-right: 3.7rem;
-  padding-bottom: 0.3rem;
-  font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
-  font-size: ${props=>props.theme.fontL};
-  color: #494161;
-    ::placeholder{
-      color: #555562;
-    }
-    ::-ms-clear,
-    ::-ms-reveal{
-      display:none;width:0;height:0;
-    }
-    ::-webkit-search-decoration,
-    ::-webkit-search-cancel-button,
-    ::-webkit-search-results-button,
-    ::-webkit-search-results-decoration{
-      display:none;
-    }
-`;
+
 const ScrollDown = styled.span`
   position: absolute;
   bottom: 5%;
