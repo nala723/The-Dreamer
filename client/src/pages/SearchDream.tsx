@@ -22,7 +22,7 @@ function SearchDream(){
       .to(openRef.current, {
           height: 'auto',
           opacity: 1,
-          duration: 1,
+          duration: 0.7,
           ease: 'expo.insOut',
       })
       .reverse();
@@ -47,28 +47,6 @@ function SearchDream(){
           openRefTween.current.kill();
           } 
   },[]);
-  useEffect(()=> {
-    let selected : boolean;
-    cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
-      if(index === idx){
-        selected = el.animation.reversed();
-        // console.log('selected :', selected)
-        return selected;
-      }
-    })
-      DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
-        ani.reverse();
-        // console.log('ani : ', ani.reverse())
-      })
-      cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
-          if(index === idx ){
-            el.animation.reversed(!selected)
-          }
-          // console.log('el.animation :',el.animation.reversed()) 
-      })
-     
-  },[index, open])
-  
 
   const addFinalRefs = (el: HTMLDivElement) => {
     if (el && !cateGoryRef.current.includes(el)){
@@ -79,8 +57,24 @@ function SearchDream(){
     openRefTween.current.reversed(!openRefTween.current.reversed());
   }
   const handleCatg = (index: number) => {
-    setIndex(index);
-    setOpen(!open);
+    let selected : boolean;
+    cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
+      if(index === idx){
+        selected = el.animation.reversed();
+        console.log('selected :', selected)
+        return selected;
+      }
+    })
+      DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
+        ani.reverse();
+        console.log('ani : ', ani.reverse())
+      })
+      cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
+          if(index === idx ){
+            el.animation.reversed(!selected)
+          }
+          console.log('el.animation :',el.animation.reversed()) 
+      })
   }
   return (
     <Container>
