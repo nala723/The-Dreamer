@@ -8,99 +8,40 @@ import { gsap } from 'gsap';
 function SearchDream(){
   const openRef = useRef(null);//이어도되나
   const openRefTween = useRef<undefined | any>();
-  const categroupRef = useRef<HTMLDivElement[]>([]);
-  const cateHeadRef = useRef<HTMLDivElement[]>([]);
   const cateGoryRef = useRef<HTMLDivElement[]>([]);
   const [samp,setSamp] = useState(-1);
   const [open,setOpen] = useState(false);
-  // const test = useRef(null);
-  // const testTween = useRef<undefined | any>();
-  categroupRef.current = [];
-  cateHeadRef.current = [];
   cateGoryRef.current = [];
  // play로 원할때 play가능
   useEffect(()=>{
-
     openRefTween.current = gsap // 일단 이렇게 하고 보고 stegger 할거 timeline으로 이어보자
       .to(openRef.current, {
           height: 'auto',
           opacity: 1,
           duration: 1,
-          stagger: 0.5,
-          // ease: 'expo.inOut',
+          ease: 'expo.inOut',
       })
       .reverse();
-      //어떠한 조건하에..lv2 실행 / kill하는건 lv2의 tween만이여야함
-      // if(openRefTween.current){ // 이렇게 해보고 .reverese()로 접근
-        // testTween.current = gsap
-        //   .to(test.current, {
-        //     height: 'auto',
-        //     opacity: 1,
-        //     duration: 1,
-        //     ease: 'expo.inOut',
-        //   })
-        //   .reverse();
-        // return () => testTween.current.kill();  
-      // }
-
       return () => openRefTween.current.kill();
   },[]);
+
   useEffect(()=> {
-    if(openRefTween.current){ // 이렇게 해보고 .reverese()로 접근
-       const ani = gsap.timeline();
-      cateGoryRef.current.forEach((el,idx) => {
-        if(idx === samp){
-            if(!open){
-              ani
-              .to(el,{
-                height: 0,
-                duration: 0.5,
-                ease: 'expo.inOut',
-              });
-            }else{ 
-            ani
-            .to(el,{
-              height: 'auto',
-              duration: 0.5,
-              ease: 'expo.inOut',
-            })  
-          } 
-        } 
-          // return () => ani.kill();  // 다른것 클리갛면 저절로 닫히고 열리는데 너무 느림
-        // }else{
-        //   if(open){
-        //     ani
-        //     .to(el,{
-        //       height: 0,
-        //       duration: 0.5,
-        //       ease: 'expo.inOut',
-        //     });
-        //   } 
-        // }
+    if(openRefTween.current){ 
+       const ani = gsap.timeline({ duration: 0.5, ease: 'expo.inOut'});
+        cateGoryRef.current.forEach((el,idx) => {
+          if(idx === samp){
+              if(!open){
+                ani.to(el,{ height: 0 });
+              }else{ 
+                ani.to(el,{ height: 'auto'})  
+            } 
+          }
         return () => ani.kill();  
      }) 
     }
 
   },[samp, open])
   
-  // const LvOneRef = useRef<HTMLDivElement[]>([]);
-  // LvOneRef.current = [];
-
-  // const addToRefs = (el: HTMLDivElement) => {
-  //   if (el && !LvOneRef.current.includes(el)){
-  //     LvOneRef.current.push(el)
-  //   }
-  // }
-  const addToRefs = (el: HTMLDivElement) => {
-    if (el && !categroupRef.current.includes(el)){
-      categroupRef.current.push(el);
-    }
-  }
-  const addAnotherRefs = (el: HTMLDivElement) => {
-    if (el && !cateHeadRef.current.includes(el)){
-      cateHeadRef.current.push(el);
-    }
-  }
   const addFinalRefs = (el: HTMLDivElement) => {
     if (el && !cateGoryRef.current.includes(el)){
       cateGoryRef.current.push(el);
@@ -110,9 +51,6 @@ function SearchDream(){
     openRefTween.current.reversed(!openRefTween.current.reversed());
   }
   const handleCatg = (index: number) => {
-      // reverse 시키는것
-    // testTween.current.reversed(!testTween.current.reversed());
-    // setSamp(!samp);
     setSamp(index);
     setOpen(!open);
 
@@ -145,8 +83,8 @@ function SearchDream(){
           {dummyDatas.map((dum, idx)=>{
             for(const props in dum){
               return(
-                <CateGroup ref={addToRefs}> {/*일단 그룹만들었음 */}
-                  <Category ref={addAnotherRefs} onClick={()=> handleCatg(idx)} key={idx}>{props}
+                <CateGroup> {/*일단 그룹만들었음 */}
+                  <Category onClick={()=> handleCatg(idx)} key={idx}>{props}
                   </Category>
                   <DeepTitle ref={addFinalRefs}>
                     {dum[props].map((el,idx)=>{
