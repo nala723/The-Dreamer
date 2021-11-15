@@ -5,55 +5,95 @@ import HashTag from '../components/reusable/HashTag';
 import { dummyDatas } from '../config/dummyDatas';
 import { gsap } from 'gsap';
 
-function SearchDream(){
-  const openRef = useRef(null);//이어도되나
-  const openRefTween = useRef<undefined | any>();
+function SearchDream(): JSX.Element {
+  const openRef = useRef(null);
+  const openRefTween = useRef<gsap.core.Timeline>();
   const cateGoryRef = useRef<HTMLDivElement[]>([]);
-  const [samp,setSamp] = useState(-1);
-  const [open,setOpen] = useState(false);
+  const DeepAnim = useRef<gsap.core.Tween[]>([]);
+  const lineRef = useRef(null);
+  const SclineRef = useRef<HTMLDivElement>(null);
+  const cateHeadRef = useRef<HTMLDivElement[]>([]);
   cateGoryRef.current = [];
- // play로 원할때 play가능
+  DeepAnim.current = [];
+  cateHeadRef.current = [];
+
   useEffect(()=>{
-    openRefTween.current = gsap // 일단 이렇게 하고 보고 stegger 할거 timeline으로 이어보자
-      .to(openRef.current, {
-          height: 'auto',
-          opacity: 1,
-          duration: 1,
-          ease: 'expo.inOut',
+    gsap.set(openRef.current, { height: 'auto', opacity: 1})
+    const headani = gsap.timeline({ ease: 'expo.inOut' })
+    openRefTween.current = headani 
+      .to(lineRef.current,{ 
+          width: '100%',
+          opacity: 0.7
+      })
+      .to(cateHeadRef.current, { 
+         stagger: 0.1,
+         opacity: 1
+      })
+      .to(SclineRef.current,{ 
+          width: '100%',
+          opacity: 0.7,
+          delay: -0.2
       })
       .reverse();
-      return () => openRefTween.current.kill();
+
+    cateGoryRef.current.forEach((el: HTMLDivElement | any) => { 
+      const arr = gsap
+        .to(el, {
+           height: 'auto', 
+           duration: 1.2,
+           opacity: 0.7, 
+           ease: 'expo.inOut'
+         }).reverse(); 
+      DeepAnim.current.push(arr);
+      el.animation = arr  
+      })
+
+      return () =>  { 
+        cateGoryRef.current.forEach((el: HTMLDivElement | any)=>{
+          el.animation.kill();
+        })
+        DeepAnim.current.forEach((el: gsap.core.Tween)=>{
+           el.kill();
+        })
+        openRefTween.current && openRefTween.current.kill();
+        } 
   },[]);
 
-  useEffect(()=> {
-    if(openRefTween.current){ 
-       const ani = gsap.timeline({ duration: 0.5, ease: 'expo.inOut'});
-        cateGoryRef.current.forEach((el,idx) => {
-          if(idx === samp){
-              if(!open){
-                ani.to(el,{ height: 0 });
-              }else{ 
-                ani.to(el,{ height: 'auto'})  
-            } 
-          }
-        return () => ani.kill();  
-     }) 
+  const addStagerRef = (el: HTMLDivElement) => {
+    if (el && !cateHeadRef.current.includes(el)){
+      cateHeadRef.current.push(el);
     }
+  }
 
-  },[samp, open])
-  
   const addFinalRefs = (el: HTMLDivElement) => {
     if (el && !cateGoryRef.current.includes(el)){
       cateGoryRef.current.push(el);
     }
   }
-  const handleOpen = () => {
-    openRefTween.current.reversed(!openRefTween.current.reversed());
-  }
-  const handleCatg = (index: number) => {
-    setSamp(index);
-    setOpen(!open);
 
+  const handleOpen = () => {
+    handleCatg(-1); //걍없어지는게 나을지두
+    if(openRefTween.current){
+      openRefTween.current.reversed(!openRefTween.current.reversed());
+    }
+  }
+
+  const handleCatg = (index: number) => { // useEffect보다 순서대로 실행됨
+    let selected : boolean;
+    cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
+      if(index === idx){
+        selected = el.animation.reversed();
+        return selected;
+      }
+    })
+    DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
+      ani.reverse();
+    })
+    cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
+      if(index === idx ){
+        el.animation.reversed(!selected)
+        }
+    })
   }
   return (
     <Container>
@@ -79,43 +119,44 @@ function SearchDream(){
         </svg>
         </CareHeader>
         <CateTitle ref={openRef}>
-          <CateLine/>
+          <CateLine ref={lineRef}/>
           {dummyDatas.map((dum, idx)=>{
             for(const props in dum){
               return(
                 <CateGroup> {/*일단 그룹만들었음 */}
-                  <Category onClick={()=> handleCatg(idx)} key={idx}>{props}
+                  <Category ref={addStagerRef} onClick={()=> handleCatg(idx)} key={idx}>{props}
                   </Category>
                   <DeepTitle ref={addFinalRefs}>
-                    {dum[props].map((el,idx)=>{
-                      return(
-                        <DeepGory key={idx}>{el}
-                        </DeepGory>
-                      )
-                    })}
+                    <DeepLine/>
+                      {dum[props].map((el,idx)=>{
+                        return(
+                          <DeepGory key={idx}>{el}
+                          </DeepGory>
+                        )
+                      })}
+                    <DpEndLine/>
                   </DeepTitle>
                 </CateGroup>
               )
             }
           })}
-           <CateLine/>
+           <CtEndLine ref={SclineRef}/>
         </CateTitle>
       </CategoryBox>    
     </Container>
   );
 }
-//클릭 활성화시 밑줄생기고, 열림
+
 export default SearchDream;
 
 const Container = styled.div`
   position: relative;             
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
 `;
-//일단 다div로 감싸보고 안되면 뭐 absolute등
 
 const SearchSection = styled.div`
   width: 100%;
@@ -148,10 +189,12 @@ const CategoryBox = styled.div`
 `;
 const CareHeader = styled.div`
   width: 100%;
-  height: 1.781rem;
+  height: 1.7rem;
   color: ${props=> props.theme.text};
   display: flex;
-  justify-content: space-evenly; //일단.
+  justify-content: space-between;
+  padding: 0 1rem; // 임시 ***
+  /* justify-content: space-evenly; //일단. 주석- */
   >svg {
     fill: ${props=> props.theme.transp};
     width: 1.125rem;
@@ -160,32 +203,70 @@ const CareHeader = styled.div`
   }
 `;
 const CateTitle = styled.div`
+  position: relative;
   ${props=>props.theme.flexColumn}
   height: 0;
   opacity: 0;
+  gap: 1.5rem;
+  >div:nth-child(2){
+    margin-top: 1rem;
+  }
+  >div:nth-child(10){
+    margin-bottom: 1rem;
+  }
 `;
-const CateLine = styled.div` // 메뉴 라인일단 이렇게 해보고 아니면 헤더 밑어쩌고..
+const CateLine = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 0;
-  height: 1px;
-  background-color: ${props=> props.theme.moretransp};
+  height: 1.4px;
+  background-color: ${props=> props.theme.transp};
 `;
 const CateGroup = styled.div`
+  ${props=>props.theme.flexColumn}
   height: 100%;
 `;
 const Category = styled.div`
-   ${props=>props.theme.flexColumn}
-   color: ${props=> props.theme.text}; //height: 지워봄
-   /* height: 100%; */
-   overflow: hidden;
+  ${props=>props.theme.flexColumn}
+  align-items: flex-start;
+  padding-left: 2.3rem; // 임시!***
+  color: ${props=> props.theme.text}; // 왜 justify-content: center가 안되지
+  overflow: hidden;
+  height: auto;
+  opacity: 0;
 `;
 const DeepTitle = styled(CateTitle)`
+  gap: 1rem;
   height: 0;
-  opacity: 1;
+  opacity: 0;
+  top: 0.7rem;
+  >div:nth-child(10){
+    margin: 0;
+  }
+  >div:nth-last-child(2){
+    margin-bottom: 0.7rem;
+  }
+`;
+const DeepLine = styled(CateLine)`
+  width: 100%;
+  height: 1px;
 `;
 const DeepGory = styled(Category)`
-  padding-left: 2.5rem; //밑줄이 길게 하려면 p를 만들어서 패딩더 채우거나 하면됨
+  /* padding-left: 5rem;  */ // ******둘, 임시로 지움
+  /* align-items: flex-start; */ 
   height: 100%;
-  align-items: flex-start;
+  opacity: 1;
+  align-items: center;
+  padding-left: 0;
 `;
-//뭔가 안되면 category여기를 따로 해보자
-//리스트 레이아웃 이상하면 텍스트들 왼쪽부터 쭉 나가는거로 가자 걍
+const CtEndLine = styled(CateLine)`
+  bottom: 0;
+  top: 100%;
+  width: 0;
+  opacity: 0;
+`;
+const DpEndLine = styled(CtEndLine)`
+  width: 100%;
+  opacity: 1;
+`;
