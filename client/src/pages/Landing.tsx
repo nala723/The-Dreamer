@@ -56,13 +56,21 @@ function Landing() {
     }; // addEventListener 함수를 삭제! 꼭 필요하다!
   });
 
+  const handleSearch = (search: string) => {
+    if(search === ''){
+      //something.. 모달?
+      return
+    } // search를 갖고 그 페이지로 푸쉬..? 리덕스나.. 그걸 써야하낭
+    
+  }
+
   return (
       <Container>
         <MainSection>
           <ContentsBox >
             <h1>{text}</h1>
             <SearchBox  className={fadeIn? 'fadein': ''}>
-              <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem'/>
+              <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem' handleSearch={handleSearch}/>
             </SearchBox>
           </ContentsBox >
           <ScrollDown>

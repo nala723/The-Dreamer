@@ -1,12 +1,19 @@
-import React from 'react';
+import React,{ useState } from 'react';
 import styled from 'styled-components';
 
-function SearchBar({height, width, scale, font}: 
-  {height: string; width: string; scale: string; font: string;}) {
+function SearchBar({height, width, scale, font, handleSearch}: 
+  {height: string; width: string; scale: string; font: string; handleSearch: (search: string)=>void;}) {
+  
+  const [search, setSearch] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value)
+  }  
+
   return (
-    <SearchBox width={width} scale={scale}>
-      <img src="/images/search-icon.svg" alt="search"/>
-      <Bar font={font} height={height} placeholder= 'Search your dream..' type="search">
+    <SearchBox width={width} onKeyUp={(e)=> {e.preventDefault(); e.key==='Enter'&& handleSearch(search)}}>
+      <Icon type='image' src="/images/search-icon.svg" alt="search"  scale={scale} onClick={(e) => {e.preventDefault(); handleSearch(search)}}/>
+      <Bar font={font} height={height} placeholder= 'Search your dream..' type="search" onChange={(e) => handleChange(e)} value={search}>
       </Bar>
     </SearchBox>
   );
@@ -14,18 +21,18 @@ function SearchBar({height, width, scale, font}:
 
 export default SearchBar;
 
-const SearchBox = styled.div<{width: string; scale: string;}>`
+const SearchBox = styled.div<{width: string;}>`
   position: relative;
   width: ${props=> props.width};
   height: auto;
   display: flex;
   align-items: center;
-  >img {
-      position: absolute;
-      cursor: pointer;
-      right: 2%;
-      transform: scale${props=>props.scale};
-    }
+`;
+const Icon = styled.input<{scale: string;}>`
+  position: absolute;
+  cursor: pointer;
+  right: 2%;
+  transform: scale${props=>props.scale};
 `;
 const Bar = styled.input<{font: string;}>`
   background-color: ${props=> props.theme.transp};

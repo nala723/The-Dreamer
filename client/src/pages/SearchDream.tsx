@@ -1,104 +1,35 @@
-import React, { useEffect, useRef, useState }  from 'react';
+import React, { useEffect, useState }  from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
-import { dummyDatas } from '../config/dummyDatas';
-import { gsap } from 'gsap';
+import CateGory from '../components/searchdream/Category';
+import dotenv from 'dotenv';
+dotenv.config();
 
 function SearchDream(): JSX.Element {
-  const openRef = useRef(null);
-  const openRefTween = useRef<gsap.core.Timeline>();
-  const cateGoryRef = useRef<HTMLDivElement[]>([]);
-  const DeepAnim = useRef<gsap.core.Tween[]>([]);
-  const lineRef = useRef(null);
-  const SclineRef = useRef<HTMLDivElement>(null);
-  const cateHeadRef = useRef<HTMLDivElement[]>([]);
-  cateGoryRef.current = [];
-  DeepAnim.current = [];
-  cateHeadRef.current = [];
-
-  useEffect(()=>{
-    gsap.set(openRef.current, { height: 'auto', opacity: 1})
-    const headani = gsap.timeline({ ease: 'expo.inOut' })
-    openRefTween.current = headani 
-      .to(lineRef.current,{ 
-          width: '100%',
-          opacity: 0.7
-      })
-      .to(cateHeadRef.current, { 
-         stagger: 0.1,
-         opacity: 1
-      })
-      .to(SclineRef.current,{ 
-          width: '100%',
-          opacity: 0.7,
-          delay: -0.2
-      })
-      .reverse();
-
-    cateGoryRef.current.forEach((el: HTMLDivElement | any) => { 
-      const arr = gsap
-        .to(el, {
-           height: 'auto', 
-           duration: 1.2,
-           opacity: 0.7, 
-           ease: 'expo.inOut'
-         }).reverse(); 
-      DeepAnim.current.push(arr);
-      el.animation = arr  
-      })
-
-      return () =>  { 
-        cateGoryRef.current.forEach((el: HTMLDivElement | any)=>{
-          el.animation.kill();
-        })
-        DeepAnim.current.forEach((el: gsap.core.Tween)=>{
-           el.kill();
-        })
-        openRefTween.current && openRefTween.current.kill();
-        } 
-  },[]);
-
-  const addStagerRef = (el: HTMLDivElement) => {
-    if (el && !cateHeadRef.current.includes(el)){
-      cateHeadRef.current.push(el);
-    }
-  }
-
-  const addFinalRefs = (el: HTMLDivElement) => {
-    if (el && !cateGoryRef.current.includes(el)){
-      cateGoryRef.current.push(el);
-    }
-  }
-
-  const handleOpen = () => {
-    handleCatg(-1); //걍없어지는게 나을지두
-    if(openRefTween.current){
-      openRefTween.current.reversed(!openRefTween.current.reversed());
-    }
-  }
-
-  const handleCatg = (index: number) => { // useEffect보다 순서대로 실행됨
-    let selected : boolean;
-    cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
-      if(index === idx){
-        selected = el.animation.reversed();
-        return selected;
-      }
+  //필요한 것
+  //인풋발류 - 그것 핸들러
+  //submit버튼 - 정보 호출할
+  const handleSearch = async(search: string) => {
+    if(search === ''){
+      //something.. 모달? 
+      return;
+    } // 서버 만들어서 하자.
+    await axios
+    .get(process.env.REACT_APP_URL + `/search/search`,{
+      params:{
+        query: search,
+      },
     })
-    DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
-      ani.reverse();
-    })
-    cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
-      if(index === idx ){
-        el.animation.reversed(!selected)
-        }
-    })
+    .then((re)=>console.log(re))
+    .catch(err => console.log(err,"error"))
   }
+
   return (
     <Container>
       <SearchSection>
-          <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem'/>
+          <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
       </SearchSection>
       <HashSection>
         <HashTag text='ddd'/>
@@ -111,38 +42,7 @@ function SearchDream(): JSX.Element {
       </HashSection> 
       <DreamSection>
       </DreamSection> 
-      <CategoryBox>
-        <CareHeader onClick={handleOpen}>
-        <h5>카테고리</h5>
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-        </CareHeader>
-        <CateTitle ref={openRef}>
-          <CateLine ref={lineRef}/>
-          {dummyDatas.map((dum, idx)=>{
-            for(const props in dum){
-              return(
-                <CateGroup> {/*일단 그룹만들었음 */}
-                  <Category ref={addStagerRef} onClick={()=> handleCatg(idx)} key={idx}>{props}
-                  </Category>
-                  <DeepTitle ref={addFinalRefs}>
-                    <DeepLine/>
-                      {dum[props].map((el,idx)=>{
-                        return(
-                          <DeepGory key={idx}>{el}
-                          </DeepGory>
-                        )
-                      })}
-                    <DpEndLine/>
-                  </DeepTitle>
-                </CateGroup>
-              )
-            }
-          })}
-           <CtEndLine ref={SclineRef}/>
-        </CateTitle>
-      </CategoryBox>    
+      <CateGory/>
     </Container>
   );
 }
