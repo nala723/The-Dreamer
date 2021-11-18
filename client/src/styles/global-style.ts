@@ -20,6 +20,11 @@ const GlobalStyles = createGlobalStyle`
         height: auto;
         font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Batang, Georgia, serif;
         background: ${props=>props.theme.default};
+        -ms-overflow-style: none; /* IE, Edge */
+        scrollbar-width: none; /* Firefox */
+        ::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+         }
     }
     ol, ul, li {
         list-style: none;

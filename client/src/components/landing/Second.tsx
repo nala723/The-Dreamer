@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AOS from 'aos';
 import 'aos/dist/aos.css'; 
+import SearchBar from '../reusable/SearchBar';
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -143,6 +144,13 @@ function SecondSection() {
       textBoxRef.current.push(el);
     }
   };
+  const handleSearch = (search: string) => {
+    if(search === ''){
+      //something.. 모달?
+      return
+    } // search를 갖고 그 페이지로 푸쉬..? 리덕스나.. 그걸 써야하낭
+    
+  }
   
   return (
     <>
@@ -205,9 +213,7 @@ function SecondSection() {
               <ContentsBox >
                 <h1 data-aos="fade-down" data-aos-delay="200">The-Dreamer 안에서<p></p> 당신의 꿈을 더욱 아름답게 가꿔보세요.</h1>
                 <SearchBox data-aos="fade-up">
-                  <img src="/images/search-icon.svg" alt="search"/>
-                  <SearchBar placeholder= 'Search your dream..' type="search">
-                  </SearchBar>
+                   <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem' handleSearch={handleSearch}/>
                 </SearchBox>
               </ContentsBox >
             </FinalBox> 
@@ -344,34 +350,4 @@ const SearchBox = styled.div`
   min-width: 40.25rem;
   height:auto;
   ${props=>props.theme.searchBlur};
-    >img {
-      position: absolute;
-      cursor: pointer;
-      right: 2%;
-      bottom: 30%;
-    }
 `;  
-const SearchBar = styled.input`
-  background-color: ${props=> props.theme.transp};
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 4.688rem;
-  padding-right: 3.7rem;
-  padding-bottom: 0.3rem;
-  font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
-  font-size: ${props=>props.theme.fontL};
-    ::placeholder{
-      color: #555562;
-    }
-    ::-ms-clear,
-    ::-ms-reveal{
-      display:none;width:0;height:0;
-    }
-    ::-webkit-search-decoration,
-    ::-webkit-search-cancel-button,
-    ::-webkit-search-results-button,
-    ::-webkit-search-results-decoration{
-      display:none;
-    }
-`;

@@ -9,10 +9,18 @@ function SearchBar({height, width, scale, font, handleSearch}:
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value)
   }  
+  const handleSumbit = () => {
+    if(search === ''){
+      return; //경고 모달
+    }else{
+      handleSearch(search);
+    }
+    setSearch('')
+  }
 
   return (
-    <SearchBox width={width} onKeyUp={(e)=> {e.preventDefault(); e.key==='Enter'&& handleSearch(search)}}>
-      <Icon type='image' src="/images/search-icon.svg" alt="search"  scale={scale} onClick={(e) => {e.preventDefault(); handleSearch(search)}}/>
+    <SearchBox width={width} onKeyUp={(e)=> {e.preventDefault(); e.key==='Enter'&& handleSumbit()}}>
+      <Icon type='image' src="/images/search-icon.svg" alt="search"  scale={scale} onClick={(e) => {e.preventDefault(); handleSumbit()}}/>
       <Bar font={font} height={height} placeholder= 'Search your dream..' type="search" onChange={(e) => handleChange(e)} value={search}>
       </Bar>
     </SearchBox>

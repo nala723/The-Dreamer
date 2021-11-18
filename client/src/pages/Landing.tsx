@@ -58,7 +58,6 @@ function Landing() {
 
   const handleSearch = (search: string) => {
     if(search === ''){
-      //something.. 모달?
       return
     } // search를 갖고 그 페이지로 푸쉬..? 리덕스나.. 그걸 써야하낭
     
