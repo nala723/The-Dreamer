@@ -26,6 +26,8 @@
         "prettier"
     ],
     "rules": {
+        "@typescript-eslint/no-extra-non-null-assertion": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "prettier/prettier": 0, // Means error
         "react/prop-types": [
             0,

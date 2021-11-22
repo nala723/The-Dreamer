@@ -16,7 +16,7 @@ function SearchDream(): JSX.Element {
   // useEffect 속에 타임라인 만들어두고,? 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
   // 만들고 저 랜덤함수 인용?(해보고 안되면 add)
 
-  // 해결할것 : 카테고리 문제와 드림 애니메이션 자연스럽게 돌아가는것
+  // 해결할것 : 카테고리 문제와 드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
   let Position = [];
   let Xposition: number;
   let Yposition: number;
@@ -29,6 +29,7 @@ function SearchDream(): JSX.Element {
     }
     function floatingDream(dream: HTMLDivElement, size: number) {
       tl = gsap.timeline({repeat: -1,  ease: 'none', delay: 0.3});
+      
        tl.to(
         dream,
         {
@@ -61,12 +62,7 @@ function SearchDream(): JSX.Element {
     }
 
   },[result])
-
-  // useEffect(()=>{
-  //   DreamGsap.current && DreamGsap.current.forEach((dream: gsap.core.Timeline)=>{
-  //     dream.current.reversed(!dream.current.reversed());
-  //   })
-  // },[]);
+ 
   const handleSearch = async(search: string) => {
     if(search === ''){
       //something.. 모달? 
@@ -81,16 +77,12 @@ function SearchDream(): JSX.Element {
     .then((re)=> setResult(re.data.items))
     .catch(err => console.log(err,"error"))
   }
-
+  const handleLink = (e: React.MouseEvent ,link : string) => {
+    e.preventDefault();
+    return window.open(link);
+  }
   const handlePosition = (index: number) => {
     const quotient = (Math.floor(index / 3)) * 60;
-    // let remainder = index % 3
-    // if(remainder === 0 || remainder === 2){  // 어떠한 범위 내에서 랜덤하게 배치할수 있을듯 처음배치만 그렇게 하구
-    //   remainder += 10
-    // }else if(remainder === 1){
-    //   remainder += 15
-    // }
-
     if(index % 3 === 0){  
       Xposition = 15;
     }else if(index % 3 === 1){
@@ -109,7 +101,7 @@ function SearchDream(): JSX.Element {
       DreamRef.current.push(el);
     }
   };
-
+ console.log(result);
   return (
     <Container>
       <SearchSection>
@@ -126,12 +118,12 @@ function SearchDream(): JSX.Element {
       </HashSection> 
       <DreamSection>
         {/* <DreamWrapper> */}
-        {result && result.map((res :{title: string; description: string;}, idx) => {
+        {result && result.map((res :{title: string; description: string; link: string;}, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
             <Dream ref={addToRefs} key={idx} top={y} left={x}>
-              <DrContent>
+              <DrContent onClick={(e)=> handleLink(e,res.link)}>
                 <Title>{res.title.replace(/[<][^>]*[>]/gi,'')}</Title>
                 <Text>{res.description.replace(/[<][^>]*[>]/gi,'').slice(0,66)+ '...'}</Text>
               </DrContent>
@@ -200,7 +192,7 @@ const Dream = styled.div<{top: string; left: string;}>`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index:100;
+  z-index: 50;
 `;
 const DrContent = styled.div`
   width: calc(100% - 2rem);
@@ -211,6 +203,7 @@ const DrContent = styled.div`
   justify-content: center;
   gap: 1.5rem;
   text-align: center;
+  cursor: pointer;
 `;
 const Title = styled.h5`
   color: ${props=> props.theme.reverse};

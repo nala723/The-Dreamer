@@ -47,13 +47,13 @@ function CateGory(): JSX.Element {
         })
   
         return () =>  { 
-          cateGoryRef.current.forEach((el: HTMLDivElement | any)=>{
-            el.animation.kill();
-          })
-          DeepAnim.current.forEach((el: gsap.core.Tween)=>{
-             el.kill();
-          })
-          openRefTween.current && openRefTween.current.kill();
+            openRefTween.current && openRefTween.current.kill();
+            cateGoryRef.current.forEach((el: HTMLDivElement | any)=>{
+              el.animation.kill();
+            })
+            DeepAnim.current.forEach((el: gsap.core.Tween)=>{
+              el.kill();
+            })
           } 
     },[]);
   
@@ -80,17 +80,23 @@ function CateGory(): JSX.Element {
       let selected : boolean;
       cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
         if(index === idx){
-          selected = el.animation.reversed();
+          selected = el.animation.reversed(); 
+          // console.log('selected :', selected)
           return selected;
+         
         }
       })
       DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
-        ani.reverse();
+        // console.log('ani :',ani.reversed())
+        ani.reverse(); // -----------> 현재 얘가 작동하지 않는다. 왜지?
+        // console.log('after ani :',ani.reversed())
+   
       })
       cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
         if(index === idx ){
           el.animation.reversed(!selected)
           }
+          // console.log('el :', el.animation.reversed())   
       })
     }
 
@@ -98,7 +104,7 @@ function CateGory(): JSX.Element {
 
   return (
  
-            <CategoryBox>
+      <CategoryBox>
         <CareHeader onClick={handleOpen}>
         <h5>카테고리</h5>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
