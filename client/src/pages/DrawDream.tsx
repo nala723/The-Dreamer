@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { colors } from '../config/dummyDatas';
+import { colors, cursors } from '../config/dummyDatas';
 
 interface CanvasProps {
   width: number;
@@ -15,17 +15,67 @@ interface Coordinate {
 function DrawDream({ width, height }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mousePosition, setMousePosition] = useState<Coordinate | undefined>(); // 마우스포인터(x,y)
-  const [isPainting, setIsPainting] = useState(false); //페인팅상태
+  const [isPainting, setIsPainting] = useState(false); //페인팅상태 선 긋는 상태
   const [lineWeight, setLineWeight] = useState<number>(2.5); // 타입수정
   const [selectColor, setSelectColor] = useState('#000000');
+  const [cursor, setCursor] = useState(cursors[0]);
+  const [eraser, setEraser] = useState(false); 
+  const [brush, setBrush] = useState(true);
+  const [fill, setFill] = useState(false);
+  const [title, setTitle] = useState('');
+  // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
+  const context = useRef<CanvasRenderingContext2D | null>();
 
   const handleColor = (e : React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     const newColor = (e.target as HTMLDivElement).style.backgroundColor;
     setSelectColor(newColor);
+    setEraser(false);
+    if(!fill){
+      setBrush(true);
+    }
   }
   
+  // 굵기 조절
   const handleBrushW = (e: any)  => {
     setLineWeight(e.target.value);
+  }
+
+  const handleBrush = (e: React.MouseEvent<HTMLInputElement, MouseEvent>): void => {
+    e.preventDefault();
+    setEraser(false);
+    setFill(false);
+    setBrush(true);
+    setCursor(cursors[0]);
+  }
+
+  // 지우기
+  const handleErase = (e: React.MouseEvent<HTMLInputElement, MouseEvent>): void => {
+    e.preventDefault();
+    setEraser(true);
+    setBrush(false);
+    setFill(false);
+    setCursor(cursors[1]);
+  }
+ 
+  // 채우기
+  const handleFill = () => {
+    setFill(true);
+    setBrush(false);
+    setEraser(false);
+    setCursor(cursors[2]);
+  }
+ 
+  // 그림 저장
+  const handleSave = () => {
+    if(!canvasRef.current){
+      return;
+    }
+    const canvas: HTMLCanvasElement = canvasRef.current;
+    const image = canvas.toDataURL('image/png', 1.0);
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'My-Dream'; // 여기 제목을 해줄수 있을듯!
+    link.click();
   }
   // 좌표 얻는 함수
   const getCoordinates = (e: MouseEvent): Coordinate | undefined => {
@@ -39,24 +89,39 @@ function DrawDream({ width, height }: CanvasProps) {
     }
   }
   // canvas에 선을 긋는 함수
-  const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate ) => {
+  const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate) => {
     if(!canvasRef.current){
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
-    const context = canvas.getContext('2d');
+    context.current = canvas.getContext('2d');
 
-    if(context) { //선 스타일지정
-      context.strokeStyle = selectColor; 
-      context.lineJoin = 'round';
-      context.lineWidth = lineWeight;
+    if(context.current) { //선 스타일지정
 
-      context.beginPath();
-      context.moveTo(originalMousePosition.x, originalMousePosition.y);
-      context.lineTo(newMousePosition.x, newMousePosition.y);
-      context.closePath();
+      context.current.lineJoin = 'round';
+      context.current.lineWidth = lineWeight;
+      context.current.fillStyle = selectColor;
 
-      context.stroke();
+      if(fill){
+        canvas.style.cursor = cursors[2];
+        context.current.fillRect(0, 0, canvas.width, canvas.height); //왜 느릴까..? 두세번 클릭해야함..
+      }else{
+        if(eraser){
+          canvas.style.cursor = cursors[1];
+          // context.clearRect(newMousePosition.x-context.lineWidth/2, newMousePosition.y-context.lineWidth/2, context.lineWidth, context.lineWidth)
+          context.current.strokeStyle = 'white'; 
+        }
+        else if(brush){
+          canvas.style.cursor = cursors[0];
+          context.current.strokeStyle = selectColor; 
+        }
+          context.current.beginPath();
+          context.current.moveTo(originalMousePosition.x, originalMousePosition.y);
+          context.current.lineTo(newMousePosition.x, newMousePosition.y);
+          context.current.closePath();
+    
+          context.current.stroke();
+      }
     }
   }
 
@@ -91,7 +156,13 @@ function DrawDream({ width, height }: CanvasProps) {
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
-    canvas.getContext('2d')!!.clearRect(0, 0, canvas.width, canvas.height);
+
+    if(context.current){
+      context.current.fillStyle = 'white';
+      context.current.fillRect(0,0,canvas.width,canvas.height);
+      context.current.fillStyle = selectColor;
+    }
+    // canvas.getContext('2d')!!.clearRect(0, 0, canvas.width, canvas.height);
   }
 
   // const undo1 = () => {  // 뒤로가기 만들수 있다!
@@ -133,14 +204,19 @@ function DrawDream({ width, height }: CanvasProps) {
   // }, []);  
   return (
     <Container>
-      <h1>당신의 꿈을 그림으로 남겨보세요.</h1>
+      <Title>
+        <h1>당신의 꿈을 그림으로 남겨보세요.</h1>
+      </Title>
       <Dream>
         <DrInner>
           <TextBox>
-            <h5>제목 : something..</h5>
+            <InputBox>
+              <h5>제목 : </h5>
+              <input value={title} onChange={(e) => setTitle(e.target.value)}/>
+            </InputBox>
             <h5>2021년 11월 10일</h5>
           </TextBox>
-          <Canvas ref={canvasRef} height={height} width={width}/> 
+          <Canvas ref={canvasRef} height={height} width={width} style={{cursor : `${cursor}`}}/> 
           <ToolBox>
             <Palette>
               {colors.map((color, idx)=>{
@@ -151,14 +227,14 @@ function DrawDream({ width, height }: CanvasProps) {
             </Palette>
             <ButtonBox>
               <UpperBtn>
-                <LineWeight type='range' min='0.1' max='5.0' value={lineWeight} step='0.1' onChange={(e) => handleBrushW(e)}/>
+                <LineWeight type='range' min='1.0' max='20.0' value={lineWeight} step='1.0' onChange={(e) => handleBrushW(e)}/>
                 <Icon type='image' src='/images/new-icon.svg' alt='new' onClick={clearCanvas}/>
-                <Icon type='image' src='/images/save-icon.svg' alt='save'/>
+                <Icon type='image' src='/images/save-icon.svg' alt='save' onClick={handleSave}/>
               </UpperBtn>
               <LowerBtn>
-                <Icon type='image' src='/images/eraser-icon.svg' alt='eraser'/>
-                <Icon type='image' src='/images/paint-icon.svg' alt='paint'/>
-                <Icon type='image' src='/images/brush-icon.svg' alt='brush'/>
+                <Icon type='image' src='/images/eraser-icon.svg' alt='eraser' onClick={(e) => handleErase(e)}/>
+                <Icon type='image' src='/images/paint-icon.svg' alt='paint' onClick={handleFill}/>
+                <Icon type='image' src='/images/brush-icon.svg' alt='brush' onClick={(e) => handleBrush(e)}/>
               </LowerBtn>
             </ButtonBox>  
           </ToolBox>
@@ -176,9 +252,71 @@ DrawDream.defaultProps = { // 안되다가 인라인으로 props로 받아서 �
 
 export default DrawDream;
 
+// const Container = styled.div`
+//   display: flex;
+//   position: relative;
+//   width: 100%;
+//   height: calc(100vh - 4.375rem);
+// `;
+// const Title = styled.div`
+//   position: absolute;
+//   width: auto;
+//   height: auto;
+//   left: 4%;
+//   top: 5.5%;
+//   h1{
+//     font-size: ${props=>props.theme.fontL};
+//   }
+// `;
+// const Dream = styled.div`
+//   position: absolute;
+//   left: 50%;
+//   top: 45%;
+//   margin-top: -24.25rem;
+//   margin-left: -25.25rem;
+//   width: 50.5rem;
+//   height: 50.5rem; // 뷰포트에서 조정해봐야겠다
+//   border-radius: 100%;
+//   background: ${props=>props.theme.dream};
+//   box-shadow: 0px 0px 30px 4px rgba(255, 207, 242, 0.5);
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 50;
+// `;
+// const Container = styled.div`
+//   ${props=>props.theme.flexRow};
+//   height: calc(100vh - 4.375rem);
+//   overflow: auto;
+// `;
+// const Title = styled.span`
+//   position: relative;
+//   width: auto;
+//   height: auto;
+//   display: flex;
+//   top: -45%;
+//   margin-right: -20%;
+//   left: -23%;
+//   h1{
+//     font-size: ${props=>props.theme.fontL};
+//   }
+// `;
 const Container = styled.div`
   ${props=>props.theme.flexColumn};
-  height: inherit;
+  height: calc(100vh - 4.375rem);
+  justify-content: flex-start; // 다른 디바이스에선 지우기
+  overflow: auto;
+  gap: 1rem;
+  /* -ms-overflow-style: none; 
+  scrollbar-width: none;
+    ::-webkit-scrollbar {
+    display: none;
+  } */
+`;
+const Title = styled.div`
+  width: auto;
+  height: auto;
   h1{
     font-size: ${props=>props.theme.fontL};
   }
@@ -186,6 +324,8 @@ const Container = styled.div`
 const Dream = styled.div`
   width: 50.5rem;
   height: 50.5rem; // 뷰포트에서 조정해봐야겠다
+  min-width: 50.5rem;
+  min-height: 50.5rem;
   border-radius: 100%;
   background: ${props=>props.theme.dream};
   box-shadow: 0px 0px 30px 4px rgba(255, 207, 242, 0.5);
@@ -211,12 +351,32 @@ const TextBox = styled.div`
   font-size: 15px;
   color: ${props=>props.theme.reverse};
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  :nth-child(1){
-  }
   :nth-child(2){
   }
 `;
+const InputBox = styled.div`
+  display: flex;
+  width: auto; 
+  align-items: center;
+  height: 100%;
+  >h5 {
+
+  }
+  >input {
+    height: 100%;
+    width: auto;
+    text-indent: 1rem;
+    display: flex; 
+    align-items: center;
+    background-color: transparent;
+    color: ${props=>props.theme.reverse};
+    font-size: 18px;
+    font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Batang, Georgia, serif;
+  }
+`;
+
 const Canvas = styled.canvas`
   background-color: white;
 `;
@@ -241,6 +401,7 @@ const Color = styled.div`
   width: 1.741rem;
   height: 1.741rem;
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 `;
 const ButtonBox = styled.div`
   width: 10.875rem;
@@ -289,4 +450,6 @@ const LowerBtn = styled(UpperBtn)`
 `;
 const Icon =styled.input`
    cursor: pointer;
+   border-radius: 100%;
+   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 `;

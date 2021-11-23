@@ -78,3 +78,7 @@ export const colors = [
     '#B30000', '#FF0000', '#FF6600', '#FF9933', '#FFCC00', '#FFFF00', '#87EB24', '#33CC33', '#009900', '#00E673',
     '#000000', '#FFFFFF', '#8F8F8F', '#CC00CC', '#6600CC', '#3333CC', '#0000FF', '#0099FF', '#33CCFF', '#00FFFF'
 ];
+
+export const cursors = [
+    'url(/images/brush.cur), pointer', 'url(/images/eraser.cur), pointer', 'url(/images/bucket.cur), pointer'
+];
