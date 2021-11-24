@@ -1,11 +1,17 @@
 import React, {useEffect, useState} from 'react';
+import { useHistory } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { SearchDreamAct } from '../actions';
+import { RootState } from '../reducers';
 import Footer from '../components/Footer';
 import SecondSection from '../components/landing/Second';
 import { keyframes } from 'styled-components';
 import SearchBar from '../components/reusable/SearchBar';
 
 function Landing() {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const txt = '오늘, 어떤 꿈을 꿨나요 ?';
   const [text, setText] = useState('');
   const [count, setCount] = useState(0);
@@ -56,11 +62,13 @@ function Landing() {
     }; // addEventListener 함수를 삭제! 꼭 필요하다!
   });
 
-  const handleSearch = (search: string) => {
+  const handleSearch = async(search: string) => {
     if(search === ''){
-      return
-    } // search를 갖고 그 페이지로 푸쉬..? 리덕스나.. 그걸 써야하낭
-    
+      //something.. 모달? 
+      return;
+    } 
+    dispatch(SearchDreamAct(search))
+    history.push('/searchdream');
   }
 
   return (

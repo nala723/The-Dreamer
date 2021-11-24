@@ -74,7 +74,7 @@ function DrawDream({ width, height }: CanvasProps) {
     const image = canvas.toDataURL('image/png', 1.0);
     const link = document.createElement('a');
     link.href = image;
-    link.download = 'My-Dream'; // 여기 제목을 해줄수 있을듯!
+    link.download = title; // 여기 제목을 해줄수 있을듯!
     link.click();
   }
   // 좌표 얻는 함수
