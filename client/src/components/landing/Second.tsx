@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import styled from 'styled-components';
 import gsap from "gsap";
+import { useHistory } from 'react-router-dom';
+import {  useDispatch } from 'react-redux';
+import { SearchDreamAct } from '../../actions';
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AOS from 'aos';
 import 'aos/dist/aos.css'; 
@@ -10,6 +13,8 @@ import SearchBar from '../reusable/SearchBar';
 gsap.registerPlugin(ScrollTrigger);
 
 function SecondSection() {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const mainRef = useRef(null);
   const textBoxRef = useRef<HTMLDivElement[]>([]);
   const SecondRef = useRef(null)
@@ -146,10 +151,11 @@ function SecondSection() {
   };
   const handleSearch = (search: string) => {
     if(search === ''){
-      //something.. 모달?
-      return
-    } // search를 갖고 그 페이지로 푸쉬..? 리덕스나.. 그걸 써야하낭
-    
+      //something.. 모달? 
+      return;
+    } 
+    dispatch(SearchDreamAct(search))
+    history.push('/searchdream');
   }
   
   return (

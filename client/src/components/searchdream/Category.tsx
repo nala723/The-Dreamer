@@ -116,7 +116,7 @@ function CateGory(): JSX.Element {
           {dummyDatas.map((dum, idx)=>{
             for(const props in dum){
               return(
-                <CateGroup> {/*일단 그룹만들었음 */}
+                <CateGroup key={idx}> {/*일단 그룹만들었음 */}
                   <Category ref={addStagerRef} onClick={()=> handleCatg(idx)} key={idx}>{props}
                   </Category>
                   <DeepTitle ref={addFinalRefs}>

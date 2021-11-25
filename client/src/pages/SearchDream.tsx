@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef }  from 'react';
-import axios from 'axios';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { SearchDreamAct } from '../actions';
+import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
@@ -9,10 +11,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 function SearchDream(): JSX.Element { 
+  const { loading, data, error } = useSelector((state: RootState) => state.searchReducer);
+  const dispatch = useDispatch();
   const DreamRef = useRef<HTMLDivElement[]>([]);
   // const DreamGsap = useRef<gsap.core.Timeline>(); 함수가 안된다그래서 일단은..
   DreamRef.current = [];
-  const [ result, setResult ] = useState([]);
   // useEffect 속에 타임라인 만들어두고,? 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
   // 만들고 저 랜덤함수 인용?(해보고 안되면 add)
 
@@ -61,22 +64,16 @@ function SearchDream(): JSX.Element {
       // DreamGsap.current &&  DreamGsap.current.kill();
     }
 
-  },[result])
+  },[data])
  
-  const handleSearch = async(search: string) => {
+  const handleSearch = (search: string) => {
     if(search === ''){
       //something.. 모달? 
       return;
-    } // 서버 만들어서 하자.
-    await axios
-    .get(process.env.REACT_APP_URL + `/search/search`,{
-      params:{
-        query: search + ' 꿈풀이',
-      },
-    })
-    .then((re)=> setResult(re.data.items))
-    .catch(err => console.log(err,"error"))
+    } 
+    dispatch(SearchDreamAct(search))
   }
+
   const handleLink = (e: React.MouseEvent ,link : string) => {
     e.preventDefault();
     return window.open(link);
@@ -101,7 +98,7 @@ function SearchDream(): JSX.Element {
       DreamRef.current.push(el);
     }
   };
- console.log(result);
+ console.log(data);
   return (
     <Container>
       <SearchSection>
@@ -118,7 +115,7 @@ function SearchDream(): JSX.Element {
       </HashSection> 
       <DreamSection>
         {/* <DreamWrapper> */}
-        {result && result.map((res :{title: string; description: string; link: string;}, idx) => {
+        {data && data.map((res :{title: string; description: string; link: string;}, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
