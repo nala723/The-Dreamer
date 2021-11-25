@@ -2,7 +2,7 @@ const axios = require("axios");
 require('dotenv').config();
 
 module.exports = async (req, res) => {
-    let qu = req.query.query;
+    let qu = encodeURI(req.query.query)
     let reqOptions = {
       headers: {
         'X-Naver-Client-Id': process.env.CLIENT_ID,
