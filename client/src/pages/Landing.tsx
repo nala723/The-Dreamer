@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { useHistory } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import {  useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../actions';
-import { RootState } from '../reducers';
 import Footer from '../components/Footer';
 import SecondSection from '../components/landing/Second';
 import { keyframes } from 'styled-components';
@@ -62,7 +61,7 @@ function Landing() {
     }; // addEventListener 함수를 삭제! 꼭 필요하다!
   });
 
-  const handleSearch = async(search: string) => {
+  const handleSearch = (search: string) => {
     if(search === ''){
       //something.. 모달? 
       return;

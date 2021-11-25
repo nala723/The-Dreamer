@@ -149,7 +149,7 @@ function SecondSection() {
       textBoxRef.current.push(el);
     }
   };
-  const handleSearch = async(search: string) => {
+  const handleSearch = (search: string) => {
     if(search === ''){
       //something.. 모달? 
       return;
