@@ -2,13 +2,14 @@
 // require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
 // require("dotenv").config({ path: '../.env' });
 
-require('../envconfig');
+import '../envconfig';
+import { client_id, client_secret } from '../envvar';
 
 const axios = require("axios");
 
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-console.log(CLIENT_ID, process.env.CLIENT_ID,'나와라라라')
+// const CLIENT_ID = process.env.CLIENT_ID;
+// const CLIENT_SECRET = process.env.CLIENT_SECRET;
+console.log(client_id, process.env.CLIENT_ID,'나와라라라')
 
 module.exports = async (req, res) => {
     let qu = req.query.query
@@ -28,8 +29,8 @@ module.exports = async (req, res) => {
         'https://openapi.naver.com/v1/search/blog.json',
         {
           headers: {
-            'X-Naver-Client-Id': CLIENT_ID,
-            'X-Naver-Client-Secret': CLIENT_SECRET,
+            'X-Naver-Client-Id': client_id,
+            'X-Naver-Client-Secret': client_secret,
             'Content-Type' : 'application/json; charset=utf-8'
           },
           params: {
