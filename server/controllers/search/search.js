@@ -3,21 +3,31 @@ require('dotenv').config();
 
 module.exports = async (req, res) => {
     let qu = req.query.query
-    let reqOptions = {
-      headers: {
-        'X-Naver-Client-Id': process.env.CLIENT_ID,
-        'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
-        'Content-Type' : 'application/json; charset=utf-8'
-      },
-      params: {
-        query: qu,
-        display: 10
-      }
-    };
+    // let reqOptions = {
+    //   headers: {
+    //     'X-Naver-Client-Id': process.env.CLIENT_ID,
+    //     'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
+    //     'Content-Type' : 'application/json; charset=utf-8'
+    //   },
+    //   params: {
+    //     query: qu,
+    //     display: 10
+    //   }
+    // };
     try {
       let sarchRes = await axios.get(
         'https://openapi.naver.com/v1/search/blog.json',
-        reqOptions
+        {
+          headers: {
+            'X-Naver-Client-Id': 'GI8wPDg1GKr1M4un2re_',
+            'X-Naver-Client-Secret': 'Lvwd2GFxZg',
+            'Content-Type' : 'application/json; charset=utf-8'
+          },
+          params: {
+            query: qu,
+            display: 10
+          }
+        }
       );
       return res.status(200).json(sarchRes.data);
     } catch (error) {

@@ -17,9 +17,11 @@ export const SearchDreamAct = (data: string) =>  {
         try {
             const response = await axios
                 .get('http://ec2-52-78-72-83.ap-northeast-2.compute.amazonaws.com' + `/search/search`,{
+                    headers: { "Content-Type": "application/json" },
                     params:{
                     query: data + ' 꿈풀이',
                     },
+                    withCredentials: true,
                 })
                 if(response.data.items){
                     dispatch({ 
