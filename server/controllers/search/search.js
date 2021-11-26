@@ -1,6 +1,8 @@
-const path = require('path')
+// const path = require('path')
 // require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
-require("dotenv").config({ path: '../.env' });
+// require("dotenv").config({ path: '../.env' });
+
+require('../envconfig');
 
 const axios = require("axios");
 
