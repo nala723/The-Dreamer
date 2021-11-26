@@ -1,5 +1,7 @@
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
+// require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
+require("dotenv").config({ path: '../.env' });
+
 const axios = require("axios");
 
 const CLIENT_ID = process.env.CLIENT_ID;

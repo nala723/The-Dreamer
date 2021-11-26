@@ -4,7 +4,8 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const searchRouter = require('./routers/search');
 const port = 80;
-
+require("dotenv").config();
+console.log(process.env.CLIENT_ID,'나와라라라')
 global.__basedir = __dirname;
 
 app.use(express.json());
