@@ -1,14 +1,11 @@
 // const path = require('path')
 // require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
 // require("dotenv").config({ path: '../.env' });
-
-import '../envconfig';
-import { client_id, client_secret } from '../envvar';
-
+require('../envconfig');
 const axios = require("axios");
 
-// const CLIENT_ID = process.env.CLIENT_ID;
-// const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
 console.log(client_id, process.env.CLIENT_ID,'나와라라라')
 
 module.exports = async (req, res) => {
