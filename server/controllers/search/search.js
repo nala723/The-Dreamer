@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
       headers: {
         'X-Naver-Client-Id': process.env.CLIENT_ID,
         'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
-        'Content-Type' : 'application/json'
+        'Content-Type' : 'application/json; charset=utf-8'
       },
       params: {
         query: qu,
