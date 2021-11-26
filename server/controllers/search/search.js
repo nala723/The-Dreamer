@@ -1,7 +1,7 @@
 // const path = require('path')
 // require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
-// require("dotenv").config({ path: '../.env' });
-require('../envconfig');
+require("dotenv").config({ path: __dirname + "/./../../.env" });
+
 const axios = require("axios");
 
 const client_id = process.env.CLIENT_ID;
@@ -28,7 +28,6 @@ module.exports = async (req, res) => {
           headers: {
             'X-Naver-Client-Id': client_id,
             'X-Naver-Client-Secret': client_secret,
-            'Content-Type' : 'application/json; charset=utf-8'
           },
           params: {
             query: qu,
