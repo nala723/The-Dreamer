@@ -18,10 +18,7 @@ module.exports = async (req, res) => {
         'https://openapi.naver.com/v1/search/blog.json',
         reqOptions
       );
-       res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
-       res.end(sarchRes.data);
-      // return
-      // res.status(200).json(sarchRes.data);
+      return res.status(200).json(sarchRes.data);
     } catch (error) {
         
         res.status(response.statusCode).end();
