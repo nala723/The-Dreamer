@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
     let qu = req.query.query
     // let reqOptions = {
     //   headers: {
-    //     'X-Naver-Client-Id': process.env.CLIENT_ID,
+    //     'X-Naver-Client-Id': process.env.CLIENT_ID, // 실제로 키 대입하면 되는데..이렇게 하면 안됨..?
     //     'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
     //     'Content-Type' : 'application/json; charset=utf-8'
     //   },
