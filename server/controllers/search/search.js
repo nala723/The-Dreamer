@@ -1,5 +1,5 @@
-const axios = require("axios");
 require('dotenv').config();
+const axios = require("axios");
 
 module.exports = async (req, res) => {
     let qu = req.query.query
