@@ -1,7 +1,11 @@
 const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
-
 const axios = require("axios");
+
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+console.log(CLIENT_ID, process.env.CLIENT_ID,'나와라라라')
+
 module.exports = async (req, res) => {
     let qu = req.query.query
     // let reqOptions = {
@@ -20,8 +24,8 @@ module.exports = async (req, res) => {
         'https://openapi.naver.com/v1/search/blog.json',
         {
           headers: {
-            'X-Naver-Client-Id': process.env.CLIENT_ID,
-            'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
+            'X-Naver-Client-Id': CLIENT_ID,
+            'X-Naver-Client-Secret': CLIENT_SECRET,
             'Content-Type' : 'application/json; charset=utf-8'
           },
           params: {
