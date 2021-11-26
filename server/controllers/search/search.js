@@ -19,8 +19,8 @@ module.exports = async (req, res) => {
         'https://openapi.naver.com/v1/search/blog.json',
         {
           headers: {
-            'X-Naver-Client-Id': 'GI8wPDg1GKr1M4un2re_',
-            'X-Naver-Client-Secret': 'Lvwd2GFxZg',
+            'X-Naver-Client-Id': process.env.CLIENT_ID,
+            'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
             'Content-Type' : 'application/json; charset=utf-8'
           },
           params: {
