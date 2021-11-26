@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
         {
           headers: {
             'X-Naver-Client-Id': process.env.CLIENT_ID,
-            'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
+            'X-Naver-Client-Secret': 'Lvwd2GFxZg',
             'Content-Type' : 'application/json; charset=utf-8'
           },
           params: {
