@@ -1,39 +1,28 @@
 const path = require('path')
-// require('dotenv').config({ path: path.resolve(__dirname, '../.env')})
 require("dotenv").config({ path: __dirname + "/./../../.env" });
 
 const axios = require("axios");
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
-console.log(client_id, process.env.CLIENT_ID,'나와라라라')
 
 module.exports = async (req, res) => {
     let qu = req.query.query
-    // let reqOptions = {
-    //   headers: {
-    //     'X-Naver-Client-Id': process.env.CLIENT_ID, // 실제로 키 대입하면 되는데..이렇게 하면 안됨..?
-    //     'X-Naver-Client-Secret': process.env.CLIENT_SECRET,
-    //     'Content-Type' : 'application/json; charset=utf-8'
-    //   },
-    //   params: {
-    //     query: qu,
-    //     display: 10
-    //   }
-    // };
+    let reqOptions = {
+      headers: {
+        'X-Naver-Client-Id': client_id,
+        'X-Naver-Client-Secret': client_secret,
+        'Content-Type' : 'application/json; charset=utf-8'
+      },
+      params: {
+        query: qu,
+        display: 10
+      }
+    };
     try {
       let sarchRes = await axios.get(
         'https://openapi.naver.com/v1/search/blog.json',
-        {
-          headers: {
-            'X-Naver-Client-Id': client_id,
-            'X-Naver-Client-Secret': client_secret,
-          },
-          params: {
-            query: qu,
-            display: 10
-          }
-        }
+         reqOptions
       );
       return res.status(200).json(sarchRes.data);
     } catch (error) {
