@@ -5,8 +5,8 @@ module.exports = {
     signout: require("./sign/signout"),
     withdrawal: require("./sign/withdrawal"),
     /*-----------------------------------------------------------------*/
-    // emailCode: require("./sign/emailCode"),
-    // emailVerification: require("./sign/emailVerification"),
+    emailCode: require("./sign/emailCode"),
+    emailVerification: require("./sign/emailVerification.js"),
     // /*-----------------------------------------------------------------*/
     // googleSignin: require("./google/signin"),
     // googleWithdrawal: require("./google/withdrawal"),
