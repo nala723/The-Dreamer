@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       profile: {
-        type: Sequelize.BLOB
+        type: Sequelize.BLOB //(안되면 수정)
       },
       createdAt: {
         allowNull: false,

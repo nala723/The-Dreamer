@@ -1,10 +1,10 @@
-const { user } = require("../../models");
+const { User } = require("../../models");
 const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require('../tokenFunctions')
 
 module.exports = async (req, res) => {
   try {
-    const userInfo = await user.findOne({attributes: ['id', 'nickname', 'email', 'vegtype', 'password', 'profile'], where : {email: req.body.email}});
+    const userInfo = await User.findOne({attributes: ['id', 'username', 'email',  'password', 'profile'], where : {email: req.body.email}});
     const userProfile = userInfo.dataValues.profile;
     
     if(!userInfo){
@@ -23,8 +23,8 @@ module.exports = async (req, res) => {
                   res.json({
                     message : 'ok',
                     accessToken : access_token,
-                    profileblob : userProfile,
-                    nickname : userInfo.dataValues.nickname,
+                    profile : userProfile,
+                    username : userInfo.dataValues.username,
                     email : userInfo.dataValues.email
                   })
               }

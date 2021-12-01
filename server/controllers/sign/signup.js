@@ -4,13 +4,13 @@ const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require('../tokenFunctions');
 
 module.exports = async (req, res) => {
-    let {nickname, email, password} = req.body;
+    let {username, email, password} = req.body;
 
     let profile = fs.readFileSync(
-      __basedir + "/resources/assets/tmp/bros_blank.jpg"
+      __basedir + "/resources/assets/bros_blank.jpg"
     )
-
-    let user = await model.user.findOne({where : {email : email}});
+    
+    let user = await model.User.findOne({where : {email : email}});
     if(user){
       res.status(409).json({message : '이미 존재하는 이메일입니다'});
     }else{
@@ -21,17 +21,16 @@ module.exports = async (req, res) => {
             if(err){
               throw err;
             }else{
-              const users = model.user.create({
-                 nickname : nickname,
+              const users = model.User.create({
+                 username : username,
                  password : hash,
                  email : email,
                  profile : profile,
-                 social : 0
+                //  social : 0
               })
               return users
               .then((users) => {
-                const userInfo = {id: users.id, email: email, nickName: nickname, vegtype:users.vegtype}
-                console.log(userInfo)
+                const userInfo = {id: users.id, email: email, username: username}
                 const access_token = generateAccessToken(userInfo);
                 const refresh_token = generateRefreshToken(userInfo);
                 
@@ -39,8 +38,8 @@ module.exports = async (req, res) => {
                 res.status(200).json({
                   message : 'ok',
                   accessToken : access_token,
-                  profileblob : profile,
-                  nickname : nickname,
+                  profile : profile,
+                  username : username,
                   email : email
                 })
               })
