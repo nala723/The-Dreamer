@@ -1,5 +1,7 @@
 import React, { useEffect, useRef }  from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { SearchDreamAct } from '../../actions';
 import { dummyDatas } from '../../config/dummyDatas';
 import { gsap } from 'gsap';
 
@@ -12,12 +14,13 @@ function CateGory(): JSX.Element {
     const SclineRef = useRef<HTMLDivElement>(null);
     const cateHeadRef = useRef<HTMLDivElement[]>([]);
     cateGoryRef.current = [];
-    DeepAnim.current = [];
+    // DeepAnim.current = [];
     cateHeadRef.current = [];
+    const dispatch = useDispatch();
   
     useEffect(()=>{
       gsap.set(openRef.current, { height: 'auto', opacity: 1})
-      const headani = gsap.timeline({ ease: 'expo.inOut' })
+      const headani = gsap.timeline()
       openRefTween.current = headani 
         .to(lineRef.current,{ 
             width: '100%',
@@ -87,8 +90,8 @@ function CateGory(): JSX.Element {
         }
       })
       DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
-        // console.log('ani :',ani.reversed())
-        ani.reverse(); // -----------> 현재 얘가 작동하지 않는다. 왜지?
+        console.log('ani :',ani.reversed(),  DeepAnim.current)
+        ani.reverse(); 
         // console.log('after ani :',ani.reversed())
    
       })
@@ -98,6 +101,11 @@ function CateGory(): JSX.Element {
           }
           // console.log('el :', el.animation.reversed())   
       })
+    }
+
+    const handleSearch = (e : React.MouseEvent<HTMLDivElement, MouseEvent>, el : string): void => {
+      e.preventDefault();
+      dispatch(SearchDreamAct(el))
     }
 
 
@@ -123,7 +131,7 @@ function CateGory(): JSX.Element {
                     <DeepLine/>
                       {dum[props].map((el,idx)=>{
                         return(
-                          <DeepGory key={idx}>{el}
+                          <DeepGory key={idx} onClick={(e) => handleSearch(e, el)}>{el}
                           </DeepGory>
                         )
                       })}

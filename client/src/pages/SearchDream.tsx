@@ -7,8 +7,6 @@ import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
 import gsap from 'gsap';
-import dotenv from 'dotenv';
-dotenv.config();
 
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer);
