@@ -13,12 +13,12 @@ module.exports = async (req, res) => {
     let user = await model.User.findOne({where : {email : email}});
     if(user){
       res.status(409).json({message : '이미 존재하는 이메일입니다'});
-    }else{
+    }else{  
       try {
 
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(password, salt, (err, hash) => {
-            if(err){
+            if(err){    
               throw err;
             }else{
               const users = model.User.create({
@@ -27,9 +27,7 @@ module.exports = async (req, res) => {
                  email : email,
                  profile : profile,
                 //  social : 0
-              })
-              return users
-              .then((users) => {
+              }).then((users) => { 
                 const userInfo = {id: users.id, email: email, username: username}
                 const access_token = generateAccessToken(userInfo);
                 const refresh_token = generateRefreshToken(userInfo);
@@ -42,12 +40,16 @@ module.exports = async (req, res) => {
                   username : username,
                   email : email
                 })
+              }).catch((err)=>{
+                console.log(err,'errrrrrrrrrrrrrrrrrrr')
               })
+              
             }
           })
         })
 
       } catch (error) { 
+        console.log('에러',error)
         res.status(500).send(error)
       }
     }
