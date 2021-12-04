@@ -1,8 +1,42 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { SignInAct } from '../actions';
+import { RootState } from '../reducers';
+import {useHistory} from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
 
 function Login(){
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [loginInfo, setLoginInfo] = useState({
+    Email:'',
+    Password:''
+  })
+  const [errorMessage, setErrorMessage] = useState('')
+  const handleInput = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginInfo({ ...loginInfo, [key]: e.target.value})
+  }
+  const handleSubmit = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    axios
+      .post(process.env.REACT_APP_URL + `/sign/signin`,{
+        email: loginInfo.Email,
+        password: loginInfo.Password
+        })
+      .then((res)=>{
+        if(res.status === 401){
+          setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
+        }else if(res.status === 200){
+          dispatch(SignInAct(res.data))
+          history.push('./searchdream')
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })  
+  }
   return (
     <Container>
        <LogInBox>
@@ -13,13 +47,14 @@ function Login(){
             <InputBox>
                 <SingleInput>
                   <div>Email</div>
-                  <input  type='email'/>
+                  <input  type='email' onChange={handleInput('Email')}/>
                 </SingleInput>
                 <SingleInput>
                   <div>Password</div>
-                  <input  type='password'/>
+                  <input  type='password' onChange={handleInput('Password')}/>
                 </SingleInput>
-                <Button>
+                <Error>{errorMessage}</Error>
+                <Button onClick={handleSubmit}>
                 Log In
                </Button>
             </InputBox>   
@@ -88,13 +123,13 @@ const SingleInput = styled.div`
   font-size: 20px;
   padding-bottom: 0.5rem;
   text-indent: 0.5rem;
-  gap: 4rem;
   > div{
     width: 4.875rem;
   }
   > input{
     width: 21.813rem;
-    color: ${props=> props.theme.transp}; 
+    text-indent: 3rem;
+    color: ${props=> props.theme.text}; 
     background-color: transparent; 
     font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
     font-size: 20px;
@@ -104,6 +139,13 @@ const SingleInput = styled.div`
   }
 `;
 
+const Error = styled.div`
+  ${props => props.theme.flexRow};
+  font-size: ${props => props.theme.fontS};
+  align-items: flex-end;
+  height: 1.2rem;
+  color: ${props=> props.theme.point};
+`;
 const Button = styled.div`
   ${props => props.theme.flexRow};
   height: 3.75rem;
@@ -115,7 +157,7 @@ const Button = styled.div`
   transition: all 1.5s ease-in-out;
   background: ${props=> props.theme.dream};  
   /* border: transparent;  */
-  margin-top: 2.688rem;
+  margin-top: 1.5rem;
   :hover{
     background: transparent; 
     border: 1px solid ${props=> props.theme.transp};  

@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import {  useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../actions';
+import Modal from '../components/reusable/Modal';
 import Footer from '../components/Footer';
 import SecondSection from '../components/landing/Second';
 import { keyframes } from 'styled-components';
@@ -17,6 +18,7 @@ function Landing() {
   const [fadeIn, setFadeIn] = useState(false);
   const [scrollTop, setScrollTop] = useState(false);
   const [scrollY, setScrollY] = useState(0)
+  const [isOpen, setIsOpen] = useState(false);
 
 //부드러운 스크롤 구현할것 + 페이지 넘어갈때 부드러운 화면 전환
 
@@ -62,17 +64,21 @@ function Landing() {
   });
 
   const handleSearch = (search: string) => {
-    if(search === ''){
-      //something.. 모달? 
+    if(!search){
+      setIsOpen(true);
       return;
     } 
     dispatch(SearchDreamAct(search))
     history.push('/searchdream');
   }
+  const handleClick = () => {
+    setIsOpen(false)
+  }
 
   return (
       <Container>
         <MainSection>
+        {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
           <ContentsBox >
             <h1>{text}</h1>
             <SearchBox  className={fadeIn? 'fadein': ''}>

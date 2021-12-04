@@ -6,11 +6,13 @@ import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
+import Modal from '../components/reusable/Modal';
 import gsap from 'gsap';
 
 function SearchDream(): JSX.Element { 
-  const { loading, data, error } = useSelector((state: RootState) => state.searchReducer);
+  const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
   const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
   const DreamRef = useRef<HTMLDivElement[]>([]);
   // const DreamGsap = useRef<gsap.core.Timeline>(); 함수가 안된다그래서 일단은..
   DreamRef.current = [];
@@ -66,7 +68,7 @@ function SearchDream(): JSX.Element {
  
   const handleSearch = (search: string) => {
     if(search === ''){
-      //something.. 모달? 
+      setIsOpen(true);
       return;
     } 
     dispatch(SearchDreamAct(search))
@@ -90,15 +92,18 @@ function SearchDream(): JSX.Element {
     return Position;
   }
 
-
   const addToRefs = (el: HTMLDivElement) => {
     if (el && !DreamRef.current.includes(el)) {
       DreamRef.current.push(el);
     }
   };
- console.log(data);
+  const handleClick = () => {
+    setIsOpen(false)
+  }
+
   return (
     <Container>
+      {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
       <SearchSection>
           <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
       </SearchSection>
