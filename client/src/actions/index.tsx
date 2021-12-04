@@ -144,7 +144,7 @@ export function searchReducer (state: ActionState = initialState, action: Action
             return state;
     }
 }
-export function userReducer (state: ActionState = initialState, action: Action): ActionState {
+export function usersReducer (state: ActionState = initialState, action: Action): ActionState {
     switch (action.type) {
         case USER_INFO:
             return Object.assign({}, state, {

@@ -6,7 +6,7 @@ import { RootState } from '../reducers';
 import { Buffer } from 'buffer';
 
 function Header (props: { themeToggler: () => void; t: any; }){
-  const { username, profile } = useSelector((state: RootState) => state.userReducer.user);
+  const { username, profile } = useSelector((state: RootState) => state.usersReducer.user);
   const {themeToggler,t} = props;
   const menulist = [ 
     { menu: '꿈 알아보기', url: '/searchdream'},
