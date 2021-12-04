@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducers';
+import { Buffer } from 'buffer';
 
 function Header (props: { themeToggler: () => void; t: any; }){
+  const { username, profile } = useSelector((state: RootState) => state.userReducer.user);
   const {themeToggler,t} = props;
   const menulist = [ 
     { menu: '꿈 알아보기', url: '/searchdream'},
@@ -11,7 +15,10 @@ function Header (props: { themeToggler: () => void; t: any; }){
     { menu: '로그인', url: '/login'}
   ];
   const toggleicon = ['🌞', '🌙'];
-
+  const profileImg = 
+    typeof(profile) === 'string' ?
+     profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
+  
   return (
     <>
       <Container>
@@ -21,7 +28,10 @@ function Header (props: { themeToggler: () => void; t: any; }){
           <RightBox>
             <Menu>
                {menulist.map((menu,idx)=>{
-                 return <LinkMenu to={menu.url} key={idx}>{menu.menu}</LinkMenu>
+                 return (username && idx === 3) ? 
+                    <LinkMenu to='/mypage' key={idx} login='login'><img src={profileImg} alt='img'/></LinkMenu>
+                     :
+                    <LinkMenu to={menu.url} key={idx} login=''>{menu.menu}</LinkMenu>
                })}
             </Menu> 
             <Toggle onClick={themeToggler} t={t}>
@@ -64,13 +74,27 @@ const Menu = styled.ul`
   height: inherit;
   justify-content: space-around;
 `;
-const LinkMenu = styled(Link)`
+const LinkMenu = styled(Link)<{ login: string }>`
   color: ${props=> props.theme.text};
   font-size: ${props=> props.theme.fontS};
   position: relative;
   cursor: pointer;
   :nth-child(4) {
     color: ${props=> props.theme.point};
+    ${props=> props.login ? 
+      css`
+        width: 1.813rem;
+        height: 1.813rem;
+        border-radius: 100%;
+        overflow: hidden;
+      `: 
+      null}
+      >img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: ${props=> props.theme.dream};
+      }
     :hover:after{
       background-color: ${props=> props.theme.point};
     }

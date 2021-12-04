@@ -10,11 +10,11 @@ function SearchBar({height, width, scale, font, handleSearch}:
     setSearch(e.target.value)
   }  
   const handleSumbit = () => {
-    if(search === ''){
-      return; //경고 모달
-    }else{
+    // if(search === ''){
+    //   return; //경고 모달
+    // }else{
       handleSearch(search);
-    }
+    // }
     setSearch('')
   }
 

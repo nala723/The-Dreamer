@@ -15,6 +15,7 @@
     "@types/styled-components": "^5.1.15",
     "aos": "^3.0.0-beta.6",
     "axios": "^0.24.0",
+    "buffer": "^6.0.3",
     "dotenv": "^10.0.0",
     "gsap": "^3.8.0",
     "react": "^17.0.2",

@@ -65,7 +65,7 @@ function Landing() {
 
   const handleSearch = (search: string) => {
     if(!search){
-      setIsOpen(true);
+      setIsOpen(true); 
       return;
     } 
     dispatch(SearchDreamAct(search))

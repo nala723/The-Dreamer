@@ -6,7 +6,6 @@ import Modal from '../components/reusable/Modal';
 import {useHistory} from 'react-router-dom';
 import {  emailIsValid, pwIsValid } from '../components/reusable/Validator';
 
-
 type ErrorMsgType = {
   [index: string]: string
   Email: string,
@@ -32,7 +31,7 @@ function SignUp(){
     // somethingMissed:false
   })
   const [valid, setValid] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const userlist = [
     { name: 'Username', type: 'text', key: 'Username'},
     { name: 'Email', type: 'email', key: 'Email'},
@@ -111,6 +110,7 @@ function SignUp(){
     setIsOpen(false)
     history.push('./login')
   }
+  
   return (
      <Container>
        {isOpen && <Modal handleClick={handleClick}>회원 가입이 완료되었습니다.</Modal>}
