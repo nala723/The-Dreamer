@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function Likes() {
+function MyLikes() {
   return (
     <>
       <div>this is Toggle!!</div>
@@ -9,4 +9,4 @@ function Likes() {
   );
 }
 
-export default Likes;
+export default MyLikes;

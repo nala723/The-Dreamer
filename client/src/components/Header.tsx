@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducers';
 import { Buffer } from 'buffer';
+import Option from './Option';
 
 function Header (props: { themeToggler: () => void; t: any; }){
   const { username, profile } = useSelector((state: RootState) => state.usersReducer.user);
-  const {themeToggler,t} = props;
+  const { themeToggler,t } = props;
+  const [ dropdown, setDropdown ] = useState(false);
   const menulist = [ 
     { menu: '꿈 알아보기', url: '/searchdream'},
     { menu: '꿈 그리기', url: '/drawdream'},
@@ -29,9 +31,12 @@ function Header (props: { themeToggler: () => void; t: any; }){
             <Menu>
                {menulist.map((menu,idx)=>{
                  return (username && idx === 3) ? 
-                    <LinkMenu to='/mypage' key={idx} login='login'><img src={profileImg} alt='img'/></LinkMenu>
+                    <UserPic key={idx} onClick={()=>setDropdown(!dropdown)}>
+                      <img src={profileImg} alt='img'/>
+                      {dropdown && <Option />}
+                    </UserPic>
                      :
-                    <LinkMenu to={menu.url} key={idx} login=''>{menu.menu}</LinkMenu>
+                    <LinkMenu to={menu.url} key={idx}>{menu.menu}</LinkMenu>
                })}
             </Menu> 
             <Toggle onClick={themeToggler} t={t}>
@@ -53,6 +58,7 @@ const Container = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 2.5rem;
+  z-index: 10;
 `;
 const LogoBox = styled(Link)`
 `;
@@ -74,26 +80,28 @@ const Menu = styled.ul`
   height: inherit;
   justify-content: space-around;
 `;
-const LinkMenu = styled(Link)<{ login: string }>`
+const UserPic = styled.li`
+  width: 1.813rem;
+  height: 1.813rem;
+  border-radius: 100%;
+  overflow: hidden; 
+  >img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer; 
+        background: ${props=> props.theme.dream};
+      }
+`;
+
+const LinkMenu = styled(Link)`
   color: ${props=> props.theme.text};
   font-size: ${props=> props.theme.fontS};
   position: relative;
   cursor: pointer;
   :nth-child(4) {
     color: ${props=> props.theme.point};
-    ${props=> props.login ? 
-      css`
-        width: 1.813rem;
-        height: 1.813rem;
-        border-radius: 100%;
-        overflow: hidden;
-      `: 
-      null}
       >img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        background: ${props=> props.theme.dream};
       }
     :hover:after{
       background-color: ${props=> props.theme.point};
