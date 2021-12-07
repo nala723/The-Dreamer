@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { SignInAct } from '../actions';
 import { RootState } from '../reducers';
 import { Buffer } from 'buffer';
 import Option from './Option';
+import Modal from './reusable/Modal';
+import axios from 'axios';
 
 function Header (props: { themeToggler: () => void; t: any; }){
-  const { username, profile } = useSelector((state: RootState) => state.usersReducer.user);
+  const { accessToken, email, username, profile } = useSelector((state: RootState)=> state.usersReducer.user);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [ isOpen, setIsOpen ] = useState(false);
   const { themeToggler,t } = props;
   const [ dropdown, setDropdown ] = useState(false);
   const menulist = [ 
@@ -20,10 +26,55 @@ function Header (props: { themeToggler: () => void; t: any; }){
   const profileImg = 
     typeof(profile) === 'string' ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
+
+  const handleClick = () => {
+    // e.preventDefault();
+    setIsOpen(!isOpen);
+  }
+
+  const handleSignOut = async(choice: boolean) => {
+    if(choice){
+      setIsOpen(false);// 모달 닫고
+      await axios
+        .get(`${process.env.REACT_APP_URL}` + '/sign/signout', { // 요청하기
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ` + accessToken,
+          }
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            dispatch(
+              SignInAct({
+                email: '',
+                username: '',
+                accessToken: "",
+                profile: "",
+              })
+            );
+            // dispatch(getgoogleToken({ googleToken: "" }));
+             history.push("/");
+          } else {
+            history.push("/notfound");
+          }
+        })
+        .catch((err) => 
+        history.push("/notfound"));
+    } else{
+      return;
+    }
+  }
+    // const handleClose = () => {
+    //     setIsOpen(false);/// 모달만 닫기
+    //   }
+    // if(isOpen){
+    //   return <Modal handleClick={handleClick} handleSignOut={handleSignOut}>로그아웃 하시겠습니까?</Modal>
+    // }     
   
   return (
     <>
       <Container>
+      {isOpen && <Modal handleClick={handleClick} handleSignOut={handleSignOut}>로그아웃 하시겠습니까?</Modal>}
           <LogoBox to='/'>
             <Logo />
           </LogoBox>
@@ -33,7 +84,7 @@ function Header (props: { themeToggler: () => void; t: any; }){
                  return (username && idx === 3) ? 
                     <UserPic key={idx} onClick={()=>setDropdown(!dropdown)}>
                       <img src={profileImg} alt='img'/>
-                      {dropdown && <Option />}
+                      {dropdown && <Option handleClick={handleClick}/>}
                     </UserPic>
                      :
                     <LinkMenu to={menu.url} key={idx}>{menu.menu}</LinkMenu>

@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import MyLikes from './userInfo/MyLikes';
 import MyDream from './userInfo/MyDream';
 import MyAccount from './userInfo/MyAccount';
 
-function Option (){
-  const lists = [ '좋아하는 꿈', '내가 그린 꿈', '나의 계정 보기', '로그아웃']
-
+function Option (props: {handleClick : ()=> void}){
+  const { handleClick } = props;
+  
   return (
     <Container>
         <Route path='/mylikes' component={MyLikes} />
@@ -17,7 +17,7 @@ function Option (){
         <Page to='/mylikes'>좋아하는 꿈</Page>
         <Page to='/mydream'>내가 그린 꿈</Page>
         <Page to='/myaccount'>나의 계정 보기</Page>
-        <Logout>로그아웃</Logout >
+        <Logout onClick={handleClick}>로그아웃</Logout >
       </PageList>
     </Container>
   );
@@ -27,7 +27,7 @@ export default Option;
 
 const Container = styled.div`
     position: absolute;
-    /* ${props => props.theme.flexColumn}; */
+    /*${props => props.theme.flexColumn};*/
     width: 9.25rem;
     height: 12rem;
     border-radius: 0.3rem;
@@ -41,16 +41,19 @@ const Container = styled.div`
 const PageList = styled.ul`
   height: 100%;
   padding: 0.3rem;
+  padding-bottom: 0.5rem;
   ${props => props.theme.flexColumn};
+  justify-content: space-around;
   font-size: ${props=> props.theme.fontS};
 `;  
 
 const Page = styled(Link)`
   width: 85%;
+  /* height: 100%; */
   color: ${props=> props.theme.text};
   text-align: center;
   cursor: pointer; 
-  flex: 1;
+
   :hover{
     color: ${props=> props.theme.anker};
     text-shadow: 4px 4px 10px ${props=> props.theme.anker};
@@ -59,8 +62,7 @@ const Page = styled(Link)`
 
 const Logout = styled.li`
   width: 85%;
-  flex: 1.2;
-  padding-top:1rem;
+  padding-top: 1.1rem;
   color: ${props=> props.theme.text};
   text-align: center;
   border-top: 1px solid ${props=> props.theme.transp};

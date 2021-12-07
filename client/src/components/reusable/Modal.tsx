@@ -1,10 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-function Modal(props: { handleClick: ()=>void; children: string;}) {
+function Modal(props: { 
+  handleClick: (e?: React.MouseEvent )=>void; children: string; handleSignOut?: (arg0 :boolean)=>void;}) {
   // 모달 좀더 제목이랑 내용 구분?
   
-    const {  handleClick, children } = props;
+    const {  handleClick, children, handleSignOut } = props;
     return (
         <Background className={`${children ? "active" : ""}`}>
           <ModalSection
@@ -12,14 +13,20 @@ function Modal(props: { handleClick: ()=>void; children: string;}) {
             onClick={handleClick}
           >
             <ModalTitle>
-              <img src="/images/darklogo.svg" alt='logo'/>
+              <Img src='theme' alt='logo'/>
             </ModalTitle>
             <Content>
               <div>{children}</div>
             </Content>
-            <OkBtn>
-              <button>확인</button>
-            </OkBtn>
+            {handleSignOut ? 
+              <OkBtn signout='signout'>
+                <button onClick={()=> handleSignOut(true)}>확인</button>
+                <button onClick={handleClick}>취소</button>
+              </OkBtn>: 
+              <OkBtn signout=''>
+                <button>확인</button>
+              </OkBtn>
+            }
           </ModalSection>
         </Background>
   );
@@ -66,8 +73,10 @@ const ModalSection = styled.div`
 const ModalTitle = styled.div`
   width:100%;
   padding: 1rem 0 0 1rem;
-  >img{
-  }
+`;
+const Img = styled.img.attrs<{src: string;}>(props=>({
+  src: props.theme.imgsrc
+}))`
 `;
 const Content = styled.div`
   ${props=> props.theme.flexColumn};
@@ -83,11 +92,14 @@ const Content = styled.div`
     border-bottom: 1px solid ${props=> props.theme.transp};
   }
 `;
-const OkBtn = styled.div`
-  ${props=> props.theme.flexColumn};
+const OkBtn = styled.div<{signout : string;}>`
+  ${props=> props.signout ? props.theme.flexRow : props.theme.flexColumn}
+  ${props=> props.signout && css`
+  gap: 3rem;
+  `}
   > button{
     width: 7.688rem;
-    height: 2.188rem;
+    height: 2.5rem;
     border-radius: 5px;
     font-size: 15px;
     font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
@@ -103,4 +115,5 @@ const OkBtn = styled.div`
       transition: all 0.3s ease-in-out;
     }
   }
+  
 `;
