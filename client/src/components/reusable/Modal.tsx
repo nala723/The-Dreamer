@@ -22,7 +22,8 @@ function Modal(props: {
               <OkBtn signout='signout'>
                 <button onClick={()=> handleSignOut(true)}>확인</button>
                 <button onClick={handleClick}>취소</button>
-              </OkBtn>: 
+              </OkBtn>
+              : 
               <OkBtn signout=''>
                 <button>확인</button>
               </OkBtn>
