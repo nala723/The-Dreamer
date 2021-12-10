@@ -17,6 +17,7 @@ const Landing = lazy(() => import('./pages/Landing'));
 const DrawDream = lazy(() => import('./pages/DrawDream'));
 const Horoscope = lazy(() => import('./pages/Horoscope'));
 const SearchDream = lazy(() => import('./pages/SearchDream'));
+const MyPage = lazy(() => import('./pages/MyPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const Header = lazy(() => import('./components/Header'));
 
@@ -39,6 +40,7 @@ function App() {
               <Route path="/horoscope" component={Horoscope} />
               <Route path="/login" component={Login} />
               <Route path="/signup" component={SignUp} />
+              <Route path="/mypage" component={MyPage} />
               <Route path="*" component={NotFound} />
             </Switch>
             <ParticlesConfig t={theme}/>

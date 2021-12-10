@@ -1,22 +1,16 @@
 import React, { useState } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import MyLikes from './userInfo/MyLikes';
-import MyDream from './userInfo/MyDream';
-import MyAccount from './userInfo/MyAccount';
 
 function Option (props: {handleClick : ()=> void}){
   const { handleClick } = props;
   
   return (
     <Container>
-        <Route path='/mylikes' component={MyLikes} />
-        <Route path='/mydream' component={MyDream} />
-        <Route path='/myaccount' component={MyAccount} />
       <PageList>
-        <Page to='/mylikes'>좋아하는 꿈</Page>
-        <Page to='/mydream'>내가 그린 꿈</Page>
-        <Page to='/myaccount'>나의 계정 보기</Page>
+        <Page to='/mypage/mylikes'>좋아하는 꿈</Page>
+        <Page to='/mypage/mydream'>내가 그린 꿈</Page>
+        <Page to='/mypage/myaccount'>나의 계정 보기</Page>
         <Logout onClick={handleClick}>로그아웃</Logout >
       </PageList>
     </Container>

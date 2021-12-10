@@ -232,13 +232,15 @@ const Button = styled.div`
   font-size: ${props => props.theme.fontL};
   font-weight: 600;
   cursor: pointer;
-  transition: all 1.5s ease-in-out;
+  color: ${props=> props.theme.reverse};
+  transition: all 0.3s ease-in-out;
   background: ${props=> props.theme.dream};  
   /* border: transparent;  */
   :hover{
     background: transparent; 
     border: 1px solid ${props=> props.theme.transp};  
-    transition: all 1.5s ease-in-out;
+    color: ${props=> props.theme.text};
+    transition: all 0.3s ease-in-out;
   }
 `;
 
@@ -257,4 +259,7 @@ const HaveAccount = styled.div`
 const LinkedP = styled(Link)`
   color: ${props=> props.theme.point};
   cursor: pointer;
+  :hover{
+    color: ${props=> props.theme.transp};
+  }
 `;
