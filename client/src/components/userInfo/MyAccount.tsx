@@ -25,7 +25,6 @@ function MyAccount() {
   const [currentInput, setCurrentInput] = useState<{
     [index: string]: any
     imgFile: string | File | null,
-    // previewUrl: string | ArrayBuffer | null,
     Password: string,
     PasswordCheck: string
   }>({
@@ -34,7 +33,9 @@ function MyAccount() {
     Password:'',
     PasswordCheck:''
 })
-  const [errorMessage, setErrorMessage] = useState({
+  const [errorMessage, setErrorMessage] = useState<{
+    [index: string]: string 
+  }>({
     Password: '',
     PasswordCheck: '',
   })
@@ -100,6 +101,13 @@ function MyAccount() {
             console.log(err)
     })
 }    
+
+  // 카메라아이콘 커스텀
+  const handlePhotoClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      photoInput.current && photoInput.current.click();
+  }
+
     // 이미지 업로드
   const imageFileHandler = (key: string) => (e : React.ChangeEvent<HTMLInputElement> ) => {
     e.preventDefault();
@@ -114,15 +122,20 @@ function MyAccount() {
         }
         reader.readAsDataURL(file);
   }
-  // 카메라아이콘 커스텀
-  const handlePhotoClick = (e: React.MouseEvent) => {
-      e.preventDefault();
-      photoInput.current && photoInput.current.click();
-  }
+
   // 인풋창
   const handleInputValue = useCallback((key) => (e : React.ChangeEvent<HTMLInputElement> ) => {
       setCurrentInput({ ...currentInput, [key]:e.target.value})
   },[currentInput])
+
+  const canclePhoto = (e : React.MouseEvent) => {
+    e.preventDefault();
+    setCurrentInput({
+      ...currentInput,
+      imgFile : '',
+      previewUrl : ''
+    }) 
+  }
 
    // 이메일, 비번 유효성 검사
    const validationCheck = (key: string) => (e: React.FocusEvent<HTMLInputElement>) => {
@@ -303,20 +316,24 @@ function MyAccount() {
                 <PhotoCircle src={currentInput.imgFile?currentInput.previewUrl : profileImg} alt='img'/>
               </Photo>
             </UserPhotoBox>
+            {currentInput.imgFile && <CanclePhoto onClick={canclePhoto}>사진 삭제</CanclePhoto>}
           </PhotoBox>
           <InfoBox>
             <InfoUl>
             {userlist.map((user,idx)=>{
               return(
-                <InfoList key={idx}>
-                  <div>{user.name}</div>
-                  { user.key 
-                  ?  
-                  <input type={user.type} onChange={handleInputValue(user.key)} 
-                  value={currentInput[user.key]} onBlur={validationCheck(user.key)}/> 
-                  : 
-                  <div>{user.val}</div> }
-                </InfoList>
+                <InputWrapper key={idx}>
+                  <InfoList>
+                    <div>{user.name}</div>
+                    { user.key 
+                    ?  
+                    <input type={user.type} onChange={handleInputValue(user.key)} 
+                    value={currentInput[user.key]} onBlur={validationCheck(user.key)}/> 
+                    : 
+                    <div>{user.val}</div> }
+                  </InfoList>
+                  {user.key && <Error>{errorMessage[user.key]}</Error>}
+                </InputWrapper>
               )
             })}
             </InfoUl>
@@ -355,10 +372,25 @@ const Content = styled.div`
 `;
 
 const PhotoBox = styled.div`
+ position: relative; 
   width: 100%;
   height: 7.467rem;
   display: flex;
   justify-content: center;
+`;
+
+const CanclePhoto = styled.div`
+  position: absolute; 
+  color: ${props=> props.theme.point};
+  bottom: 0;
+  right: 0;
+  font-size: 14px;
+  text-indent: -5rem;
+  cursor: pointer;
+  :hover{
+    font-weight: bold;
+    color: ${props=> props.theme.transp};
+  }
 `;
 const UserPhotoBox = styled.div`
   height: 100%;
@@ -404,13 +436,19 @@ const InfoBox = styled.div`
 
 const InfoUl = styled.ul`
   width: 100%;
-  height: 18.063rem;
+  height: 18.1rem;
   display: flex;
   flex-direction: column;
 `;
 
-const InfoList = styled.li`
-  height: 100%;
+const InputWrapper = styled.li`
+  display: flex;
+  flex-direction: column;
+  height: calc(100% / 4);
+`;
+
+const InfoList = styled.div`
+  height: 3.5rem;
   width: 100%;
   display: flex;
   border-bottom: 1px solid ${props=> props.theme.transp};
@@ -426,18 +464,26 @@ const InfoList = styled.li`
     width: 21.813rem;
     text-indent: 5rem;
     color: ${props=> props.theme.text}; 
-    font-size: 18px;
+    font-size: 22px;
   }
   > input{
     width: 21.813rem;
     text-indent: 5rem;
     color: ${props=> props.theme.text}; 
     background-color: transparent; 
-    font-size: 20px;
+    font-size: 22px;
       ::placeholder{
         color: ${props=> props.theme.transp};
       }
   }
+`;
+
+const Error = styled.div`
+  ${props => props.theme.flexRow};
+  font-size: ${props => props.theme.fontS};
+  align-items: flex-end;
+  height: 1.2rem;
+  color: ${props=> props.theme.point};
 `;
 
 
