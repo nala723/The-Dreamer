@@ -19,6 +19,8 @@ function MyAccount() {
   const [ wdOpen, setWdOpen ] = useState(false);
   const [ valid, setValid] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const [ isWithDraw, setWithDraw ] = useState(false);
+  const [ okWdModal, setOkWdModal ] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
   // const refPassword = useRef(null);
   // const refPasswordCheck = useRef(null);
@@ -61,6 +63,11 @@ function MyAccount() {
       getUserInfo();
       // }
   },[])
+  useEffect(()=> {
+    if(isWithDraw){
+      setOkWdModal(true)// 모달부터 부르고
+    }
+  },[isWithDraw])
 
    // 유저 정보 요청 함수 - 통과
   const getUserInfo = () => {
@@ -99,6 +106,7 @@ function MyAccount() {
      })
      .catch(err => {
             console.log(err)
+            history.push('/notfound');
     })
 }    
 
@@ -238,6 +246,7 @@ function MyAccount() {
                     })
                     .catch(error=>
                         console.log(error)
+                        
                     )
             
         },
@@ -276,7 +285,32 @@ function MyAccount() {
 //           refPasswordCheck.current?.focus();
 //       }
 //   };
-      
+const Handlewithdraw = async() => {
+  await axios
+    .delete(`${process.env.REACT_APP_URL}` + `/sign/withdrawal`,{
+      headers: {
+          // "Content-Type": "application/json",
+          authorization: `Bearer ` + accessToken
+          }
+    })
+  // },{
+  //     email: email
+  // })
+  .then((res)=> {
+       if(res.status === 200){
+            dispatch(WithDrawlAct({ accessToken: '', email: '', username: '', profile: '' }));
+            history.push('/');
+       }
+       else{
+            history.push('/notfound');
+       }
+
+   })
+   .catch(err => {
+          console.log(err,'에러러러러')
+          history.push('/notfound');
+  })
+}      
 
   const handleClick = ()=> {
     setIsOpen(!isOpen);
@@ -290,13 +324,23 @@ function MyAccount() {
       setValid(false);
       setIsChanged(false);
       getUserInfo();
-      
     }
-    
-  }   
+  } 
+
   const handleWdOpen = () => {
-    setWdOpen(!wdOpen);
+    if(wdOpen){
+      setWithDraw(true); // 여기서 그냥 불러보고 탈퇴.. 되는지 해보자
+    }
+    setWdOpen(!wdOpen); 
   }
+
+  const confirmWithDrawl = () => {
+    if(okWdModal){
+      setOkWdModal(false);
+      Handlewithdraw();
+    }
+  } 
+
   return (
      <Container>
       {isOpen && <Modal handleClick={handleClick}>회원 정보 수정이 완료되었습니다.</Modal>}
@@ -306,6 +350,7 @@ function MyAccount() {
           정말 탈퇴하시겠어요?
         </Modal>
       }
+      {okWdModal && <Modal handleClick={confirmWithDrawl}>회원 탈퇴가 완료되었습니다.</Modal>}
        <Title><h1>나의 계정 보기</h1></Title>
        <Content>
          <PhotoBox>
