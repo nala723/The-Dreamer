@@ -13,5 +13,5 @@ module.exports = {
     /*-------------------------------------------------*/
     updateUserInfo: require("./mypage/updateUserInfo"),
     getUserInfo: require("./mypage/getUserInfo"),
-    getFavorites: require("./mypage/getFavorites"),
+    // getFavorites: require("./mypage/getFavorites"),
 }
