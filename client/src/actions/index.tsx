@@ -9,8 +9,9 @@ const SEARCH_DREAM_ERROR = 'SEARCH_DREAM_ERROR' as const;
 
 const USER_INFO = 'USER_INFO' as const;
 const USER_EDIT_INFO = "USER_EDIT_INFO" as const;
-const WITHDRAW = "WITHDRAW" as const;
+const WITHDRAWL = "WITHDRAWL" as const;
 const GET_GOOGLE_TOKEN = "GET_GOOGLE_TOKEN" as const;
+const GET_NEW_TOKEN = "GET_NEW_TOKEN" as const;
 
 // 액션 생성함수 선언
 
@@ -54,6 +55,28 @@ export const SignInAct = (data: UserInfo) => {
         payload: data
     }
 }
+
+export const GetTokenAct = (data: string) => {
+    return {
+        type: GET_NEW_TOKEN,
+        payload: data
+    }
+}
+
+export const EditUserAct = (data : {username: string, profile: string, email: string})=> {
+    return {
+        type: USER_EDIT_INFO,
+        payload: data
+    }
+}
+
+export const WithDrawlAct = (data: UserInfo)=> {
+    return {
+        type: WITHDRAWL,
+        payload: data
+    }
+}
+
 interface Data { // 나중에 필요할지도! 일단 kipppp
     bloggerlink: string;
     bloggername: string;
@@ -91,6 +114,9 @@ type Action =
     | SearchDrmSuccess_Action
     | SearchDrmErr_Action
     | ReturnType<typeof SignInAct>
+    | ReturnType<typeof GetTokenAct>
+    | ReturnType<typeof EditUserAct>
+    | ReturnType<typeof WithDrawlAct>
 
 // 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
 
@@ -150,6 +176,18 @@ export function usersReducer (state: ActionState = initialState, action: Action)
             return Object.assign({}, state, {
                 user: action.payload
             })
+        case USER_EDIT_INFO:
+            return Object.assign({}, state, {
+                user: { ...state.user, ...action.payload}
+            })        
+        case GET_NEW_TOKEN:
+            return Object.assign({}, state, {
+                user: { ...state.user, accessToken: action.payload }
+            })
+        case WITHDRAWL:
+            return Object.assign({}, state, {
+                user: action.payload
+            })               
         default:
             return state;
     }

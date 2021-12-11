@@ -1,16 +1,43 @@
-import React, { useState }  from 'react';
+import React, { useState, useCallback, useRef, useEffect }  from 'react';
+import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { SignInAct } from '../../actions';
+import { GetTokenAct, EditUserAct, WithDrawlAct, SignInAct } from '../../actions';
 import { RootState } from '../../reducers';
 import { Buffer } from 'buffer';
 import Modal from '../reusable/Modal';
+import { pwIsValid } from '../../components/reusable/Validator';
+import axios from 'axios';
+
+
 
 function MyAccount() {
   const { accessToken, email, username, profile } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [ isOpen, setIsOpen] = useState(false);
   const [ wdOpen, setWdOpen ] = useState(false);
+  const [ valid, setValid] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
+  const photoInput = useRef<HTMLInputElement>(null);
+  // const refPassword = useRef(null);
+  // const refPasswordCheck = useRef(null);
+  const [currentInput, setCurrentInput] = useState<{
+    [index: string]: any
+    imgFile: string | File | null,
+    // previewUrl: string | ArrayBuffer | null,
+    Password: string,
+    PasswordCheck: string
+  }>({
+    imgFile:'',
+    previewUrl: '',
+    Password:'',
+    PasswordCheck:''
+})
+  const [errorMessage, setErrorMessage] = useState({
+    Password: '',
+    PasswordCheck: '',
+  })
   const userlist = [
     { name: 'Username', val: username },
     { name: 'Email', val: email},
@@ -21,8 +48,238 @@ function MyAccount() {
     typeof(profile) === 'string' ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
 
+
+    // 최초 렌더링시 유저정보 받아오기
+  useEffect(()=>{
+    // let token
+      // if(googleToken){
+      //   token = googleToken
+      //    getUserInfo(token)
+      // }else {
+        // token = accessToken
+      getUserInfo();
+      // }
+  },[])
+
+   // 유저 정보 요청 함수 - 통과
+  const getUserInfo = () => {
+    // setLoading(true)
+    axios
+      .get(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,{
+        headers: {
+          "Content-Type": "multipart/form-data",
+            authorization: `Bearer ` + accessToken
+            }
+    })
+    .then((res)=> {
+        if(res.headers.accessToken){
+            // if(googleToken){
+            //         dispatch(getgoogleToken({accessToken: res.headers.accessToken}));
+            //     }
+            // else {
+                dispatch(GetTokenAct(res.headers.accessToken));
+            // }
+          }
+         if(res.status === 200){
+            //  if(googleToken){
+            //     dispatch(userInfo({vegType :res.data.vegType}))
+            //  }
+            // else{
+              console.log('get 성공?')
+            typeof(res.data.profile) === 'string' ?
+            res.data.profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');   
+            dispatch(EditUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))
+            // }
+         }
+         else{
+              history.push('/notfound');
+         }
+        //  setLoading(false) 
+     })
+     .catch(err => {
+            console.log(err)
+    })
+}    
+    // 이미지 업로드
+  const imageFileHandler = (key: string) => (e : React.ChangeEvent<HTMLInputElement> ) => {
+    e.preventDefault();
+    const reader = new FileReader();
+    const file = (e.target.files as FileList)[0];  
+        reader.onloadend = () => {
+            setCurrentInput({
+                ...currentInput,
+                imgFile : file,
+                previewUrl : reader.result
+            })
+        }
+        reader.readAsDataURL(file);
+  }
+  // 카메라아이콘 커스텀
+  const handlePhotoClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      photoInput.current && photoInput.current.click();
+  }
+  // 인풋창
+  const handleInputValue = useCallback((key) => (e : React.ChangeEvent<HTMLInputElement> ) => {
+      setCurrentInput({ ...currentInput, [key]:e.target.value})
+  },[currentInput])
+
+   // 이메일, 비번 유효성 검사
+   const validationCheck = (key: string) => (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    let message
+    if(!currentInput[key]){
+      setErrorMessage({...errorMessage, [key] : ''}) 
+      return;
+    }
+    if(key === 'Password'){ // 비번 검사
+      message = pwIsValid(value)
+      if(typeof(message) === 'string'){ 
+        setErrorMessage({...errorMessage, [key] : message})
+        return false;
+      }
+    }
+    if(key === 'PasswordCheck'){
+      if(value !== currentInput.Password){ // 비번 일치하지 않을때
+        setErrorMessage({...errorMessage, [key] : '비밀번호가 일치하지 않습니다.'}) 
+        return false;
+      }
+    }
+    setErrorMessage({...errorMessage, [key] : ''}) 
+    setValid(true);
+  }
+
+  //회원정보 수정
+
+  const onSubmitHandler = async(e : React.MouseEvent) => { 
+    e.preventDefault();
+    // if(googleToken){
+    //     handleBack(e)
+    //     return;
+    // }
+  
+    if(!valid){
+        return
+    }
+     
+    //  if((!currentInput.inputPassword || !currentInput.imgFile || !currentInput.inputVegtype || inValidEditMSG)){
+    //     setInvalidEditMSG('입력을 모두 완료해주세요') 
+    //     return
+    //  } 
+    // setLoading(true)
+    const MAX_WIDTH = 320;
+    const MAX_HEIGHT = 180;
+    const MIME_TYPE = "image/*";
+    const QUALITY = 0.7;
+
+    let imgforaxios;
+    
+    const file = currentInput.imgFile; 
+    const blobURL = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = blobURL;
+    img.onerror = function () {
+        URL.revokeObjectURL(this.src);
+    };
+    img.onload = await function () {
+        URL.revokeObjectURL((this as HTMLImageElement).src);
+        const [newWidth, newHeight] = calculateSize(img, MAX_WIDTH, MAX_HEIGHT);
+        const canvas = document.createElement("canvas");
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        const ctx = canvas.getContext("2d");
+        ctx && ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        canvas.toBlob(
+        (blob) => {
+            imgforaxios=blob;
+            const formData = new FormData();
+            imgforaxios && formData.append("profile",imgforaxios);
+            formData.append("password",currentInput.Password);
+            // 잘 가는지 확인
+            for(const pair of formData.entries()) {
+              console.log(pair[0]+ ', '+ pair[1]);
+           }
+                axios
+                .patch(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,formData,{
+                       headers: {
+                            "Content-Type": "multipart/form-data",
+                            authorization: `Bearer ` + accessToken
+                            },
+                       withCredentials: true
+                   })  
+                   .then((res)=> {
+                        if(res.headers.accessToken){
+                            dispatch(GetTokenAct(res.headers.accessToken));
+                            }
+                        if(res.status === 200){
+                            // dispatch(EditUserAct(profile: currentInput.imgFile)) // 그냥 get 받아서 변경해봐?
+                             setIsChanged(true);
+                            console.log('잘받아졌나')
+                             handleClick();
+                         }
+                         else{
+                             history.push('/notfound');
+                         }
+                     
+                        //  setLoading(false) 
+                    })
+                    .catch(error=>
+                        console.log(error)
+                    )
+            
+        },
+        MIME_TYPE,
+        QUALITY
+        );
+    }; 
+    // 이미지 사이즈 계산
+    function calculateSize(img : HTMLImageElement, maxWidth: number, maxHeight: number) {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+            if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+            }
+        } else {
+            if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+            }
+        }
+        return [width, height];
+        }
+
+};
+//  // 인풋창 포커스 핸들
+//   const handleMoveTopPW = (e)=>{
+//       if(e.key === 'Enter') {
+//           refPassword.current?.focus();
+//       }
+//     }
+//   const handleMoveTopPWCheck = (e)=>{
+//       if(e.key === 'Enter') {
+//           refPasswordCheck.current?.focus();
+//       }
+//   };
+      
+
   const handleClick = ()=> {
-    setIsOpen(false);
+    setIsOpen(!isOpen);
+    if(isChanged){
+      setCurrentInput({
+        imgFile:'',
+        previewUrl: '',
+        Password:'',
+        PasswordCheck:''
+      })
+      setValid(false);
+      setIsChanged(false);
+      getUserInfo();
+      
+    }
+    
   }   
   const handleWdOpen = () => {
     setWdOpen(!wdOpen);
@@ -40,10 +297,11 @@ function MyAccount() {
        <Content>
          <PhotoBox>
            <UserPhotoBox>
-           <Camera src='/images/camera.svg'/>
+           <Camera src='/images/camera.svg' onClick={handlePhotoClick}/>
              <Photo>
-               <PhotoCircle src={profileImg} alt='img'/>
-               </Photo>
+                <input type='file' accept='image/*' name="profile" ref={photoInput} onChange={imageFileHandler("profile")} />
+                <PhotoCircle src={currentInput.imgFile?currentInput.previewUrl : profileImg} alt='img'/>
+              </Photo>
             </UserPhotoBox>
           </PhotoBox>
           <InfoBox>
@@ -52,12 +310,17 @@ function MyAccount() {
               return(
                 <InfoList key={idx}>
                   <div>{user.name}</div>
-                  { user.key ?  <input type={user.type} /> : <div>{user.val}</div> }
+                  { user.key 
+                  ?  
+                  <input type={user.type} onChange={handleInputValue(user.key)} 
+                  value={currentInput[user.key]} onBlur={validationCheck(user.key)}/> 
+                  : 
+                  <div>{user.val}</div> }
                 </InfoList>
               )
             })}
             </InfoUl>
-            <SubmitBtn>수정</SubmitBtn>
+            <SubmitBtn onClick={onSubmitHandler}>수정</SubmitBtn>
           </InfoBox>
           <WithDrawl onClick={handleWdOpen}>회원 탈퇴</WithDrawl>
        </Content>  
@@ -109,6 +372,9 @@ const Photo = styled.div`
   display: flex;
   overflow: hidden;
   z-index:-1px;
+  >input{
+    display: none;
+  }
 `;
 const PhotoCircle = styled.img`
   width: 100%;
