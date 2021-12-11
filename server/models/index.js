@@ -34,4 +34,25 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+const { User, Dream, User_like_dream} = sequelize.models;
+
+User.hasMany( User_like_dream, {
+  foreignKey: 'user_id'
+});
+
+User_like_dream.belongsTo(User, {
+  foreignKey: 'user_id'
+});
+
+Dream.hasMany( User_like_dream, {
+  foreignKey: 'dream_id'
+});
+
+User_like_dream.belongsTo(Dream, {
+  foreignKey: 'dream_id'
+});
+
+Dream.belongsToMany(User, {through: 'User_like_dream', foreignKey: 'dream_id'});
+User.belongsToMany(Dream, {through: 'User_like_dream', foreignKey: 'user_id'});
+
 module.exports = db;
