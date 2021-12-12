@@ -18,17 +18,17 @@ module.exports = async (req, res) => {
         }
       })
 
-      // await Dream.destroy({
-      //   where : {
-      //     id : userid
-      //   }
-      // });
+      await Dream.destroy({
+        where : {
+          id : userid
+        }
+      });
 
-      // await User_like_dream.destroy({
-      //   where : {
-      //     id : userid
-      //   }
-      // });
+      await User_like_dream.destroy({
+        where : {
+          id : userid
+        }
+      });
       res.status(200).json({message : 'ok'})
       // .then((res)=> {
       //   res.status(200).json({message : 'ok'})

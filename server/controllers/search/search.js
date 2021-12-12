@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
       },
       params: {
         query: qu,
-        display: 10
+        display: 9
       }
     };
     try {

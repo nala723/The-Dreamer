@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef }  from 'react';
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../actions';
 import { RootState } from '../reducers';
@@ -7,12 +7,17 @@ import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
 import Modal from '../components/reusable/Modal';
+import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
 
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
+  const { username } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const [like, setLike] = useState(false);
+  const [banGuest, setBanGuest] = useState(false);
+  // const HeartRef = useRef(null);
   const DreamRef = useRef<HTMLDivElement[]>([]);
   // const DreamGsap = useRef<gsap.core.Timeline>(); 함수가 안된다그래서 일단은..
   DreamRef.current = [];
@@ -24,6 +29,21 @@ function SearchDream(): JSX.Element {
   let Xposition: number;
   let Yposition: number;
 
+  // useEffect(()=>{
+  //   const likeTl = gsap;
+  //   likeTl.to(
+  //     HeartRef.current, 
+  //     {
+  //       duration: 5, 
+  //       ease: "back.inOut(1.7)",
+  //       scale: 3
+  //     } 
+  //   )
+  //   console.log(HeartRef.current, likeTl)
+  //   // return ()=> {
+  //   //   likeTl.kill();
+  //   // }
+  // },[like])
   useEffect(()=>{
     let tl: gsap.core.Timeline;
     // const tl = gsap.timeline({repeat: -1,  ease: 'Power1.easeInOut'});
@@ -73,7 +93,6 @@ function SearchDream(): JSX.Element {
     } 
     dispatch(SearchDreamAct(search))
   }
-
   const handleLink = (e: React.MouseEvent ,link : string) => {
     e.preventDefault();
     return window.open(link);
@@ -97,13 +116,38 @@ function SearchDream(): JSX.Element {
       DreamRef.current.push(el);
     }
   };
+  // 꿈 모달 닫기
   const handleClick = () => {
-    setIsOpen(false)
+    setIsOpen(false);
   }
+
+  // likes
+  const handleLike = (e : React.MouseEvent, idx: number) => {
+    e.preventDefault();
+    if(!username){
+      banGuestLike();
+      return
+    }
+    data[idx]['islike'] = true;
+    console.log(data);
+    setLike(!like);
+  }
+
+  const handleDislike = (e: React.MouseEvent, idx: number) => {
+    e.preventDefault();
+    data[idx]['islike'] = false;
+    setLike(!like);
+  }
+ 
+  const banGuestLike = () => {
+    setBanGuest(!banGuest);
+  } 
+
 
   return (
     <Container>
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
+      {banGuest && <Modal handleClick={banGuestLike}>로그인 후 이용가능한 서비스입니다.</Modal>}
       <SearchSection>
           <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
       </SearchSection>
@@ -127,6 +171,10 @@ function SearchDream(): JSX.Element {
                 <Title>{res.title.replace(/[<][^>]*[>]/gi,'')}</Title>
                 <Text>{res.description.replace(/[<][^>]*[>]/gi,'').slice(0,66)+ '...'}</Text>
               </DrContent>
+              {!data[idx]['islike']? 
+                <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
+                :
+              <StyledHeart onClick={(e)=> handleDislike(e,idx)} fill='likes' />} {/*후버시 색 바뀜,로그인시만 이용가능*/}
             </Dream>
           )
         })}
@@ -138,6 +186,19 @@ function SearchDream(): JSX.Element {
 }
 
 export default SearchDream;
+
+
+const bounceHeart = keyframes`
+  0% {
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1.0);
+  }
+`;
 
 const Container = styled.div`
   position: relative;             
@@ -181,6 +242,7 @@ const DreamSection = styled.div`
 // `;
 const Dream = styled.div<{top: string; left: string;}>`
   position: absolute;
+  ${props=> props.theme.flexColumn};
   width: 17.063rem;
   height: 17.063rem;
   border-radius: 100%;
@@ -189,28 +251,39 @@ const Dream = styled.div<{top: string; left: string;}>`
   box-shadow: 0px 0px 30px 4px rgba(255, 207, 242, 0.5);
   top: ${props=>props.top};
   left: ${props=>props.left};
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 50;
 `;
 const DrContent = styled.div`
+ ${props=> props.theme.flexColumn};
   width: calc(100% - 2rem);
-  height: calc(100% - 1rem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  height: calc(100% - 6rem);
+  border-radius: 100%;
   gap: 1.5rem;
   text-align: center;
   cursor: pointer;
 `;
 const Title = styled.h5`
   color: ${props=> props.theme.reverse};
-  width: 100%;
+  padding-top: 1rem;
+  line-height: 1.1rem;
+  width: 90%;
   font-weight: bold;
 `;
 const Text = styled.p`
   color: ${props=> props.theme.reverse};
   width: 100%;
+`;
+const StyledHeart = styled(Heart)<{fill: string}>`
+  ${props=> props.fill ? css`
+  fill: #E57E8B;
+  animation: ${bounceHeart} 0.4s ease-in-out;`
+  : css`
+  fill: #E0ACAC;
+  transform: scale(0.8);
+  `}
+  cursor: pointer;
+  :hover {
+    transform: scale(1.0);
+    fill: #E57E8B;
+  }
 `;

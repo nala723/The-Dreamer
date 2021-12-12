@@ -78,12 +78,14 @@ export const WithDrawlAct = (data: UserInfo)=> {
 }
 
 interface Data { // 나중에 필요할지도! 일단 kipppp
+    [index: string] : any
     bloggerlink: string;
     bloggername: string;
     description: string;
     link: string;
     postdate: string;
     title: string;
+    islike?: boolean
 }
 
 interface UserInfo { // 나중에 필요할지도! 일단 kipppp
