@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef }  from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { SearchDreamAct } from '../actions';
+import { SearchDreamAct, LikeDrmAct, DisLikeDrmAct } from '../actions';
 import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
@@ -9,6 +9,7 @@ import CateGory from '../components/searchdream/Category';
 import Modal from '../components/reusable/Modal';
 import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
+import axios from 'axios';
 
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
@@ -17,7 +18,6 @@ function SearchDream(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [like, setLike] = useState(false);
   const [banGuest, setBanGuest] = useState(false);
-  // const HeartRef = useRef(null);
   const DreamRef = useRef<HTMLDivElement[]>([]);
   // const DreamGsap = useRef<gsap.core.Timeline>(); 함수가 안된다그래서 일단은..
   DreamRef.current = [];
@@ -29,21 +29,6 @@ function SearchDream(): JSX.Element {
   let Xposition: number;
   let Yposition: number;
 
-  // useEffect(()=>{
-  //   const likeTl = gsap;
-  //   likeTl.to(
-  //     HeartRef.current, 
-  //     {
-  //       duration: 5, 
-  //       ease: "back.inOut(1.7)",
-  //       scale: 3
-  //     } 
-  //   )
-  //   console.log(HeartRef.current, likeTl)
-  //   // return ()=> {
-  //   //   likeTl.kill();
-  //   // }
-  // },[like])
   useEffect(()=>{
     let tl: gsap.core.Timeline;
     // const tl = gsap.timeline({repeat: -1,  ease: 'Power1.easeInOut'});
@@ -129,14 +114,15 @@ function SearchDream(): JSX.Element {
       return
     }
     data[idx]['islike'] = true;
-    console.log(data);
     setLike(!like);
+    dispatch(LikeDrmAct(data[idx]));
   }
 
   const handleDislike = (e: React.MouseEvent, idx: number) => {
     e.preventDefault();
     data[idx]['islike'] = false;
     setLike(!like);
+    dispatch(DisLikeDrmAct(idx));
   }
  
   const banGuestLike = () => {
@@ -174,7 +160,7 @@ function SearchDream(): JSX.Element {
               {!data[idx]['islike']? 
                 <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
                 :
-              <StyledHeart onClick={(e)=> handleDislike(e,idx)} fill='likes' />} {/*후버시 색 바뀜,로그인시만 이용가능*/}
+              <StyledHeart onClick={(e)=> handleDislike(e,idx)} fill='likes' />} 
             </Dream>
           )
         })}

@@ -13,6 +13,9 @@ const WITHDRAWL = "WITHDRAWL" as const;
 const GET_GOOGLE_TOKEN = "GET_GOOGLE_TOKEN" as const;
 const GET_NEW_TOKEN = "GET_NEW_TOKEN" as const;
 
+const LIKE_DREAM = 'LIKE_DREAM' as const;
+const DISLIKE_DREAM = 'DISLIKE_DREAM' as const;
+
 // 액션 생성함수 선언
 
 export const SearchDreamAct = (data: string) =>  { 
@@ -77,6 +80,20 @@ export const WithDrawlAct = (data: UserInfo)=> {
     }
 }
 
+export const LikeDrmAct = (data: Data) => {
+    return {
+        type: LIKE_DREAM,
+        payload: data
+    }
+}
+
+export const DisLikeDrmAct = (data: number)=> {
+    return {
+        type: DISLIKE_DREAM,
+        payload: data
+    }
+}
+
 interface Data { // 나중에 필요할지도! 일단 kipppp
     [index: string] : any
     bloggerlink: string;
@@ -119,6 +136,8 @@ type Action =
     | ReturnType<typeof GetTokenAct>
     | ReturnType<typeof EditUserAct>
     | ReturnType<typeof WithDrawlAct>
+    | ReturnType<typeof LikeDrmAct>
+    | ReturnType<typeof DisLikeDrmAct>
 
 // 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
 
@@ -132,9 +151,12 @@ type ActionState = {
         accessToken: string;
         email: string;
         username: string;
-        profile: string;
-    }
+        profile: string; 
+    },
+    dream: Data[]; 
 }
+//임시로 리덕스로.. 나중에 서버랑 연결해주자..이렇게 하면 다른 아이디로 해도 남아있을듯
+//혹은 로그인 로그아웃시 없어지거나
 
 // 초기상태를 선언합니다.
 const initialState: ActionState = {
@@ -148,7 +170,8 @@ const initialState: ActionState = {
         email: '',
         username: '',
         profile: ''
-    }
+    },
+    dream: [] 
 };
 
 // 리듀서를 작성합니다.
@@ -194,3 +217,18 @@ export function usersReducer (state: ActionState = initialState, action: Action)
             return state;
     }
 }
+
+export function dreamReducer (state: ActionState = initialState, action: Action): ActionState {
+    switch (action.type) {
+        case LIKE_DREAM:
+            return Object.assign({}, state, {
+                dream: action.payload
+            })
+        case DISLIKE_DREAM:
+            return Object.assign({}, state, {
+                dream: state.dream.filter((el,idx)=> idx !== action.payload)
+            })         
+        default:
+            return state;
+    }
+}   
