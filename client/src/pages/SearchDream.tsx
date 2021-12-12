@@ -200,6 +200,18 @@ const bounceHeart = keyframes`
   }
 `;
 
+const cancleHeart = keyframes`
+  0% {
+    transform: scale(1.0);
+  }
+  70% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(0.8);
+  }
+`;
+
 const Container = styled.div`
   position: relative;             
   overflow: auto;
@@ -279,6 +291,7 @@ const StyledHeart = styled(Heart)<{fill: string}>`
   animation: ${bounceHeart} 0.4s ease-in-out;`
   : css`
   fill: #E0ACAC;
+  animation: ${cancleHeart} 0.4s ease-in-out;
   transform: scale(0.8);
   `}
   cursor: pointer;
@@ -287,3 +300,4 @@ const StyledHeart = styled(Heart)<{fill: string}>`
     fill: #E57E8B;
   }
 `;
+ 
