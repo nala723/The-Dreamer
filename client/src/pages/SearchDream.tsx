@@ -14,6 +14,7 @@ import axios from 'axios';
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
   const { username } = useSelector((state: RootState)=> state.usersReducer.user);
+  const { dreamReducer } = useSelector((state: RootState)=> state);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [like, setLike] = useState(false);
@@ -115,7 +116,8 @@ function SearchDream(): JSX.Element {
     }
     data[idx]['islike'] = true;
     setLike(!like);
-    dispatch(LikeDrmAct(data[idx]));
+    const dataarr = [data[idx]]
+    dispatch(LikeDrmAct(dataarr));
   }
 
   const handleDislike = (e: React.MouseEvent, idx: number) => {

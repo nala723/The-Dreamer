@@ -80,7 +80,7 @@ export const WithDrawlAct = (data: UserInfo)=> {
     }
 }
 
-export const LikeDrmAct = (data: Data) => {
+export const LikeDrmAct = (data: Data[]) => {
     return {
         type: LIKE_DREAM,
         payload: data
@@ -222,7 +222,7 @@ export function dreamReducer (state: ActionState = initialState, action: Action)
     switch (action.type) {
         case LIKE_DREAM:
             return Object.assign({}, state, {
-                dream: action.payload
+                dream: [...state.dream, ...action.payload]
             })
         case DISLIKE_DREAM:
             return Object.assign({}, state, {
