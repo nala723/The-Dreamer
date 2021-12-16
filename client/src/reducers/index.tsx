@@ -6,7 +6,7 @@ import storage from "redux-persist/lib/storage"; // local storage에 저장
 const persistConfig = {
     key: 'root', // localStorage에 저장
     storage, 
-    whitelist: ['usersReducer', 'dreamReducer'], //  reducer 중에 use reducer만 localstorage에 저장합니다.
+    whitelist: ['usersReducer','dreamReducer'], //  reducer 중에 use reducer만 localstorage에 저장합니다.
 	// blacklist -> 그것만 제외합니다
 }
 

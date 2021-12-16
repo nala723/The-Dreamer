@@ -87,7 +87,7 @@ export const LikeDrmAct = (data: Data[]) => {
     }
 }
 
-export const DisLikeDrmAct = (data: number)=> {
+export const DisLikeDrmAct = (data: string)=> {
     return {
         type: DISLIKE_DREAM,
         payload: data
@@ -96,11 +96,11 @@ export const DisLikeDrmAct = (data: number)=> {
 
 interface Data { // 나중에 필요할지도! 일단 kipppp
     [index: string] : any
-    bloggerlink: string;
-    bloggername: string;
+    bloggerlink?: string;
+    bloggername?: string;
     description: string;
     link: string;
-    postdate: string;
+    postdate?: string;
     title: string;
     islike?: boolean
 }
@@ -226,7 +226,11 @@ export function dreamReducer (state: ActionState = initialState, action: Action)
             })
         case DISLIKE_DREAM:
             return Object.assign({}, state, {
-                dream: state.dream.filter((el,idx)=> idx !== action.payload)
+                dream: state.dream.filter((el)=> {
+                    let splitarr: string[] | string = el['link'].split('=')
+                    splitarr = splitarr[splitarr.length-1]
+                   return splitarr !== action.payload
+                })
             })         
         default:
             return state;

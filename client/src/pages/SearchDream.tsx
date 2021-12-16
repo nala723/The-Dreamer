@@ -116,7 +116,15 @@ function SearchDream(): JSX.Element {
     }
     data[idx]['islike'] = true;
     setLike(!like);
-    const dataarr = [data[idx]]
+    const date = new Date();
+    const day = date.getFullYear() +'-'+ `${date.getMonth()+1}` + '-' + date.getDate()  
+    const obj = {
+      title : data[idx]['title'],
+      link : data[idx]['link'],
+      description :  data[idx]['description'],
+      likedate : day
+    }
+    const dataarr = [obj]
     dispatch(LikeDrmAct(dataarr));
   }
 
@@ -124,7 +132,10 @@ function SearchDream(): JSX.Element {
     e.preventDefault();
     data[idx]['islike'] = false;
     setLike(!like);
-    dispatch(DisLikeDrmAct(idx));
+    let splitarr: string[] | string = data[idx]['link'].split('=');
+    splitarr = splitarr[splitarr.length-1]
+    console.log(splitarr)
+    dispatch(DisLikeDrmAct(splitarr));
   }
  
   const banGuestLike = () => {

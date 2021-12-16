@@ -202,6 +202,17 @@ function DrawDream({ width, height }: CanvasProps) {
   //   });
   //   canvas.dispatchEvent(mouseEvent); // 앞서 만든 마우스 이벤트를 디스패치해줍니다
   // }, []);  
+  const getDaytoYear = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const week = ['일','월','화','수','목','금','토'];
+    const day = week[now.getDay()];
+
+    return year + '년 ' + month + '월 ' + date + '일 ' + day
+  }
+
   return (
     <Container>
       <Title>
@@ -214,7 +225,7 @@ function DrawDream({ width, height }: CanvasProps) {
               <h5>제목 : </h5>
               <input value={title} onChange={(e) => setTitle(e.target.value)}/>
             </InputBox>
-            <h5>2021년 11월 10일</h5>
+            <h5>{getDaytoYear()}</h5>
           </TextBox>
           <Canvas ref={canvasRef} height={height} width={width} style={{cursor : `${cursor}`}}/> 
           <ToolBox>
