@@ -15,6 +15,7 @@ module.exports = {
     getUserInfo: require("./mypage/getUserInfo"),
     getFavorites: require("./mypage/getFavorites"),
     getMyPics: require("./mypage/getMyPics"),
+    deleteMyPic: require("./mypage/deleteMyPic"),
     /*-----------------------------------------------------------------*/
     createFavorites: require("./search/createFavorites"),
     cancelFavorites: require("./search/cancelFavorites"),

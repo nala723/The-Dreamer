@@ -7,5 +7,6 @@ router.patch("/user-info", upload.single('profile'), controllers.updateUserInfo)
 router.get("/user-info", controllers.getUserInfo);
 router.get("/like", controllers.getFavorites);
 router.get("/mypics", controllers.getMyPics);
+router.delete("/delete-pic", controllers.deleteMyPic);
 
 module.exports = router;
