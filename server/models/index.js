@@ -34,7 +34,15 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-const { User, Dream, User_like_dream} = sequelize.models;
+const { User, Dream, User_like_dream, Picture } = sequelize.models;
+
+User.hasMany( Picture, {
+  foreignKey: 'user_id'
+});
+
+Picture.belongsTo(User, {
+  foreignKey: 'user_id'
+});
 
 User.hasMany( User_like_dream, {
   foreignKey: 'user_id'

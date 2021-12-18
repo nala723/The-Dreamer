@@ -1,8 +1,5 @@
 module.exports = async (req, res) => {
-    
-
     try {
-
       const authorization = req.headers['authorization'];
 
       if(!authorization){
