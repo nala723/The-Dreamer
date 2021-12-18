@@ -31,9 +31,19 @@ export const SearchDreamAct = (data: string) =>  {
                     },
                 })
                 if(response.data.items){
+                     const dataArray = (response.data.items).map((el: Data) => {
+                        el['title'] = el.title.replace(/[<][^>]*[>]/gi,' ')
+                        el['description'] = el.description.replace(/[<][^>]*[>]/gi,' ')
+                       return  el = {
+                            title: el['title'],
+                            description:  el['description'],
+                            link: el['link'],
+                             }   
+                    }) 
+
                     dispatch({ 
                         type: SEARCH_DREAM_SUCCESS,
-                        payload: response.data.items
+                        payload: dataArray
                     })
                   }    
 
@@ -96,11 +106,8 @@ export const DisLikeDrmAct = (data: string)=> {
 
 interface Data { // 나중에 필요할지도! 일단 kipppp
     [index: string] : any
-    bloggerlink?: string;
-    bloggername?: string;
     description: string;
     link: string;
-    postdate?: string;
     title: string;
     islike?: boolean
 }

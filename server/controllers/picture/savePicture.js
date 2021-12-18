@@ -1,8 +1,8 @@
-const model = require('../../models');
+const { Picture } = require('../../models');
 const fs = require('fs');
 const { isAuthorized, remakeToken } = require('../tokenFunctions')
 
-module.exports = async (req, res) => {
+module.exports = async(req, res) => {
     const authorization = req.headers['authorization'];
    try{
        if(!authorization){
@@ -19,20 +19,20 @@ module.exports = async (req, res) => {
 
             const userData = isAuthorized(accessToken);
             const saveImage = fs.readFileSync(req.file.path);
-
-            let Result = await Picture.create({
+            // console.log('그림인식?된건가',req.body ) // 통과
+            await Picture.create({
                 title : req.body.title,
                 picture : saveImage,
                 emotion: req.body.emotion,
                 user_id : userData.id
-            });
-            console.log('되나여?? 그림왔나여',picture)
-            if(Result){
+            })
+            .then(response=>{
                 res.status(200).json({message : '업로드 성공'})
-                }else{
-                res.status(500).send(error);
-                }
-            }
+            })
+            .catch(err=>{
+                res.status(500).send(err);
+            })
+          }
         }
     } catch (error) {
         res.status(500).send(error);

@@ -14,7 +14,6 @@ import axios from 'axios';
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
   const { username } = useSelector((state: RootState)=> state.usersReducer.user);
-  const { dreamReducer } = useSelector((state: RootState)=> state);
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [like, setLike] = useState(false);
@@ -117,12 +116,10 @@ function SearchDream(): JSX.Element {
     data[idx]['islike'] = true;
     setLike(!like);
     const date = new Date();
-    const day = date.getFullYear() +'-'+ `${date.getMonth()+1}` + '-' + date.getDate()  
+    const day = date.getFullYear() +'.'+ `${date.getMonth()+1}` + '.' + date.getDate()  
     const obj = {
-      title : data[idx]['title'],
-      link : data[idx]['link'],
-      description :  data[idx]['description'],
-      likedate : day
+      ...data[idx],
+      likedate : day.slice(2)
     }
     const dataarr = [obj]
     dispatch(LikeDrmAct(dataarr));
@@ -134,7 +131,6 @@ function SearchDream(): JSX.Element {
     setLike(!like);
     let splitarr: string[] | string = data[idx]['link'].split('=');
     splitarr = splitarr[splitarr.length-1]
-    console.log(splitarr)
     dispatch(DisLikeDrmAct(splitarr));
   }
  
@@ -167,8 +163,8 @@ function SearchDream(): JSX.Element {
           return (
             <Dream ref={addToRefs} key={idx} top={y} left={x}>
               <DrContent onClick={(e)=> handleLink(e,res.link)}>
-                <Title>{res.title.replace(/[<][^>]*[>]/gi,'')}</Title>
-                <Text>{res.description.replace(/[<][^>]*[>]/gi,'').slice(0,66)+ '...'}</Text>
+                <Title>{res.title}</Title>
+                <Text>{res.description.slice(0,66)+ '...'}</Text>
               </DrContent>
               {!data[idx]['islike']? 
                 <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 

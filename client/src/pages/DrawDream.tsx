@@ -1,6 +1,13 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { GetTokenAct } from '../actions';
+import { RootState } from '../reducers';
 import { colors, cursors } from '../config/dummyDatas';
+import { Buffer } from 'buffer';
+import axios from 'axios';
+import Modal from '../components/reusable/Modal';
 
 interface CanvasProps {
   width: number;
@@ -13,6 +20,9 @@ interface Coordinate {
 }
 
 function DrawDream({ width, height }: CanvasProps) {
+  const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
+  const history = useHistory();
+  const dispatch = useDispatch();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mousePosition, setMousePosition] = useState<Coordinate | undefined>(); // 마우스포인터(x,y)
   const [isPainting, setIsPainting] = useState(false); //페인팅상태 선 긋는 상태
@@ -23,6 +33,7 @@ function DrawDream({ width, height }: CanvasProps) {
   const [brush, setBrush] = useState(true);
   const [fill, setFill] = useState(false);
   const [title, setTitle] = useState('');
+  const [open, setOpen] = useState(false);
   // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
   const context = useRef<CanvasRenderingContext2D | null>();
 
@@ -65,18 +76,61 @@ function DrawDream({ width, height }: CanvasProps) {
     setCursor(cursors[2]);
   }
  
-  // 그림 저장
-  const handleSave = () => {
+  // 그림 서버 저장
+  const handleSave = async(e: React.MouseEvent<HTMLInputElement>) => {
     if(!canvasRef.current){
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
     const image = canvas.toDataURL('image/png', 1.0);
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = title; // 여기 제목을 해줄수 있을듯!
-    link.click();
+    /*#################################### 그림 로컬 저장 ################################### */
+    // const link = document.createElement('a');
+    // link.href = image;
+    // link.download = title; // 여기 제목을 해줄수 있을듯!
+    // link.click();
+    const blobBin = Buffer.from(image, 'base64').toString('binary');
+   
+		const array = [];
+		for (let i = 0; i < blobBin.length; i += 1) {
+			array.push(blobBin.charCodeAt(i));
+		}
+		const u8arr = new Uint8Array(array);
+		const file = new Blob([u8arr], { type: "image/png" }); // Blob 객체 생성
+		const formdata = new FormData(); // formData 생성
+		formdata.append("picture", file); // formdata에 file data 추가
+    formdata.append('title', title);
+    formdata.append('emotion', 'happy');
+
+  //   for(const pair of formdata.entries()) {
+  //     console.log(pair[0]+ ', '+ pair[1]);
+  //  }
+    await axios
+      .post(process.env.REACT_APP_URL + '/picture/save-pic', formdata, {
+            headers: { 
+              "content-Type": "multipart/form-data",
+              authorization: `Bearer ` + accessToken },
+      })
+      .then(res=>{
+        if(res.headers.accessToken){
+            dispatch(GetTokenAct(res.headers.accessToken));
+        }
+        if(res.status === 200){
+          handleClick()
+        }else{
+          console.log(res.data.message)
+        }
+      })
+      .catch(err=>{
+        history.push('/notfound');
+        console.log(err)
+      })
   }
+
+  const handleClick = ()=> {
+    setOpen(!open);
+  } 
+
+
   // 좌표 얻는 함수
   const getCoordinates = (e: MouseEvent): Coordinate | undefined => {
     if(!canvasRef.current){
@@ -215,6 +269,7 @@ function DrawDream({ width, height }: CanvasProps) {
 
   return (
     <Container>
+      {open && <Modal handleClick={handleClick}>그림이 저장되었습니다.</Modal>}
       <Title>
         <h1>당신의 꿈을 그림으로 남겨보세요.</h1>
       </Title>

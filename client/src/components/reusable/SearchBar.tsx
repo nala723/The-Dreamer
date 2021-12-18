@@ -1,27 +1,33 @@
 import React,{ useState } from 'react';
 import styled from 'styled-components';
 
-function SearchBar({height, width, scale, font, handleSearch}: 
-  {height: string; width: string; scale: string; font: string; handleSearch: (search: string)=>void;}) {
+function SearchBar({height, width, scale, font, handleSearch, handleInput, input}: 
+  {height: string; width: string; scale: string; font: string; handleSearch: (search: string)=>void; handleInput?: (search: string)=> void; input?: string}) {
   
   const [search, setSearch] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value)
+    handleInput && handleInput(e.target.value)
   }  
   const handleSumbit = () => {
     // if(search === ''){
     //   return; //경고 모달
     // }else{
-      handleSearch(search);
+      if(input){
+        handleSearch(input);
+      }else{
+        handleSearch(search);
+         setSearch('')
+      }
     // }
-    setSearch('')
+   
   }
 
   return (
-    <SearchBox width={width} onKeyUp={(e)=> {e.preventDefault(); e.key==='Enter'&& handleSumbit()}}>
+    <SearchBox width={width} onKeyUp={(e)=> {e.preventDefault(); e.key==='Enter'&& handleSumbit()}} >
       <Icon type='image' src="/images/search-icon.svg" alt="search"  scale={scale} onClick={(e) => {e.preventDefault(); handleSumbit()}}/>
-      <Bar font={font} height={height} placeholder= 'Search your dream..' type="search" onChange={(e) => handleChange(e)} value={search}>
+      <Bar font={font} height={height} placeholder= 'Search your dream..' type="search" onChange={(e) => handleChange(e)} value={input? input : search}>
       </Bar>
     </SearchBox>
   );
