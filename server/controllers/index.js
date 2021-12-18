@@ -10,11 +10,13 @@ module.exports = {
     // /*-----------------------------------------------------------------*/
     // googleSignin: require("./google/signin"),
     // googleWithdrawal: require("./google/withdrawal"),
-    /*-------------------------------------------------*/
+    /*-----------------------------------------------------------------*/
     updateUserInfo: require("./mypage/updateUserInfo"),
     getUserInfo: require("./mypage/getUserInfo"),
     getFavorites: require("./mypage/getFavorites"),
-    /*-------------------------------------------------*/
+    /*-----------------------------------------------------------------*/
     createFavorites: require("./search/createFavorites"),
     cancelFavorites: require("./search/cancelFavorites"),
+    /*-----------------------------------------------------------------*/
+    savePicture: require("./picture/savePicture")
 }

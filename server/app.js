@@ -5,6 +5,7 @@ const app = express();
 const searchRouter = require('./routers/search');
 const signRouter = require("./routers/sign");
 const mypageRouter = require('./routers/mypage');
+const pictureRouter = require('./routers/picture');
 const port = 80;
 
 global.__basedir = __dirname;
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use('/search', searchRouter);
 app.use("/sign", signRouter);
 app.use("/mypage", mypageRouter);
+app.use("/picture", pictureRouter);
 
 app.get('/',(req,res)=>{
     res.status(201).send('hello world');
