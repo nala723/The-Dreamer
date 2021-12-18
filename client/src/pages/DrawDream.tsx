@@ -33,7 +33,9 @@ function DrawDream({ width, height }: CanvasProps) {
   const [brush, setBrush] = useState(true);
   const [fill, setFill] = useState(false);
   const [title, setTitle] = useState('');
+  const [emotion, setEmotion] = useState('happy')
   const [open, setOpen] = useState(false);
+  const [errOpen, setErrOpen] = useState(false);
   // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
   const context = useRef<CanvasRenderingContext2D | null>();
 
@@ -81,6 +83,10 @@ function DrawDream({ width, height }: CanvasProps) {
     if(!canvasRef.current){
       return;
     }
+    if(!title || !emotion){
+      handleErr()
+      return;
+    }
     const canvas: HTMLCanvasElement = canvasRef.current;
     const image = canvas.toDataURL('image/png', 1.0);
     /*#################################### 그림 로컬 저장 ################################### */
@@ -99,7 +105,7 @@ function DrawDream({ width, height }: CanvasProps) {
 		const formdata = new FormData(); // formData 생성
 		formdata.append("picture", file); // formdata에 file data 추가
     formdata.append('title', title);
-    formdata.append('emotion', 'happy');
+    formdata.append('emotion', emotion);
 
   //   for(const pair of formdata.entries()) {
   //     console.log(pair[0]+ ', '+ pair[1]);
@@ -129,6 +135,11 @@ function DrawDream({ width, height }: CanvasProps) {
   const handleClick = ()=> {
     setOpen(!open);
   } 
+
+  const handleErr = ()=> {
+    setErrOpen(!errOpen);
+  } 
+
 
 
   // 좌표 얻는 함수
@@ -269,6 +280,7 @@ function DrawDream({ width, height }: CanvasProps) {
 
   return (
     <Container>
+      {errOpen && <Modal handleClick={handleErr}>그림, 제목, 오늘의 꿈 타입 선택을 모두 완료해주세요.</Modal>}
       {open && <Modal handleClick={handleClick}>그림이 저장되었습니다.</Modal>}
       <Title>
         <h1>당신의 꿈을 그림으로 남겨보세요.</h1>
