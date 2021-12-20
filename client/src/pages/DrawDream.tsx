@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { GetTokenAct } from '../actions';
 import { RootState } from '../reducers';
@@ -8,6 +8,12 @@ import { colors, cursors } from '../config/dummyDatas';
 import { Buffer } from 'buffer';
 import axios from 'axios';
 import Modal from '../components/reusable/Modal';
+import { emotionList } from '../config/dummyDatas';
+import { ReactComponent as Soso } from '../assets/face-soso.svg';
+import { ReactComponent as Wink } from '../assets/face-wink.svg';
+import { ReactComponent as Happy } from '../assets/face-happy.svg';
+import { ReactComponent as Bad } from '../assets/face-bad.svg';
+import { ReactComponent as What } from '../assets/face-what.svg';
 
 interface CanvasProps {
   width: number;
@@ -33,7 +39,7 @@ function DrawDream({ width, height }: CanvasProps) {
   const [brush, setBrush] = useState(true);
   const [fill, setFill] = useState(false);
   const [title, setTitle] = useState('');
-  const [emotion, setEmotion] = useState('happy')
+  const [emotion, setEmotion] = useState(emotionList[2].name);
   const [open, setOpen] = useState(false);
   const [errOpen, setErrOpen] = useState(false);
   // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
@@ -277,6 +283,9 @@ function DrawDream({ width, height }: CanvasProps) {
 
     return year + '년 ' + month + '월 ' + date + '일 ' + day
   }
+  const handleEmotion = (idx: number) => {
+    setEmotion(emotionList[idx].name)
+  } // emotion을 props로 전달, 스타일드컴포넌트에서 그 값 확인 해당하면 fill변경
 
   return (
     <Container>
@@ -287,13 +296,30 @@ function DrawDream({ width, height }: CanvasProps) {
       </Title>
       <Dream>
         <DrInner>
-          <TextBox>
-            <InputBox>
-              <h5>제목 : </h5>
-              <input value={title} onChange={(e) => setTitle(e.target.value)}/>
-            </InputBox>
-            <h5>{getDaytoYear()}</h5>
-          </TextBox>
+          <UpperBox>
+              <Emotions>
+                <StyledSoso onClick={()=>handleEmotion(0)} fill={emotion}/> 
+                <StyledWink onClick={()=>handleEmotion(1)} fill={emotion}/>
+                <StyledHappy onClick={()=>handleEmotion(2)} fill={emotion}/>
+                <StyledBad onClick={()=>handleEmotion(3)} fill={emotion}/>
+                <StyledWhat onClick={()=>handleEmotion(4)} fill={emotion}/>
+                {/* {emotionList.map((el,idx)=>{
+                  return (
+                    emotion === el.name ?    
+                     <input type='image' src={el.img} key={idx} alt='face' onClick={()=>handleEmotion(idx)}/>
+                       : 
+                      <input type='image' src={el.img} key={idx} alt='face' onClick={()=>handleEmotion(idx)}/>)
+                 })
+                } */}
+              </Emotions>
+            <TextBox>
+              <InputBox>
+                <h5>제목 : </h5>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)}/>
+              </InputBox>
+              <h5>{getDaytoYear()}</h5>
+            </TextBox>
+          </UpperBox>
           <Canvas ref={canvasRef} height={height} width={width} style={{cursor : `${cursor}`}}/> 
           <ToolBox>
             <Palette>
@@ -414,37 +440,110 @@ const Dream = styled.div`
   z-index: 50;
 `;
 const DrInner = styled.div`
+ ${props=>props.theme.flexColumn};
   width: 37.563rem;
-  padding-top: 3rem;
   height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 1rem;
 `;
-const TextBox = styled.div`
+const UpperBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 85%;
+  height: auto;
+  gap: 1.2rem;
+`;
+const Emotions = styled.div`
+   ${props=>props.theme.flexRow};
+   gap: 0.9rem;
+   margin-top: -1rem;
+`;
+
+const StyledSoso = styled(Soso)<{fill: string}>`
+  ${props=> props.fill === 'soso' ? css`
+  fill: #FFFA81;
+  opacity: 1;
+  `
+  : css`
+  fill: #E1BBC9;
+  opacity: 0.5;
+  `};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  transform: scale(0.9);
+`;
+const StyledWink = styled(Wink)<{fill: string}>`
+  ${props=> props.fill === 'wink' ? css`
+  fill: #FFFA81;
+  opacity: 1;`
+  : css`
+  fill: #E1BBC9;
+  opacity: 0.5;
+  `};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  transform: scale(0.9);
+`;
+const StyledHappy = styled(Happy)<{fill: string}>`
+  ${props=> props.fill === 'happy' ? css`
+  fill: #FFFA81;
+  opacity: 1;`
+  : css`
+  fill: #E1BBC9;
+  opacity: 0.5;
+  `};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  transform: scale(0.9);
+`;
+const StyledBad = styled(Bad)<{fill: string}>`
+  ${props=> props.fill === 'bad' ? css`
+  fill: #FFFA81;
+  opacity: 1;`
+  : css`
+  fill: #E1BBC9;
+  opacity: 0.5;
+  `};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  transform: scale(0.9);
+`;
+const StyledWhat = styled(What)<{fill: string}>`
+  ${props=> props.fill === 'what' ? css`
+  fill: #FFFA81;
+  opacity: 1;`
+  : css`
+  fill: #E1BBC9;
+  opacity: 0.5;
+  `};
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  transform: scale(0.9);
+`;
+
+
+const TextBox = styled.div`
+  width: 100%;
   height: auto;
   font-size: 15px;
   color: ${props=>props.theme.reverse};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  :nth-child(2){
-  }
 `;
 const InputBox = styled.div`
   display: flex;
-  width: auto; 
+  width: 70%; 
   align-items: center;
   height: 100%;
   >h5 {
-
   }
-  >input {
+`;
+const Input = styled.input.attrs({
+  placeholder: '제목을 입력해 주세요.',
+})`
     height: 100%;
-    width: auto;
+    width: 80%; 
     text-indent: 1rem;
     display: flex; 
     align-items: center;
@@ -452,7 +551,9 @@ const InputBox = styled.div`
     color: ${props=>props.theme.reverse};
     font-size: 18px;
     font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Batang, Georgia, serif;
-  }
+    ::placeholder {
+      color: #9e7d8a;
+    }
 `;
 
 const Canvas = styled.canvas`
@@ -460,9 +561,9 @@ const Canvas = styled.canvas`
 `;
 const ToolBox = styled.div`
   width: 90%;
-  /* height: 5.313rem; */
   display: flex;
   gap: 1.2rem;
+  /* padding-top: 1rem; */
   padding-left: 0.5rem;
   justify-content: center;
 `;

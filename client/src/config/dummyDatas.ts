@@ -82,3 +82,26 @@ export const colors = [
 export const cursors = [
     'url(/images/brush.cur), pointer', 'url(/images/eraser.cur), pointer', 'url(/images/bucket.cur), pointer'
 ];
+
+export const emotionList = [
+    {
+        name : 'soso',
+        img: '../assets/face-soso.svg', 
+      },
+    {
+        name : 'wink',
+        img: '../assets/face-wink.svg',  
+      },
+    {
+      name : 'happy',
+      img: '../assets/face-happy.svg', 
+    },
+    {
+      name : 'bad',
+      img: '../assets/face-bad.svg'
+    },
+    {
+     name : 'what',
+     img: '../assets/face-what.svg'
+    }
+]
