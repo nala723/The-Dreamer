@@ -358,7 +358,7 @@ const DropDownContainer = styled.ul`
 `;
 
 const Allsearch = styled.div`
-  width: 3.6rem;
+  width: 3.8rem;
   margin-left: -0.7rem;
   cursor: pointer;
   text-align: center;

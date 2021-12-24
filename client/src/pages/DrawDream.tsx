@@ -94,19 +94,19 @@ function DrawDream({ width, height }: CanvasProps) {
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
-    const image = canvas.toDataURL('image/png', 1.0);
+    const image = canvas.toDataURL('image/png').split(',')[1];
     /*#################################### 그림 로컬 저장 ################################### */
     // const link = document.createElement('a');
     // link.href = image;
     // link.download = title; // 여기 제목을 해줄수 있을듯!
     // link.click();
+
     const blobBin = Buffer.from(image, 'base64').toString('binary');
-   
 		const array = [];
 		for (let i = 0; i < blobBin.length; i += 1) {
-			array.push(blobBin.charCodeAt(i));
+			array.push(blobBin.charCodeAt(i));//인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장한다. 
 		}
-		const u8arr = new Uint8Array(array);
+		const u8arr = new Uint8Array(array); //8비트의 형식화 배열을 생성한다. 
 		const file = new Blob([u8arr], { type: "image/png" }); // Blob 객체 생성
 		const formdata = new FormData(); // formData 생성
 		formdata.append("picture", file); // formdata에 file data 추가

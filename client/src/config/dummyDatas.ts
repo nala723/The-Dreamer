@@ -1,3 +1,9 @@
+import { ReactComponent as Soso } from '../assets/face-soso.svg';
+import { ReactComponent as Wink } from '../assets/face-wink.svg';
+import { ReactComponent as Happy } from '../assets/face-happy.svg';
+import { ReactComponent as Bad } from '../assets/face-bad.svg';
+import { ReactComponent as What } from '../assets/face-what.svg';
+
 type ObjType = [
     {
         [index: string] : string[]
