@@ -5,6 +5,7 @@ import Modal from '../reusable/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import { DisLikeDrmAct } from '../../actions';
 import { RootState } from '../../reducers';
+import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import gsap from 'gsap';
 
 function MyLikes() {
@@ -244,7 +245,7 @@ function MyLikes() {
           const [ x, y ] = position;
           return (
             <Dream ref={addToRefs} key={idx} top={y} left={x}>
-              <input src='/images/delete-icon.svg' alt='delete' type='image'  onClick={(e)=> handleDislike(e,idx)}/>
+              <Delete onClick={(e)=> handleDislike(e,idx)}/>
               <DrContent onClick={(e)=> handleLink(e,res.link)}>
                 <DrTitle>{res.title}</DrTitle>
                 <Text>{res.description.slice(0,66)+ '...'}</Text>
@@ -381,14 +382,15 @@ const Dream = styled.div<{top: string; left: string;}>`
   top: ${props=>props.top};
   left: ${props=>props.left};
   z-index: 50;
-  >input {
+  >svg {
    display: none;
    margin: 0;
   }
   :hover{
-    >input {
+    >svg {
    display: block;
    cursor: pointer;
+   fill: #DF899D;
    /* margin-bottom: -1rem; //위치 나중 수정 */
     }
   }

@@ -8,6 +8,7 @@ import { RootState } from '../../reducers';
 import { Buffer } from "buffer";
 import axios from "axios";
 import gsap from "gsap";
+import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import { ReactComponent as Soso } from '../../assets/face-soso.svg';
 import { ReactComponent as Wink } from '../../assets/face-wink.svg';
 import { ReactComponent as Happy } from '../../assets/face-happy.svg';
@@ -53,7 +54,7 @@ function MyDream() {
         what:  <What /> 
   
     }
-
+  // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
 
   useEffect(() => {
     getPictures();
@@ -76,9 +77,9 @@ function MyDream() {
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
-                console.log(re.picture)
+                // console.log(re.picture)
                 re.picture ="data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
-                console.log(re.picture)
+                // console.log(re.picture)
                 return re;
               })
               setMyPic(data);
@@ -178,11 +179,31 @@ function MyDream() {
       }
     }
   };
-
- console.log(myPic);
   // 전체 목록 조회
   const handleAllsearch = () => {
     // setLikes(dream);
+  }
+  const handleDislike = (e: React.MouseEvent, id: number) => {
+    e.preventDefault();
+    axios
+      .delete(process.env.REACT_APP_URL + `/mypage/delete-pic/${id}`,
+      {
+        headers: {
+          authorization : 'Bearer ' + accessToken
+        }
+      })
+      .then((res)=>{
+        if(res.headers.accessToken){
+          dispatch(GetTokenAct(res.headers.accessToken));
+          }
+        if(res.status === 200){
+          getPictures();
+          }    
+      })
+      .catch((err)=>{
+        console.log(err)
+        history.push('/notfound');
+      })  
   }
 
   return (
@@ -228,8 +249,11 @@ function MyDream() {
              return(
                <Card key={pic.id}>
                  <CardDiv>
+                   <div>
+                    <Delete onClick={(e)=> handleDislike(e,pic.id)}/>
+                     <p>{(pic.createdAt).split('T')[0]}</p>
+                   </div>
                   <img src={pic.picture} alt='pic' />
-                  <p>{(pic.createdAt).split('T')[0]}</p>
                  </ CardDiv>
                  <Content>
                    <p>{pic.title}</p>
@@ -359,46 +383,84 @@ const CardBox = styled.div`
 
 const Card = styled.div`
   display: flex;
-  /* background-color: grey; */
   border-radius: 0.5rem;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
   position: relative;
+  :hover{
+    > div:nth-child(2) {
+      >svg{
+        fill: #FFFA81;
+        transition: all 0.3s ease-in-out; //안됨
+      }
+    }
+  }
   
+
 `;
 const CardDiv = styled.div`
     width: 100%;
-    height: 14rem;
+    height: 80%;
     background-color: white;
-    position: relative;
     border-radius: 0.3rem;
+    position: relative;
+    overflow: hidden;
+    >div,p,svg,img{
+      transition: all 0.3s ease-in-out;
+    }
+    >div {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background-color: rgba(73, 52, 52, 0.6);
+      opacity: 0;
+      /* display: none;
+       */
+      >p {
+      position: absolute;
+      color:  ${props => props.theme.reverse};
+      font-size:  ${props => props.theme.fontS};
+      right: 5px;
+      bottom:  5px;
+      color: white;
+      }
+    } 
   >img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 0.3rem;
   }
-  >p{
-    position: absolute;
-    color:  ${props => props.theme.reverse};
-    font-size:  ${props => props.theme.fontS};
-    right: 5px;
-    bottom:  5px;
-    display: none;
-  }
+  :hover {
+    >div,p,svg,img{
+      transition: all 0.3s ease-in-out;
+    }
+      >div {
+        ${props=> props.theme.flexColumn};
+        justify-content: flex-start;
+        opacity: 1;
+        z-index: 10;
+      >svg {
+       fill: #f5b2c1;
+       margin-top: 10px;
+      }  
+    }
+    >img {
+      transform: scale(1.3);
+    }
+  } 
 `;
 const Content = styled.div`
   ${props => props.theme.flexRow};
-  height: 100%;
+  height: 20%;
   justify-content: space-between;
-  padding: 0 1rem;
   >p {
     width: 100%;
+    text-indent: 0.6rem;
   }
   >svg {
+    transition: all 0.3s ease-in-out;
     transform: scale(0.6);
-    /* fill: #E1BBC9;
-    opacity: 0.5; */
   }
 `;
