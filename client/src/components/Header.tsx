@@ -19,7 +19,6 @@ function Header (props: { themeToggler: () => void; t: any; }){
   const menulist = [ 
     { menu: '꿈 알아보기', url: '/searchdream'},
     { menu: '꿈 그리기', url: '/drawdream'},
-    { menu: '별자리운세', url: '/horoscope'}, 
     { menu: '로그인', url: '/login'}
   ];
   const toggleicon = ['🌞', '🌙'];
@@ -81,7 +80,7 @@ function Header (props: { themeToggler: () => void; t: any; }){
           <RightBox>
             <Menu>
                {menulist.map((menu,idx)=>{
-                 return (username && idx === 3) ? 
+                 return (username && idx === 2) ? 
                     <UserPic key={idx} onClick={()=>setDropdown(!dropdown)}>
                       <img src={profileImg} alt='img'/>
                       {dropdown && <Option handleClick={handleClick}/>}
@@ -119,7 +118,7 @@ const Logo = styled.img.attrs((props) => {
 
 const RightBox = styled.div`
  display: flex;
- width: 30.5rem;
+ width: 25rem;
  height: inherit;
  align-items: center;
  gap:1.5rem;
@@ -150,7 +149,7 @@ const LinkMenu = styled(Link)`
   font-size: ${props=> props.theme.fontS};
   position: relative;
   cursor: pointer;
-  :nth-child(4) {
+  :nth-child(3) {
     color: ${props=> props.theme.point};
       >img {
       }

@@ -147,13 +147,13 @@ function SearchDream(): JSX.Element {
           <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
       </SearchSection>
       <HashSection>
-        <HashTag text='ddd'/>
-        <HashTag text='로또 당첨되서 어쩌고 저쩌고 하는'/>
-        <HashTag text='돼지 꿈'/>
-        <HashTag text='잘되게 해주세요..'/>
-        <HashTag text='제발'/>
-        <HashTag text='취업하고 싶어요'/>
-        <HashTag text='플리즈으으'/>
+        <HashTag text='고백받는'/>
+        <HashTag text='로또 당첨되는'/>
+        <HashTag text='돼지'/>
+        <HashTag text='시험 합격하는'/>
+        <HashTag text='돈'/>
+        <HashTag text='취업하는'/>
+        <HashTag text='가족'/>
       </HashSection> 
       <DreamSection>
         {/* <DreamWrapper> */}

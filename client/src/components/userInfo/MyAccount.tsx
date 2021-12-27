@@ -327,9 +327,9 @@ const Handlewithdraw = async() => {
     }
   } 
 
-  const handleWdOpen = () => {
-    if(wdOpen){
-      setWithDraw(true); // 여기서 그냥 불러보고 탈퇴.. 되는지 해보자
+  const handleWdOpen = (arg?: any) => {
+    if(arg === true){
+      setWithDraw(true);
     }
     setWdOpen(!wdOpen); 
   }

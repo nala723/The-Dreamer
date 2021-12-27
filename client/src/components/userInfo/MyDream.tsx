@@ -14,6 +14,8 @@ import { ReactComponent as Wink } from '../../assets/face-wink.svg';
 import { ReactComponent as Happy } from '../../assets/face-happy.svg';
 import { ReactComponent as Bad } from '../../assets/face-bad.svg';
 import { ReactComponent as What } from '../../assets/face-what.svg';
+import PicModal from '../reusable/PicModal';
+import Modal from '../reusable/Modal';
 
 interface PicInter {
   id : number;
@@ -36,6 +38,8 @@ interface EmoInter {
 function MyDream() {
   const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const [ isOpen, setIsOpen ] = useState(false);
+  const [ picOpenModal, setPicOpenModal ] = useState(false);
+  const [ openedPic, setOpenedPic ] = useState<PicInter | null>(null);
   const [ options, setOptions ] = useState<string[]>([]);
   const [ input, setInput ] = useState('');
   const [ selected, setSelected ] = useState(-1);
@@ -206,8 +210,23 @@ function MyDream() {
       })  
   }
 
+  const handleClick = () => {
+    setIsOpen(false)
+  }
+
+  const handlePicOpen = (pic:  PicInter) => {
+    setOpenedPic(pic);
+    setPicOpenModal(true);
+  }
+ 
+  const handlePicClose = () => {
+    setPicOpenModal(false);
+  }
+
   return (
     <Container>
+      {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
+      {openedPic && picOpenModal && <PicModal handleClick={handlePicClose} pic={openedPic}/>}
        <Title><h1>내가 그린 꿈</h1></Title>
        <UpperSection>
           <CareHeader>
@@ -248,7 +267,7 @@ function MyDream() {
            {myPic.map((pic)=>{
              return(
                <Card key={pic.id}>
-                 <CardDiv>
+                 <CardDiv onClick={()=> handlePicOpen(pic)}>
                    <div>
                     <Delete onClick={(e)=> handleDislike(e,pic.id)}/>
                      <p>{(pic.createdAt).split('T')[0]}</p>

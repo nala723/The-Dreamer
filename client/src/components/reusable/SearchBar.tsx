@@ -18,7 +18,7 @@ function SearchBar({height, width, scale, font, handleSearch, handleInput, input
         handleSearch(input);
       }else{
         handleSearch(search);
-         setSearch('')
+        //  setSearch('')
       }
     // }
    

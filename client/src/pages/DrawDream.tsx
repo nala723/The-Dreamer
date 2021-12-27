@@ -94,13 +94,12 @@ function DrawDream({ width, height }: CanvasProps) {
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
-    const image = canvas.toDataURL('image/png').split(',')[1];
-    /*#################################### 그림 로컬 저장 ################################### */
-    // const link = document.createElement('a');
-    // link.href = image;
-    // link.download = title; // 여기 제목을 해줄수 있을듯!
-    // link.click();
-
+    let image = canvas.toDataURL('image/png')
+    if(!accessToken){
+      handleSaveFile(image);
+      return
+    }
+    image = image.split(',')[1];
     const blobBin = Buffer.from(image, 'base64').toString('binary');
 		const array = [];
 		for (let i = 0; i < blobBin.length; i += 1) {
@@ -138,6 +137,15 @@ function DrawDream({ width, height }: CanvasProps) {
       })
   }
 
+  // 파일 다운로드
+  const handleSaveFile = (image: string) => {
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = title; 
+    link.click();
+  }
+
+
   const handleClick = ()=> {
     setOpen(!open);
   } 
@@ -146,7 +154,17 @@ function DrawDream({ width, height }: CanvasProps) {
     setErrOpen(!errOpen);
   } 
 
-
+ const handleOkDown = (arg: any) => {
+    if(arg === true){
+      if(!canvasRef.current){
+        return;
+      }
+      const canvas: HTMLCanvasElement = canvasRef.current;
+      const image = canvas.toDataURL('image/png')
+      handleSaveFile(image);
+    }
+    setOpen(false);
+ }
 
   // 좌표 얻는 함수
   const getCoordinates = (e: MouseEvent): Coordinate | undefined => {
@@ -290,7 +308,7 @@ function DrawDream({ width, height }: CanvasProps) {
   return (
     <Container>
       {errOpen && <Modal handleClick={handleErr}>그림, 제목, 오늘의 꿈 타입 선택을 모두 완료해주세요.</Modal>}
-      {open && <Modal handleClick={handleClick}>그림이 저장되었습니다.</Modal>}
+      {open && <Modal handleClick={handleClick} handleSignOut={handleOkDown}>그림이 저장되었습니다. <br></br>파일을 다운로드하시겠어요? </Modal>}
       <Title>
         <h1>당신의 꿈을 그림으로 남겨보세요.</h1>
       </Title>

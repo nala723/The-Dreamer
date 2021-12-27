@@ -192,12 +192,11 @@ function SecondSection() {
             <GifBox>{/*ref={GifBoxRef}*/}
                 {/* <Pin> */}
                 <GifContent>
-                  <Gif  data-aos="fade-up-right">{/*ref={gifRef}*/}
-                    <p>자료입니당</p>
-                  </Gif>
+                  <Gif src='/images/search-ani.gif' data-aos="fade-up-right" alt='gif'/>
                   <Introdct >
-                    <p data-aos="fade-up">‘꿈 알아가기’페이지에서 검색한 꿈에 대한 여러가지 풀이를 볼 수 있습니다. </p>
-                    <p data-aos="fade-up" data-aos-delay="150"> 카테고리, 인기 태그로도 검색이 가능합니다.(원하는 풀이를 선택 저장 어쩌고)</p>
+                    <p data-aos="fade-up">‘꿈 알아보기’ 페이지에서 검색한 꿈에 대한 다양한 풀이들을 볼 수 있습니다.</p>
+                    <p data-aos="fade-up" data-aos-delay="150"> 카테고리, 해쉬 태그로도 검색이 가능합니다. </p>
+                    <p data-aos="fade-up" data-aos-delay="300">  또, 마음에 드는 풀이는 하트 버튼으로 저장할 수 있습니다. (유저전용)</p>
                   </Introdct>
                 </GifContent>
                 {/* </Pin> */}
@@ -205,13 +204,14 @@ function SecondSection() {
                 <GifContent>
                   <Introdct>
                     <p data-aos="fade-up" >
-                      ‘‘꿈 그리기’ 페이지에서는 그림판을 이용해 꿈을 그리고, 저장할 수 있습니다.</p>
+                      ‘꿈 그리기’ 페이지에서는 그림판을 이용해 꿈을 그리고, 그린 그림을 저장할 수 있습니다.
+                    </p>
                     <p data-aos="fade-up" data-aos-delay="150">
-                      또, 여러 색상과 브러쉬 크기 조절이 가능합니다.(다른사람의 꿈../ 날아가지 않도록 어쩌고저쩌고,..)</p>
+                      얼굴 아이콘을 클릭해 꿈의 타입을 선택해주세요.</p>
+                    <p data-aos="fade-up" data-aos-delay="300">  
+                      툴 박스에서 브러쉬 색상, 두께, 페인트 등을 조절할 수 있습니다.</p>
                   </Introdct>
-                  <Gif  data-aos="fade-up-left">{/*ref={gifRef}*/}
-                    <p>자료입니당</p>
-                  </Gif>
+                  <Gif src='/images/search-ani.gif' data-aos="fade-up-left" alt='gif'/>
                 </GifContent>
                 {/* </Pin> */}   
             </GifBox>
@@ -315,22 +315,16 @@ const GifContent = styled.div`
   height: 100vh;
   justify-content: space-around;
 `;
-const Gif = styled.div`
-  /* position: absolute; */
-  width: 50rem;
-  height: 40rem;
-  background-color: grey;
-  >p {
-  color: ${props=> props.theme.reverse};
-  }
-  
+const Gif = styled.img`
+ 
 `;
 const Introdct = styled.div`
   ${props=>props.theme.flexColumn}
   width: 33.313rem;
   height: 21.625rem;
-  border: 1px solid ${props=>props.theme.moretransp};
-  font-size: ${props=>props.theme.fontL};
+  font-size: 22px;
+  line-height: 1.8rem;
+  align-items: flex-start;
   >p {
   color: ${props=> props.theme.reverse};
   }  

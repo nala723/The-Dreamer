@@ -7,12 +7,12 @@ module.exports = async (req, res) => {
     if(!authorization){
       res.status(401).json({message : 'invalid token'})
     }else{
+      console.log('req.params : ',req.params)
       const accessToken = authorization.split(' ')[1];
       if(isAuthorized(accessToken) === 'jwt expired'){
         res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
       }
-      const picture_id = req.body.picture_id;
-      console.log('오디까지왔나')
+      const picture_id = req.params.id;
       await Picture.destroy({
         where : {
        id : picture_id

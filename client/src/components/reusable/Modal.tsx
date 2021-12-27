@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 function Modal(props: { 
-  handleClick: (e?: React.MouseEvent )=>void; children: string; handleSignOut?: (arg0 :boolean)=>void; header?: string;}) {
+  handleClick: (e?: React.MouseEvent )=>void; children: any; handleSignOut?: (arg0 :boolean)=>void; header?: string;}) {
   // 모달 좀더 제목이랑 내용 구분?
   
     const {  handleClick, children, handleSignOut, header } = props;
@@ -101,6 +101,7 @@ const Content = styled.div<{size: string;}>`
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     border-bottom: 1px solid ${props=> props.theme.transp};
   }
   >p {

@@ -2,7 +2,6 @@ const { Picture } = require('../../models');
 const { isAuthorized, remakeToken } = require('../tokenFunctions')
 
 module.exports = async (req, res) => {
-    console.log('통신시작')
   const authorization = req.headers['authorization'];
   try {
     if(!authorization){
@@ -12,7 +11,6 @@ module.exports = async (req, res) => {
       if(isAuthorized(accessToken) === 'jwt expired'){
         res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
       }
-      console.log('액세스토큰 통과')
       const userData = isAuthorized(accessToken);
 
       const userId = userData.id;
