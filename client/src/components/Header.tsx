@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { SignInAct } from '../actions';
 import { RootState } from '../reducers';
 import { Buffer } from 'buffer';
 import Option from './Option';
 import Modal from './reusable/Modal';
+import Toggle from './Toogle';
 import axios from 'axios';
+import { ReactComponent as Hamburger } from '../assets/hamburger.svg';
 
 function Header (props: { themeToggler: () => void; t: any; }){
   const { accessToken, email, username, profile } = useSelector((state: RootState)=> state.usersReducer.user);
@@ -16,18 +18,32 @@ function Header (props: { themeToggler: () => void; t: any; }){
   const [ isOpen, setIsOpen ] = useState(false);
   const { themeToggler,t } = props;
   const [ dropdown, setDropdown ] = useState(false);
+  const [ button, setButton ] = useState(false); // 미디어 쿼리로만 해도 될지 보기
   const menulist = [ 
     { menu: '꿈 알아보기', url: '/searchdream'},
     { menu: '꿈 그리기', url: '/drawdream'},
     { menu: '로그인', url: '/login'}
   ];
-  const toggleicon = ['🌞', '🌙'];
   const profileImg = 
     typeof(profile) === 'string' ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
 
+  const showButton = () => {
+  if (window.innerWidth <= 960) {
+    setButton(true);
+   } else {
+    setButton(false);
+   }
+ };
+  useEffect(() => {
+    window.addEventListener("resize", showButton);
+    return (()=>{
+      window.removeEventListener("resize", showButton);
+    })
+  }, []); 
+
+
   const handleClick = () => {
-    // e.preventDefault();
     setIsOpen(!isOpen);
   }
 
@@ -62,13 +78,7 @@ function Header (props: { themeToggler: () => void; t: any; }){
     } else{
       return;
     }
-  }
-    // const handleClose = () => {
-    //     setIsOpen(false);/// 모달만 닫기
-    //   }
-    // if(isOpen){
-    //   return <Modal handleClick={handleClick} handleSignOut={handleSignOut}>로그아웃 하시겠습니까?</Modal>
-    // }     
+  }  
   
   return (
     <>
@@ -77,22 +87,34 @@ function Header (props: { themeToggler: () => void; t: any; }){
           <LogoBox to='/'>
             <Logo />
           </LogoBox>
-          <RightBox>
+          <RightBox resize={button ? 'resize' : ''}>
+            {button ? 
+              (username ?    
+                <UserPic onClick={()=>setDropdown(!dropdown)}>
+                  <img src={profileImg} alt='img'/>
+                  {dropdown && <Option handleClick={handleClick} resize={button} user={username}/>}
+                </UserPic>
+                :
+                <Menu>
+                  <Hamburger onClick={()=>setDropdown(!dropdown)}/> 
+                  {dropdown && <Option handleClick={handleClick} resize={button}/>}
+                </Menu>
+                )
+              :
+          
             <Menu>
                {menulist.map((menu,idx)=>{
                  return (username && idx === 2) ? 
                     <UserPic key={idx} onClick={()=>setDropdown(!dropdown)}>
                       <img src={profileImg} alt='img'/>
-                      {dropdown && <Option handleClick={handleClick}/>}
+                      {dropdown && <Option handleClick={handleClick} user={username}/>}
                     </UserPic>
                      :
                     <LinkMenu to={menu.url} key={idx}>{menu.menu}</LinkMenu>
                })}
             </Menu> 
-            <Toggle onClick={themeToggler} t={t}>
-              <Circle t={t}/>
-              <p>{t === 'light' ? toggleicon[1] : toggleicon[0]}</p>
-            </Toggle>   
+            }
+            <Toggle themeToggler={themeToggler} t={t}/>
           </RightBox>
       </Container>
     </>
@@ -102,23 +124,31 @@ function Header (props: { themeToggler: () => void; t: any; }){
 export default Header;
 
 const Container = styled.div`
+${props=> props.theme.tablet}{
+  padding: 0 1rem 0 0;
+}
   display: flex;
   width: inherit;
   height: 4.375rem;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.5rem;
+  padding: 0 2rem;
   z-index: 10;
 `;
 const LogoBox = styled(Link)`
+${props=> props.theme.tablet}{
+  transform: scale(0.8);
+}
+ 
 `;
 const Logo = styled.img.attrs((props) => {
  return {src: props.theme.imgsrc}
-})``;
+})`
+`;
 
-const RightBox = styled.div`
+const RightBox = styled.div<{resize: string;}>`
  display: flex;
- width: 25rem;
+ width: ${props => (props.resize !== '') ? 'auto' : '23rem'};
  height: inherit;
  align-items: center;
  gap:1.5rem;
@@ -174,11 +204,6 @@ const LinkMenu = styled(Link)`
     opacity: 0;
     background-color: ${props=> props.theme.anker};
   }
-  /* :hover{
-    background-color: ${props=> props.theme.moretransp};
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 0 30px 2px  ${props=> props.theme.anker};
-  }  요 효과는 나중 생각.. 배경칼라를 박스 쉐도우와 비슷하게 맞추면 될것 같기두*/
   :hover{
     color: ${props=> props.theme.anker};
     text-shadow: 4px 4px 10px ${props=> props.theme.anker};
@@ -188,36 +213,4 @@ const LinkMenu = styled(Link)`
     opacity: 1;
   }
 `;
-const Toggle = styled.div<{t: string}>`
-  position:relative;
-  display: flex;
-  align-items: center;
-  min-width: 3.25rem;
-  height: 1.375rem;
-  border: 1px solid #898989;
-  border-radius: 2rem;
-  background-color: ${props=> props.theme.toggle};
-   >p  {
-    position: absolute;
-    font-size: 14px;
-    ${props=> props.t === 'dark' ? (css`
-      right: 3px;
-      `) : (css`
-      left: 3px;`)};
-    }
-`;
-const Circle = styled.div<{t : string}>`
-  position:absolute;
-  width: 1.275rem;
-  height: 1.275rem;
-  border-radius: 100%;
-  background-color: white;
-  transition: all .3s ease-in-out;
-  cursor: pointer;
-  ${props=> props.t === 'light' ? (css`
-    left: 1.8rem;
-    right:1px;`) : (css`
-    left:1px;`)
-    };
-`; 
 

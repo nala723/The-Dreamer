@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import Toggle from './Toogle';
+import styled, {css} from 'styled-components';
 
-function Option (props: {handleClick : ()=> void}){
-  const { handleClick } = props;
+function Option (props: {handleClick : ()=> void; resize ?: boolean; user ?: string;}){
+  const { handleClick, resize, user} = props;
   
   return (
-    <Container>
+    <Container resize={resize && 'resize'}>
       <PageList>
+        {resize &&
+          <>
+           <Page to='/SearchDream'>꿈 알아보기</Page>
+           <Page to='/DrawDream'>꿈 그리기</Page>
+           <Line />
+          </>
+        } 
+      {!user ? 
+        <Login to='/login'>로그인</Login >
+      :
+        <>
         <Page to='/mypage/mylikes'>좋아하는 꿈</Page>
         <Page to='/mypage/mydream'>내가 그린 꿈</Page>
         <Page to='/mypage/myaccount'>나의 계정 보기</Page>
+        <Line />
         <Logout onClick={handleClick}>로그아웃</Logout >
+        </>
+      }
       </PageList>
     </Container>
   );
@@ -19,15 +34,24 @@ function Option (props: {handleClick : ()=> void}){
 
 export default Option;
 
-const Container = styled.div`
+const Container = styled.div<{resize ?: string | boolean;}>`
     position: absolute;
-    /*${props => props.theme.flexColumn};*/
-    width: 9.25rem;
-    height: 12rem;
+    ${props=> props.resize ? 
+    css`
+      width: 17.25rem;
+      height: auto;
+      right: 2rem;
+      top: 4.4rem; 
+    `:
+    css`
+      width: 9.25rem;
+      height: auto;
+      right: 5rem;
+      top: 4.0rem;
+    `};
     border-radius: 0.3rem;
     background: ${props=> props.theme.default};
-    right: 5rem;
-    top: 4.4rem;
+    padding: 1rem 0;
     z-index: 100;
     box-shadow: 0 0rem 2.5rem -1rem rgba(39, 0, 51, 0.8);
 `;
@@ -35,34 +59,42 @@ const Container = styled.div`
 const PageList = styled.ul`
   height: 100%;
   padding: 0.3rem;
-  padding-bottom: 0.5rem;
   ${props => props.theme.flexColumn};
-  justify-content: space-around;
+  color: ${props=> props.theme.text};
+  gap: 1.5rem;
+  text-align: center;
   font-size: ${props=> props.theme.fontS};
+  /* font-size: 18px; */
 `;  
 
 const Page = styled(Link)`
   width: 85%;
-  /* height: 100%; */
-  color: ${props=> props.theme.text};
-  text-align: center;
   cursor: pointer; 
-
   :hover{
     color: ${props=> props.theme.anker};
     text-shadow: 4px 4px 10px ${props=> props.theme.anker};
   }
 `;
+const Line = styled.div`
+ width: 85%;
+ height: 1px;
+ background-color:${props=> props.theme.transp};
+`;
+
+const Login = styled(Link)`
+  width: 85%;
+  cursor: pointer; 
+  color: ${props=> props.theme.point};
+  :hover{
+    text-shadow: 4px 4px 10px ${props=> props.theme.point};
+  }
+`;
 
 const Logout = styled.li`
   width: 85%;
-  padding-top: 1.1rem;
-  color: ${props=> props.theme.text};
-  text-align: center;
-  border-top: 1px solid ${props=> props.theme.transp};
+  color: ${props=> props.theme.point};
   cursor: pointer; 
   :hover{
-    color: ${props=> props.theme.anker};
-    text-shadow: 4px 4px 10px ${props=> props.theme.anker};
+    text-shadow: 4px 4px 10px ${props=> props.theme.point};
   }
 `;

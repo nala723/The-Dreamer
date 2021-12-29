@@ -56,10 +56,9 @@ export const darkTheme: DefaultTheme = {
   point: '#FFFA81',
   mobileS: `@media only screen and (max-width: 320px)`,
   mobileM: `@media only screen and (max-width: 375px)`,
-  // middle: `@media only screen and (max-width: ${size.middle})`,
   mobile: `@media only screen and (max-width: 425px)`,
-  // change: `@media only screen and (max-width: ${size.change})`,
   tablet: `@media only screen and (max-width: 768px)`,
+  midTablet: `@media screen and (max-width: 960px)`,
   laptop: `@media only screen and (max-width: 1024px)`,
   desktop: `@media only screen and (max-width: 1440px)`,
 };
@@ -113,6 +112,7 @@ export const lightTheme: DefaultTheme = {
   mobileM: `@media only screen and (max-width: 375px)`,
   mobile: `@media only screen and (max-width: 425px)`,
   tablet: `@media only screen and (max-width: 768px)`,
+  midTablet: `@media screen and (max-width: 960px)`,
   laptop: `@media only screen and (max-width: 1024px)`,
   desktop: `@media only screen and (max-width: 1440px)`,
 };

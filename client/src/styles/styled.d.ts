@@ -35,6 +35,7 @@ declare module 'styled-components' {
         mobileM: string;
         mobile: string;
         tablet: string;
+        midTablet: string;
         laptop: string;
         desktop: string;
   }
