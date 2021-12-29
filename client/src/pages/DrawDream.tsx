@@ -354,7 +354,12 @@ function DrawDream({ width, height }: CanvasProps) {
       </Title>
       <Dream>
         <DrInner>
-          <UpperBox onClick={()=> setTextSlider(!textSlider)} slider={textSlider}>
+          <UpperBox slider={textSlider}>
+              <InputBox>
+                <h5>제목 : </h5>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)}/>
+              </InputBox>
+            <TextBox>
               <Emotions>
                 <StyledSoso onClick={()=>handleEmotion(0)} fill={emotion}/> 
                 <StyledWink onClick={()=>handleEmotion(1)} fill={emotion}/>
@@ -370,14 +375,9 @@ function DrawDream({ width, height }: CanvasProps) {
                  })
                 } */}
               </Emotions>
-            <TextBox>
-              <InputBox>
-                <h5>제목 : </h5>
-                <Input value={title} onChange={(e) => setTitle(e.target.value)}/>
-              </InputBox>
               <h5>{getDaytoYear()}</h5>
             </TextBox>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <svg onClick={()=> setTextSlider(!textSlider)} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </UpperBox>
@@ -470,6 +470,7 @@ const Dream = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   z-index: 50;
 `;
 const DrInner = styled.div`
@@ -477,11 +478,7 @@ ${props=> props.theme.midTablet}{
   width: 100%;
   height: 95%;
 }
-${props=> props.theme.tablet}{
-  gap: 1.5rem;
-}
 ${props=> props.theme.mobile}{ // 위에서 올라오게하려면 여기수정?
-  gap: 1rem;
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -494,14 +491,16 @@ ${props=> props.theme.mobile}{ // 위에서 올라오게하려면 여기수정?
 
 const UpperBox = styled.div<{slider ?: boolean}>`
 ${props=> props.theme.midTablet}{
-  justify-content: center;
   gap: 1rem;
+}
+${props=> props.theme.tablet}{
+  width: 90%;
 }
 ${props=> props.theme.mobile}{
   width: 100%;
   position: absolute;
   align-items: center;
-  padding: 0 1rem 0.2rem 1rem;
+  padding: 1rem 1rem 0.2rem 1rem;
   top: 0rem;
   background: linear-gradient(#ffb9c5, #ff9fc2);
   border-radius: 0 0 1rem 1rem;
@@ -511,9 +510,9 @@ ${props=> props.theme.mobile}{
   display: flex;
   flex-direction: column;
   width: 85%;
-  align-items: space-between;
+  justify-content: center;
   height: auto;
-  gap: 1.2rem;
+  gap: 1.6rem;
   >svg {
     ${props=> props.theme.mobile}{
       display: block;
@@ -526,25 +525,16 @@ ${props=> props.theme.mobile}{
 `;
 
 const Emotions = styled.div`
-${props=> props.theme.midTablet}{
-  margin-top: 1rem;
-}
 ${props=> props.theme.mobile}{
  margin-top: 0.7rem;
 }
    ${props=>props.theme.flexRow};
-   gap: 0.9rem;
-   margin-top: -1rem;
+   gap: 0rem;
+   width: auto;
    >svg {
-    ${props=> props.theme.midTablet}{
-      transform: scale(0.8);
-    }
-    ${props=> props.theme.tablet}{
-      transform: scale(0.7);    
-    }
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    transform: scale(0.9);
+    transform: scale(0.6);
    }
 `;
 
@@ -600,7 +590,7 @@ const TextBox = styled.div`
   font-size: 13px;
 }
   width: 100%;
-  height: auto;
+  height: 2rem;
   font-size: 15px;
   color: ${props=>props.theme.reverse};
   display: flex;
@@ -608,20 +598,32 @@ const TextBox = styled.div`
   justify-content: space-between;
 `;
 const InputBox = styled.div`
-  display: flex;
-  width: 70%; 
-  align-items: center;
+${props=> props.theme.mobile}{
+  padding-left: 0;
+  max-width: 100%;
+}
+  ${props=>props.theme.flexRow};
+  max-width: 95%;
   height: 100%;
-  >h5 {
-  }
+  padding-left: 1rem;
+  gap:1rem;
 `;
 const Input = styled.input.attrs({
   placeholder: '제목을 입력해 주세요.',
 })`
+${props=> props.theme.mobile}{
+  text-align: start;
+  text-indent: 0;
+}
+${props=> props.theme.mobileM}{
+  max-width: 80%;
+}
+
     height: 100%;
-    width: 80%; 
-    text-indent: 1rem;
+    width: 85%;
+    text-indent: -2rem;
     display: flex; 
+    text-align: center;
     align-items: center;
     background-color: transparent;
     color: ${props=>props.theme.reverse};
@@ -648,7 +650,7 @@ ${props=> props.theme.mobile}{
 `;
 const ToolBox = styled.div<{slider ?: boolean;}>`
  ${props=> props.theme.midTablet}{
-  height: calc((100% - 70vh)/3);
+  padding-top: 0.4rem;
   gap: 1rem;
   align-items: center;
 }
