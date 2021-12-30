@@ -18,8 +18,11 @@ const Tag = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 2rem;
+  padding: 0.65rem 2rem;
   cursor: pointer;
   overflow: hidden;
+  ${props=> props.theme.midTablet}{
+    font-size: 14px;
+  }
 
 `;

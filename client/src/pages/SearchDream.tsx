@@ -18,14 +18,15 @@ function SearchDream(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [like, setLike] = useState(false);
   const [banGuest, setBanGuest] = useState(false);
+  const [width, setWidth] = useState('');
   const DreamRef = useRef<HTMLDivElement[]>([]);
-  // const DreamGsap = useRef<gsap.core.Timeline>(); 함수가 안된다그래서 일단은..
   DreamRef.current = [];
   // useEffect 속에 타임라인 만들어두고,? 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
   // 만들고 저 랜덤함수 인용?(해보고 안되면 add)
 
   // 해결할것 : 카테고리 문제와 드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
   let Position = [];
+  let quotient: number;
   let Xposition: number;
   let Yposition: number;
 
@@ -70,7 +71,28 @@ function SearchDream(): JSX.Element {
     }
 
   },[data])
+
+
+  // 처음 한번 이벤트 걸어볼까? 그러고 이 안에서 함수만들고 그에 따라 상태값변하게
+  useEffect(()=>{
+    window.addEventListener('resize', getWidth);
+    return (()=>{
+      window.removeEventListener('resize', getWidth);
+    })
+  },[])
  
+  function getWidth(){
+    if(window.innerWidth <= 960 && window.innerWidth > 425){
+      setWidth('midTablet');
+    }
+    if(window.innerWidth <= 425){
+      setWidth('mobile');
+    }
+    else if(window.innerWidth > 960){
+      setWidth('');
+    }
+  }
+
   const handleSearch = (search: string) => {
     if(search === ''){
       setIsOpen(true);
@@ -83,13 +105,29 @@ function SearchDream(): JSX.Element {
     return window.open(link);
   }
   const handlePosition = (index: number) => {
-    const quotient = (Math.floor(index / 3)) * 60;
-    if(index % 3 === 0){  
-      Xposition = 15;
-    }else if(index % 3 === 1){
-      Xposition = 45;
-    }else if(index % 3 === 2){
-      Xposition = 75;
+   
+    if(width === 'midTablet'){
+      quotient = (Math.floor(index / 2)) * 60;
+      if(index % 2 === 0){  
+        Xposition = 15;
+      
+      }else if(index % 2 === 1){
+        Xposition = 60;
+      }
+    }
+    else if(width === 'mobile'){
+      quotient = index * 60;
+      Xposition = 20;
+    }
+    else if(width === ''){
+      quotient = (Math.floor(index / 3)) * 60;
+      if(index % 3 === 0){  
+        Xposition = 15;
+      }else if(index % 3 === 1){
+        Xposition = 45;
+      }else if(index % 3 === 2){
+        Xposition = 75;
+      }
     }
     Yposition = quotient + (Math.floor(Math.random() * 10)) + 5
     Position = [Xposition + '%', Yposition + '%'];
@@ -227,26 +265,29 @@ const SearchSection = styled.div`
   display: flex;
   align-items: flex-end;
   padding-left: 19.438rem;
+  ${props=> props.theme.midTablet}{
+    padding-left: 14rem;
+  }
 `;
 const HashSection = styled.div`
-  width: 100%;
-  height: 3.5rem;
+  max-width: 100%;
+  /* min-height: 3.5rem; */
+  height: auto;
   margin-top: 0.3rem;
   display: flex;
+  flex-wrap: wrap;
   padding-top: 1.2rem;
   padding-left: 19.438rem;
   gap: 0.6rem;
+  ${props=> props.theme.midTablet}{
+    padding-left: 14rem;
+  }
 `;
 const DreamSection = styled.div`
   width: 100%;
   height: calc(100vh - 4.375rem - 9.487rem);
   position: relative;
 `;
-// const DreamWrapper = styled.div`
-//   width: 100%;
-//   height: inherit;
-//   position: absolute;
-// `;
 const Dream = styled.div<{top: string; left: string;}>`
   position: absolute;
   ${props=> props.theme.flexColumn};

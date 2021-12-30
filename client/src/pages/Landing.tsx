@@ -35,7 +35,7 @@ function Landing() {
       clearInterval(interval);
     } 
     return () => clearInterval(interval); 
-  },);  // 느낌 보고 나중에 다른 효과로 바꾸던지 하자 ex)https://www.moooi.com/eu/ 부드럽게 한그자씩
+  },); 
 
   const handleScrollBtn = () => {
     setScrollY(window.pageYOffset); // window 스크롤 값을 ScrollY에 저장
@@ -82,7 +82,7 @@ function Landing() {
           <ContentsBox >
             <h1>{text}</h1>
             <SearchBox  className={fadeIn? 'fadein': ''}>
-              <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem' handleSearch={handleSearch}/>
+              <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem' handleSearch={handleSearch} landing='true'/>
             </SearchBox>
           </ContentsBox >
           <ScrollDown>
@@ -119,13 +119,15 @@ const ScrollAni = (start: string, end: string) => keyframes`
 
 `;
 
-const Container = styled.div`                /* 메인 컬러 그냥 white로 할까 */
+const Container = styled.div`
+${props=> props.theme.laptop}{
+  min-height: 1100vh; /*아이패드는 더 많이 필요..? */
+}              
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* height: 376.75rem; */
   height: 728.24rem;
   background: ${props=> props.theme.landing};
 `;
@@ -138,14 +140,23 @@ const ContentsBox = styled.div`
    ${props=>props.theme.flexColumn};
     height:auto;
     gap:2.8rem;
+  ${props=> props.theme.mobile}{
+    gap: 1.6rem;
+  }
     > h1 {
       letter-spacing: 0.4rem;
+      ${props=> props.theme.mobile}{ // 가운데 보고 수정...정규식이나..
+        letter-spacing: 0.2rem;
+        max-width: 50%;
+        text-align: center;
+        line-height: 2rem; 
+      }
     }
 `;
 const SearchBox = styled.div`
   position: relative;
   width:40%;
-  min-width: 40.25rem;
+  min-width: 40.25rem; 
   height:auto;
   ${props=>props.theme.searchBlur};
   opacity: 0;
@@ -155,6 +166,14 @@ const SearchBox = styled.div`
         top: 0px;
         transition: all 1.5s ease-in-out;
       }
+  ${props=> props.theme.laptop}{
+     height: 12rem; //가운데를 위해
+    }        
+  ${props=> props.theme.tablet}{
+      min-width: 80vw;
+      width: 80vw;
+    }
+           
 `;  
 
 const ScrollDown = styled.span`
@@ -175,8 +194,7 @@ const ScrollDown = styled.span`
     -webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
     animation: ${ScrollAni((`0,0`),(`-10px, 10px`))} 1.5s infinite;
-    /* -webkit-animation: sdb 1.5s infinite;
-    animation: sdb 1.5s infinite; */
+    -webkit-animation: ${ScrollAni((`0,0`),(`-10px, 10px`))} 1.5s infinite;
     :nth-child(1){
       animation-delay: 0s;
     }
@@ -186,12 +204,25 @@ const ScrollDown = styled.span`
     :nth-child(3){
       animation-delay: 0.3s;
     }
+    ${props=> props.theme.mobile}{
+      width: 19px; 
+      height: 17px;
+    }  
   }
   > P{
     margin-top: 2rem;
     margin-left: -12px;
     color: ${props=> props.theme.anker};
     font-size: 20px;
+    ${props=> props.theme.laptop}{
+      font-size: 18px;
+      }
+    ${props=> props.theme.tablet}{
+      font-size: 16px;
+      }  
+    ${props=> props.theme.mobile}{
+      font-size: 14px;
+      }      
     }
 `;
 const ScrollTop = styled(ScrollDown)<{active: boolean}>`
@@ -209,6 +240,10 @@ const ScrollTop = styled(ScrollDown)<{active: boolean}>`
     border-left: none;
     border-bottom: none;
     animation: ${ScrollAni((`-10px, 10px`),(`0px, 0px`))} 1.5s infinite;  
+    ${props=> props.theme.mobile}{
+      width: 17px; 
+      height: 15px;
+    }  
   }
   ${(props)=> props.active && css`
       z-index: 100;
@@ -216,5 +251,8 @@ const ScrollTop = styled(ScrollDown)<{active: boolean}>`
     `}
   > p{
     font-size:14px;
+    ${props=> props.theme.mobile}{
+      font-size: 11px;
+      }  
   }  
 `;

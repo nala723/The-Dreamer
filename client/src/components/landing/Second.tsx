@@ -23,12 +23,6 @@ function SecondSection() {
   // const gifRef = useRef(null);
   textBoxRef.current = [];
 
-  const writings = [
-    '"미래는 꿈의 아름다움을 믿는 사람들에게 주어진다."' + '-엘리노어 루즈벨트-',
-    '어젯 밤 꾼 당신의 꿈을 풀이해드립니다.' + '검색 결과로 나오는 여러가지 풀이 중 원하는 풀이를 선택하세요.',
-    '또, 소중한 꿈이 날아가지 않도록 꿈을 그려보세요.',
-  ]
-
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -163,24 +157,27 @@ function SecondSection() {
        <Section top='calc(100vh - 4.375rem)'>
          <SectionInner>
            <ScrollBox ref={mainRef}>
-              {writings.map((el,idx)=>{
-                  return(
-                    <Pin key={idx}>
-                      <Content ref={addToRefs}>
-                        <div>
-                            {el.includes('-')? 
-                              <h1>{el.slice(0,(el.indexOf('-')))}<p></p>{el.slice((el.indexOf('-')))}</h1>
-                              :
-                              el.includes('.') && el.length > el.indexOf('.') ? 
-                                <h1>{el.slice(0,(el.indexOf('.')+1))}<p></p>{el.slice((el.indexOf('.')+1))}</h1>
-                                : 
-                              <h1>{el}</h1>
-                            }
-                        </div>
-                      </Content>
-                    </Pin>
-                  )
-                })}
+              <Pin>
+                  <Content ref={addToRefs}>
+                      <div>
+                         <h1>{`"미래는 꿈의 아름다움을 믿는 사람들에게 주어진다."`}<p></p> -엘리노어 루즈벨트-</h1>
+                      </div>
+                  </Content>
+              </Pin>
+              <Pin>
+                  <Content ref={addToRefs}>
+                      <div>
+                         <h1>어젯 밤 꾼 당신의 꿈을 <Blank/> 풀이해드립니다.<p></p>검색 결과로 나오는 여러가지 풀이 중 원하는 풀이를 선택하세요.</h1>
+                      </div>
+                  </Content>
+              </Pin>
+              <Pin>
+                  <Content ref={addToRefs}>
+                      <div>
+                         <h1>또, 소중한 꿈이 날아가지 않도록 꿈을 그려보세요.</h1>
+                      </div>
+                  </Content>
+              </Pin>
             </ScrollBox> 
             <CircScrollBox ref={SecondRef}> 
               <Pin>
@@ -219,7 +216,7 @@ function SecondSection() {
               <ContentsBox >
                 <h1 data-aos="fade-down" data-aos-delay="200">The-Dreamer 안에서<p></p> 당신의 꿈을 더욱 아름답게 가꿔보세요.</h1>
                 <SearchBox data-aos="fade-up">
-                   <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem' handleSearch={handleSearch}/>
+                   <SearchBar height='4.688rem' width='100%' scale='(1.0)' font='1.5rem' handleSearch={handleSearch}  landing='true'/>
                 </SearchBox>
               </ContentsBox >
             </FinalBox> 
@@ -234,8 +231,9 @@ export default SecondSection;
 const Section = styled.section<{ top: string }>`
   position: absolute;
   top: ${props=> props.top};
-  height: 350rem; // 안되면 다시 개별루..118.625
+  height: 350rem; 
   width: 100%;
+  padding: 0 1rem;
 `;
 const SectionInner = styled.div`
   width: 100%;
@@ -246,7 +244,6 @@ const ScrollBox = styled.div`
   position: relative;
   width: 100%;
   overflow: visible;
-  /* border: 1px solid red; */
 `;
 const Pin = styled.div`
   position: absolute;
@@ -254,30 +251,54 @@ const Pin = styled.div`
   left: 0;
   width: 100%;
   height: 100vh;
-  /* border: 1px solid aquamarine; */
 `;
 const Content = styled.div`
-  /* position: absolute; //안해도상관없네 */
   ${props=>props.theme.flexRow}
   height: 100vh;
-  /* border: 1px solid yellow; */
   > div {
     ${props=>props.theme.flexColumn};
-    padding: 4rem 0;
+    padding: 4rem 7rem;
+    ${props=> props.theme.midTablet}{
+      padding: 4rem 5rem;
+    }
+    ${props=> props.theme.mobile}{
+      padding: 4rem 2rem;
+    }
+    ${props=> props.theme.mobileM}{
+      padding: 4rem 1rem;
+    }
     > h1 {
       transform-origin: 0 0 -500px;
       line-height: 5rem;
       text-align: center;
+      ${props=> props.theme.laptop}{
+        line-height: 4rem;
+      }
+      ${props=> props.theme.midTablet}{
+        line-height: 3.3rem;
+      }
+      ${props=> props.theme.mobile}{
+        line-height: 2.6rem;
+      }
+      ${props=> props.theme.mobileM}{
+        line-height: 2.1rem;
+      }
     }
   }
 `;
+const Blank = styled.p`
+  display: none;
+  ${props=> props.theme.midTablet}{
+    display: block;
+   }
+`;
+
 const CircScrollBox = styled(ScrollBox)`
-  top: 210rem; // 400vh 였음, 이 문제는 아닌듯...
+  top: 210rem;
 `;
 const CircleBox = styled.div`
    ${props=>props.theme.flexRow};
    height: 100%;
-   /* border: 1px solid yellow; */
 `;
 const Circle = styled.div`
   position: absolute;
@@ -306,7 +327,6 @@ const GifBox = styled.div`
   height: 220vh;
   top: 160rem;
   z-index:5;
-  /* border: 1px solid black; */
   ${props=>props.theme.flexColumn}
   justify-content: space-between;
 `;
@@ -314,9 +334,30 @@ const GifContent = styled.div`
   ${props=>props.theme.flexRow}
   height: 100vh;
   justify-content: space-around;
+  gap: 2rem;
+  ${props=> props.theme.midTablet}{
+  flex-direction: column;
+  justify-content: center;
+  gap: 0rem;
+};
 `;
 const Gif = styled.img`
- 
+  width: auto;
+  height: auto;
+  min-width: 30rem;
+  display: flex;
+  ${props=> props.theme.midTablet}{
+    width: 80%
+  };
+  ${props=> props.theme.tablet}{
+    min-width: 25rem;
+  };
+  ${props=> props.theme.mobile}{
+    min-width: 20rem;
+  };
+  ${props=> props.theme.mobileM}{
+    min-width: 18rem;
+  };
 `;
 const Introdct = styled.div`
   ${props=>props.theme.flexColumn}
@@ -327,21 +368,50 @@ const Introdct = styled.div`
   align-items: flex-start;
   >p {
   color: ${props=> props.theme.reverse};
-  }  
+  }
+  ${props=> props.theme.midTablet}{
+       align-items: center;
+       text-align: center;
+       font-size: 20px;
+       max-height: 30vh;
+  }
+  ${props=> props.theme.tablet}{
+      max-width: 90vw;
+      font-size: 18px;
+  }
+  ${props=> props.theme.mobile}{
+      max-width: 80vw;
+      font-size: 15px;
+      /* max-height: 20vh; */
+  }              
 `;
 const FinalBox = styled(GifBox)`
  justify-content: center;
  height: 150vh;
-  /* border: 1px solid yellow; */
 `;
 const ContentsBox = styled.div`
    ${props=>props.theme.flexColumn};
     height: auto;
     gap: 3rem;
+    ${props=> props.theme.mobile}{
+        gap: 1.6rem;
+     }
     > h1 {
       letter-spacing: 0.4rem;
       text-align: center;
       line-height: 4rem;
+      ${props=> props.theme.laptop}{
+        line-height: 4rem;
+      }
+      ${props=> props.theme.midTablet}{
+        line-height: 3.3rem;
+      }
+      ${props=> props.theme.mobile}{
+        line-height: 2.6rem;
+      }
+      ${props=> props.theme.mobileM}{
+        line-height: 2.1rem;
+      }
     }
 `;
 const SearchBox = styled.div`
@@ -350,4 +420,9 @@ const SearchBox = styled.div`
   min-width: 40.25rem;
   height:auto;
   ${props=>props.theme.searchBlur};
+  ${props=> props.theme.tablet}{
+      min-width: 80vw;
+      width: 80vw;
+    }  
+    
 `;  
