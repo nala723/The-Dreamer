@@ -30,7 +30,14 @@ const ToggleDiv = styled.div<{t: string}>`
       right: 3px;
       `) : (css`
       left: 3px;`)};
+      ${props=> props.theme.mobile}{
+        font-size: 12px;
+      }  
     }
+  ${props=> props.theme.mobile}{
+    min-width: 2.8rem;
+    height: 1.1rem;
+  }  
 `;
 const Circle = styled.div<{t : string}>`
   position:absolute;
@@ -45,4 +52,13 @@ const Circle = styled.div<{t : string}>`
     right:1px;`) : (css`
     left:1px;`)
     };
+  ${props=> props.theme.mobile}{
+    width: 1.1rem;
+    height: 1.1rem;
+    ${props=> props.t === 'light' ? (css`
+    left: 1.55rem;
+    right:1px;`) : (css`
+    left:1px;`)
+    };
+  }   
 `; 

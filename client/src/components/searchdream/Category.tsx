@@ -158,6 +158,20 @@ const CategoryBox = styled.div`
   top: 3.875rem;
   left: 4.4%;
   cursor: pointer;
+  z-index: 60;
+  ${props=> props.theme.midTablet}{
+    width: 8.5rem;
+  }
+  ${props=> props.theme.tablet}{
+    top: 2rem;
+    left: 2.5%;
+    width: 7rem;
+    /* font-size: 15px; */
+  }
+  ${props=> props.theme.mobile}{
+    top: 4.9rem;
+  }
+  
 `;
 const CareHeader = styled.div`
   width: 100%;
@@ -172,6 +186,10 @@ const CareHeader = styled.div`
     width: 1.125rem;
     height: 1rem;
     transform: scale(1.5);
+  }
+  ${props=> props.theme.tablet}{
+    padding: 0;
+    padding-left: 1rem;
   }
 `;
 const CateTitle = styled.div`
@@ -207,6 +225,9 @@ const Category = styled.div`
   overflow: hidden;
   height: auto;
   opacity: 0;
+  ${props=> props.theme.mobile}{
+    background-color: ${props=>props.theme.reverse};
+  }
 `;
 const DeepTitle = styled(CateTitle)`
   gap: 1rem;
@@ -231,6 +252,9 @@ const DeepGory = styled(Category)`
   opacity: 1;
   align-items: center;
   padding-left: 0;
+  ${props=> props.theme.mobile}{
+    background-color: yellow;
+  }
 `;
 const CtEndLine = styled(CateLine)`
   bottom: 0;

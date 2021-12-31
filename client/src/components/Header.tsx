@@ -96,7 +96,7 @@ function Header (props: { themeToggler: () => void; t: any; }){
                 </UserPic>
                 :
                 <Menu>
-                  <Hamburger onClick={()=>setDropdown(!dropdown)}/> 
+                  <StyledHambgr onClick={()=>setDropdown(!dropdown)}/> 
                   {dropdown && <Option handleClick={handleClick} resize={button}/>}
                 </Menu>
                 )
@@ -124,9 +124,6 @@ function Header (props: { themeToggler: () => void; t: any; }){
 export default Header;
 
 const Container = styled.div`
-${props=> props.theme.tablet}{
-  padding: 0 1rem 0 0;
-}
   display: flex;
   width: inherit;
   height: 4.375rem;
@@ -134,11 +131,20 @@ ${props=> props.theme.tablet}{
   align-items: center;
   padding: 0 2rem;
   z-index: 10;
+  ${props=> props.theme.tablet}{
+  padding: 0 1rem 0 0;
+  }
+  ${props=> props.theme.mobile}{
+    height: 3.6rem;
+  }
 `;
-const LogoBox = styled(Link)`
+const LogoBox = styled(Link)` // 뷰포인트 보기
 ${props=> props.theme.tablet}{
   transform: scale(0.8);
 }
+${props=> props.theme.mobile}{
+  transform: scale(0.7);
+  }
  
 `;
 const Logo = styled.img.attrs((props) => {
@@ -152,6 +158,9 @@ const RightBox = styled.div<{resize: string;}>`
  height: inherit;
  align-items: center;
  gap:1.5rem;
+ ${props=> props.theme.mobile}{
+  gap:1rem;
+  }
 `;
 const Menu = styled.ul`
   display: flex;
@@ -172,6 +181,11 @@ const UserPic = styled.li`
         cursor: pointer; 
         background: ${props=> props.theme.dream};
       }
+`;
+const StyledHambgr = styled(Hamburger)`
+  ${props=> props.theme.mobile}{
+   width: 90%;
+  }
 `;
 
 const LinkMenu = styled(Link)`

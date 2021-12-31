@@ -7,6 +7,7 @@ import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
 import Modal from '../components/reusable/Modal';
+import { hashTagList } from '../config/dummyDatas';
 import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
 import axios from 'axios';
@@ -184,17 +185,16 @@ function SearchDream(): JSX.Element {
       <SearchSection>
           <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
       </SearchSection>
-      <HashSection>
-        <HashTag text='고백받는'/>
-        <HashTag text='로또 당첨되는'/>
-        <HashTag text='돼지'/>
-        <HashTag text='시험 합격하는'/>
-        <HashTag text='돈'/>
-        <HashTag text='취업하는'/>
-        <HashTag text='가족'/>
+      <HashSection mobile={width === 'mobile'}>
+        {width === 'mobile' ? 
+          <HashTag text='추천태그'/>
+          :
+          hashTagList.map((tag, idx)=>{
+            return( <HashTag text={tag} key={idx}/>)
+          })
+        }
       </HashSection> 
       <DreamSection>
-        {/* <DreamWrapper> */}
         {data && data.map((res :{title: string; description: string; link: string;}, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
@@ -211,7 +211,6 @@ function SearchDream(): JSX.Element {
             </Dream>
           )
         })}
-        {/* </DreamWrapper>   */}
       </DreamSection> 
       <CateGory/>
     </Container>
@@ -257,8 +256,12 @@ const Container = styled.div`
     ::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
+  ${props=> props.theme.mobile}{
+   align-items: center;
+   min-height: calc(100vh - 3.6rem);
+   height: auto;
+  }
 `;
-
 const SearchSection = styled.div`
   width: 100%;
   height: 5.688rem;
@@ -266,10 +269,22 @@ const SearchSection = styled.div`
   align-items: flex-end;
   padding-left: 19.438rem;
   ${props=> props.theme.midTablet}{
-    padding-left: 14rem;
+    padding-left: 13rem;
+  }
+  ${props=> props.theme.tablet}{
+    padding-left: 10.1rem;
+    padding-top: 1rem;
+    align-items: flex-start;
+    height: auto;
+    max-width: 97%;
+  }
+  ${props=> props.theme.mobile}{
+   width: 91vw;
+   padding-left: 0; 
+   padding-top: 0.5rem;
   }
 `;
-const HashSection = styled.div`
+const HashSection = styled.div<{mobile: boolean;}>`
   max-width: 100%;
   /* min-height: 3.5rem; */
   height: auto;
@@ -280,13 +295,26 @@ const HashSection = styled.div`
   padding-left: 19.438rem;
   gap: 0.6rem;
   ${props=> props.theme.midTablet}{
-    padding-left: 14rem;
+    padding-left: 13rem;
+  }
+  ${props=> props.theme.tablet}{
+    padding-left: 10.1rem;
+    margin: 0;
+  }
+  ${props=> props.theme.mobile}{
+    width: 100%;
+    justify-content: flex-end;
+    padding-right: 1.2rem;
+    padding-left: 0;
   }
 `;
 const DreamSection = styled.div`
   width: 100%;
   height: calc(100vh - 4.375rem - 9.487rem);
   position: relative;
+  ${props=> props.theme.tablet}{
+    height: calc(100vh - 4.375rem - 9.187rem);
+  }
 `;
 const Dream = styled.div<{top: string; left: string;}>`
   position: absolute;
@@ -320,6 +348,10 @@ const Title = styled.h5`
 const Text = styled.p`
   color: ${props=> props.theme.reverse};
   width: 100%;
+  ${props=> props.theme.mobile}{
+    font-size: 15px;
+    line-height: 1.1rem;
+  }
 `;
 const StyledHeart = styled(Heart)<{fill: string}>`
   ${props=> props.fill ? css`

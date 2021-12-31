@@ -22,7 +22,10 @@ const Tag = styled.div`
   cursor: pointer;
   overflow: hidden;
   ${props=> props.theme.midTablet}{
+    padding: 0.5rem 1.5rem;
     font-size: 14px;
   }
+ 
+  
 
 `;

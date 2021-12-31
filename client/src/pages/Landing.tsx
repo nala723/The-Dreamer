@@ -135,6 +135,9 @@ const MainSection = styled.section`
   position: absolute; 
   ${props=>props.theme.flexRow};
   height: calc(100vh - 4.375rem);
+  ${props=> props.theme.mobile}{
+   min-height: calc(100vh - 3.6rem);
+  }
 `;
 const ContentsBox = styled.div`
    ${props=>props.theme.flexColumn};

@@ -21,16 +21,11 @@ function SearchBar(props: SearchProps) {
     handleInput && handleInput(e.target.value)
   }  
   const handleSumbit = () => {
-    // if(search === ''){
-    //   return; //경고 모달
-    // }else{
       if(input){
         handleSearch(input);
       }else{
         handleSearch(search);
-        //  setSearch('')
       }
-    // }
   }
 
   return (
@@ -63,7 +58,7 @@ const Icon = styled.input<{scale: string; landing?: string;}>`
     transform: ${props=> props.landing && `scale(0.8)`};
   }
   ${props=> props.theme.mobile}{
-    transform: ${props=> props.landing && `scale(0.6)`};
+    transform: scale(0.6);
   }    
 `;
 const Bar = styled.input<{font: string; landing?: string;}>`
@@ -101,11 +96,11 @@ const Bar = styled.input<{font: string; landing?: string;}>`
     }
   ${props=> props.theme.tablet}{
       height:  ${props=> props.landing && `4.3rem`};
-     
     }  
   ${props=> props.theme.mobile}{
-      height:  ${props=> props.landing && `3.7rem`};
-      font-size:  ${props=> props.landing && `16px`};
+      height:  ${props=> props.landing ? `3.7rem` : `2.9rem`};
+      font-size:  16px;
+      padding-bottom: 0;
     } 
   ${props=> props.theme.mobileM}{
       height:  ${props=> props.landing && `3.4rem`};

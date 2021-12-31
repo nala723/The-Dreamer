@@ -105,3 +105,7 @@ export const emotionList = [
      img: '../assets/face-what.svg'
     }
 ]
+
+export const hashTagList = [
+    '고백받는', '로또 당첨되는', '돼지', '시험 합격하는', '돈', '취업하는', '가족'
+]

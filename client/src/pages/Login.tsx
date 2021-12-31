@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { SignInAct } from '../actions';
@@ -6,6 +6,18 @@ import { RootState } from '../reducers';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
+import dotenv from "dotenv";
+dotenv.config();
+
+//window객체에서 뽑아서야 하는 naver 파라미터는 아래와 같이 global로 선언해주지 않으면 사용이 불가능하다. 
+//꼭 필수로 해줘야함.
+declare global {
+  interface Window {
+    naver: any;
+  }
+}
+
+const { naver } = window;
 
 function Login(){
   const dispatch = useDispatch();
@@ -15,9 +27,16 @@ function Login(){
     Password:''
   })
   const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(()=>{
+    naverLogin(); 
+    // UserProfile();
+  },[])
+
   const handleInput = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginInfo({ ...loginInfo, [key]: e.target.value})
   }
+
   const handleSubmit = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     axios
@@ -37,6 +56,40 @@ function Login(){
         console.log(err)
       })  
   }
+
+  const naverLogin = () => {
+    const loginId = new naver.LoginWithNaverId({
+      clientId: 'GI8wPDg1GKr1M4un2re_',
+      callbackUrl: 'http://localhost:3000/login',
+      isPopup: false,
+      loginButton: { color: 'green', type: 3, height: 40},
+      callbackHandle: true
+    }) 
+    loginId.init();
+    loginId.getLoginStatus(function (status: any) {
+      if (status) {
+        const email = loginId.user.email // 필수로 설정할것을 받아와 아래처럼 조건문을 줍니다.
+        const username = loginId.user.name
+        console.log(loginId.user); 
+          
+         if( !email  || !username ) {
+          alert("필수 정보제공에 동의해주세요.");
+          loginId.reprompt();
+          return;
+        }
+      } else {
+        console.log("callback 처리에 실패하였습니다.");
+      }
+    });
+  }
+  // const UserProfile = () => {
+  //   // window.location.href.includes('access_token') && GetUser();
+  //   // function GetUser() {
+  //   //   const location = window.location.href.split('=')[1];
+  //   //   const token = location.split('&')[0];
+  //   // }    
+  //   }
+//profile_image
   return (
     <Container>
        <LogInBox>
@@ -61,7 +114,7 @@ function Login(){
             <div>or</div>
             <SocialBox>
               <GoogleBtn>Google</GoogleBtn>
-              <NaverBtn>Naver</NaverBtn>
+              <NaverBtn onClick={naverLogin} id="naverIdLogin">Naver</NaverBtn>
             </SocialBox>
           </Content>
        
@@ -74,6 +127,7 @@ function Login(){
 }
 
 export default Login;
+
 
 const Container = styled.div`            
   overflow: hidden;
@@ -184,6 +238,7 @@ const GoogleBtn = styled.button`
 const NaverBtn = styled(GoogleBtn)`
   background-color: #71A82B;
   color:  white;
+  object-fit: cover;
 `;
 
 const HaveAccount = styled.div`
