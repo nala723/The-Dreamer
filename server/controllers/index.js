@@ -7,9 +7,9 @@ module.exports = {
     /*-----------------------------------------------------------------*/
     emailCode: require("./sign/emailCode"),
     emailVerification: require("./sign/emailVerification.js"),
-    // /*-----------------------------------------------------------------*/
-    // googleSignin: require("./google/signin"),
-    // googleWithdrawal: require("./google/withdrawal"),
+    /*-----------------------------------------------------------------*/
+    socialSignin: require("./social/signin"),
+    socialWithdrawl: require("./social/withdrawal"),
     /*-----------------------------------------------------------------*/
     updateUserInfo: require("./mypage/updateUserInfo"),
     getUserInfo: require("./mypage/getUserInfo"),
