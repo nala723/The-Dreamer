@@ -109,6 +109,7 @@ function DrawDream({ width, height }: CanvasProps) {
 		}
 		const u8arr = new Uint8Array(array); //8비트의 형식화 배열을 생성한다. 
 		const file = new Blob([u8arr], { type: "image/png" }); // Blob 객체 생성
+    console.log(typeof file);
 		const formdata = new FormData(); // formData 생성
 		formdata.append("picture", file); // formdata에 file data 추가
     formdata.append('title', title);

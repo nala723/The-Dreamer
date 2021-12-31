@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect }  from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { GetTokenAct, EditUserAct, WithDrawlAct, SignInAct } from '../../actions';
+import { GetTokenAct, EditUserAct, WithDrawlAct } from '../../actions';
 import { RootState } from '../../reducers';
 import { Buffer } from 'buffer';
 import Modal from '../reusable/Modal';
@@ -12,7 +12,7 @@ import axios from 'axios';
 
 
 function MyAccount() {
-  const { accessToken, email, username, profile } = useSelector((state: RootState)=> state.usersReducer.user);
+  const { accessToken, email, username, profile, isSocial } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
   const history = useHistory();
   const [ isOpen, setIsOpen] = useState(false);
@@ -48,21 +48,18 @@ function MyAccount() {
     { name: 'Password', type: 'password', key: 'PasswordCheck'},
   ]
   const profileImg = 
-    typeof(profile) === 'string' ?
+    (typeof profile !== 'object' && typeof profile === 'string')  ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
-
+    // '/images/search-icon.svg'
+  console.log(profile, profileImg);
 
     // 최초 렌더링시 유저정보 받아오기
   useEffect(()=>{
-    // let token
-      // if(googleToken){
-      //   token = googleToken
-      //    getUserInfo(token)
-      // }else {
-        // token = accessToken
+    if(!isSocial){
       getUserInfo();
-      // }
+    }
   },[])
+
   useEffect(()=> {
     if(isWithDraw){
       setOkWdModal(true)// 모달부터 부르고
@@ -71,7 +68,6 @@ function MyAccount() {
 
    // 유저 정보 요청 함수 - 통과
   const getUserInfo = () => {
-    // setLoading(true)
     axios
       .get(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,{
         headers: {
@@ -81,28 +77,16 @@ function MyAccount() {
     })
     .then((res)=> {
         if(res.headers.accessToken){
-            // if(googleToken){
-            //         dispatch(getgoogleToken({accessToken: res.headers.accessToken}));
-            //     }
-            // else {
                 dispatch(GetTokenAct(res.headers.accessToken));
-            // }
           }
          if(res.status === 200){
-            //  if(googleToken){
-            //     dispatch(userInfo({vegType :res.data.vegType}))
-            //  }
-            // else{
-              console.log('get 성공?')
-            typeof(res.data.profile) === 'string' ?
+          (typeof profile !== 'object' && typeof profile === 'string')  ?
             res.data.profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');   
             dispatch(EditUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))
-            // }
          }
          else{
               history.push('/notfound');
          }
-        //  setLoading(false) 
      })
      .catch(err => {
             console.log(err)
@@ -174,11 +158,7 @@ function MyAccount() {
 
   const onSubmitHandler = async(e : React.MouseEvent) => { 
     e.preventDefault();
-    // if(googleToken){
-    //     handleBack(e)
-    //     return;
-    // }
-  
+
     if(!valid){
         return
     }
@@ -241,8 +221,6 @@ function MyAccount() {
                          else{
                              history.push('/notfound');
                          }
-                     
-                        //  setLoading(false) 
                     })
                     .catch(error=>
                         console.log(error)
@@ -285,20 +263,17 @@ function MyAccount() {
 //           refPasswordCheck.current?.focus();
 //       }
 //   };
+
 const Handlewithdraw = async() => {
   await axios
     .delete(`${process.env.REACT_APP_URL}` + `/sign/withdrawal`,{
       headers: {
-          // "Content-Type": "application/json",
           authorization: `Bearer ` + accessToken
           }
     })
-  // },{
-  //     email: email
-  // })
   .then((res)=> {
        if(res.status === 200){
-            dispatch(WithDrawlAct({ accessToken: '', email: '', username: '', profile: '' }));
+            dispatch(WithDrawlAct({ accessToken: '', email: '', username: '', profile: '', isSocial: false }));
             history.push('/');
        }
        else{

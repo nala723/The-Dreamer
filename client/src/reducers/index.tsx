@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import {searchReducer, usersReducer, dreamReducer} from "../actions";
+import {searchReducer, usersReducer, dreamReducer } from "../actions";
 import { persistReducer } from "redux-persist"; 
 import storage from "redux-persist/lib/storage"; // local storage에 저장
 
@@ -13,7 +13,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     searchReducer,
     usersReducer,
-    dreamReducer
+    dreamReducer,
 });
 
 export default persistReducer(persistConfig, rootReducer);

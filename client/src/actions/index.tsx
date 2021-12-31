@@ -10,7 +10,6 @@ const SEARCH_DREAM_ERROR = 'SEARCH_DREAM_ERROR' as const;
 const USER_INFO = 'USER_INFO' as const;
 const USER_EDIT_INFO = "USER_EDIT_INFO" as const;
 const WITHDRAWL = "WITHDRAWL" as const;
-const GET_GOOGLE_TOKEN = "GET_GOOGLE_TOKEN" as const;
 const GET_NEW_TOKEN = "GET_NEW_TOKEN" as const;
 
 const LIKE_DREAM = 'LIKE_DREAM' as const;
@@ -117,6 +116,7 @@ interface UserInfo { // 나중에 필요할지도! 일단 kipppp
     email: string;
     username: string;
     profile: string;
+    isSocial: boolean;
 }
 
 // 모든 액션 겍체들에 대한 타입을 준비해줍니다.
@@ -159,8 +159,9 @@ type ActionState = {
         email: string;
         username: string;
         profile: string; 
+        isSocial: boolean;
     },
-    dream: Data[]; 
+    dream: Data[];
 }
 //임시로 리덕스로.. 나중에 서버랑 연결해주자..이렇게 하면 다른 아이디로 해도 남아있을듯
 //혹은 로그인 로그아웃시 없어지거나
@@ -176,9 +177,10 @@ const initialState: ActionState = {
         accessToken: '',
         email: '',
         username: '',
-        profile: ''
+        profile: '',
+        isSocial: false
     },
-    dream: [] 
+    dream: [],
 };
 
 // 리듀서를 작성합니다.

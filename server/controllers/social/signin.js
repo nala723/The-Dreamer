@@ -2,7 +2,7 @@ const { User } = require('../../models');
 const { generateAccessToken, generateRefreshToken } = require('../tokenFunctions');
 
 module.exports = async (req, res) => {
-  const { email, username } = req.body;
+  const { email, username, profile } = req.body;
 
   try {
     const userInfo = await User.findOne({where : {email: email}});
@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
           message : "Successfully Social Signin",
           accessToken : access_token,
           username : userInfo.dataValues.username,
-          email : userInfo.dataValues.email
+          email : userInfo.dataValues.email,
         });
     }
   } catch (error) {

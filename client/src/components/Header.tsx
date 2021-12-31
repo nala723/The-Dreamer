@@ -25,8 +25,10 @@ function Header (props: { themeToggler: () => void; t: any; }){
     { menu: '로그인', url: '/login'}
   ];
   const profileImg = 
-    typeof(profile) === 'string' ?
+     (typeof profile !== 'object' && typeof profile === 'string') ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
+    //  profile.match(/\.(jpg|jpeg|png|gif)$/) ?
+    // '/images/search-icon.svg'
 
   const showButton = () => {
   if (window.innerWidth <= 960) {
@@ -57,26 +59,26 @@ function Header (props: { themeToggler: () => void; t: any; }){
             authorization: `Bearer ` + accessToken,
           }
         })
-        .then((res) => {
+        .then((res) => {    
           if (res.status === 200) {
-            dispatch(
-              SignInAct({
-                email: '',
-                username: '',
-                accessToken: "",
-                profile: "",
-              })
-            );
-            // dispatch(getgoogleToken({ googleToken: "" }));
-             history.push("/");
-          } else {
-            history.push("/notfound");
-          }
-        })
-        .catch((err) => 
-        history.push("/notfound"));
-    } else{
-      return;
+              dispatch(
+                SignInAct({
+                  email: '',
+                  username: '',
+                  accessToken: "",
+                  profile: "",
+                  isSocial: false
+                })
+              );
+              history.push("/");
+            } else {
+              history.push("/notfound");
+            }
+          })
+          .catch((err) => 
+          history.push("/notfound"));
+      } else{
+        return;
     }
   }  
   

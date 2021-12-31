@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SignInAct } from '../actions';
 import { RootState } from '../reducers';
+import { GoogleLogin } from 'react-google-login';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -27,10 +28,10 @@ function Login(){
     Password:''
   })
   const [errorMessage, setErrorMessage] = useState('')
+  const naverRef = useRef<HTMLDivElement>(null);
 
   useEffect(()=>{
     naverLogin(); 
-    // UserProfile();
   },[])
 
   const handleInput = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,39 +58,77 @@ function Login(){
       })  
   }
 
-  const naverLogin = () => {
-    const loginId = new naver.LoginWithNaverId({
-      clientId: 'GI8wPDg1GKr1M4un2re_',
+
+/* 네이버 로그인, 커스텀 버튼, 누르면 컴ㅍ넌트 상태 true로 렌더링 */
+  const naverLogin = async() => {
+    const loginId = await new naver.LoginWithNaverId({
+      clientId: process.env.REACT_APP_NAVER_ID,
       callbackUrl: 'http://localhost:3000/login',
-      isPopup: false,
+      isPopup: true,
       loginButton: { color: 'green', type: 3, height: 40},
       callbackHandle: true
     }) 
     loginId.init();
+    loginId.logout();
     loginId.getLoginStatus(function (status: any) {
       if (status) {
         const email = loginId.user.email // 필수로 설정할것을 받아와 아래처럼 조건문을 줍니다.
         const username = loginId.user.name
-        console.log(loginId.user); 
-          
+        const profile = loginId.user.profile_image
+
+        console.log(status);  
          if( !email  || !username ) {
           alert("필수 정보제공에 동의해주세요.");
           loginId.reprompt();
           return;
         }
+        socialLoginRq(email, username, profile)
       } else {
         console.log("callback 처리에 실패하였습니다.");
       }
     });
   }
-  // const UserProfile = () => {
-  //   // window.location.href.includes('access_token') && GetUser();
-  //   // function GetUser() {
-  //   //   const location = window.location.href.split('=')[1];
-  //   //   const token = location.split('&')[0];
-  //   // }    
-  //   }
-//profile_image
+  /* 구글 로그인 */
+  const responseGoogle = (res: any) => {
+    const email = res.profileObj.email;
+    const username = res.profileObj.name;
+    const profile = res.profileObj.imageUrl;
+
+    socialLoginRq(email, username, profile )
+  };  
+
+  /* 종합 소셜 로그인 */
+  const socialLoginRq = async(email: string, username: string, profile: string ) => {
+    await axios
+        .post(process.env.REACT_APP_URL + '/social/signin',{
+          email,
+          username,
+        })
+        .then((res)=>{
+          if(res.status === 200){
+            dispatch(SignInAct({isSocial: true, profile: profile,...res.data}))
+            history.push('./searchdream')
+          }else{
+            history.push('./notfound')
+          }
+        })
+        .catch(err=>{
+          console.log(err)
+          history.push('./notfound')
+        })
+    }
+    // window.location.href.includes('access_token') && GetUser();
+    // function GetUser() {
+    //   const location = window.location.href.split('=')[1];
+    //   const token = location.split('&')[0];
+    // } 
+  const handleNaverBtn = () => {
+    naverRef.current && (naverRef.current.children[0] as HTMLElement).click();
+  } 
+  // const customStyle = {
+  //   borderRadius : "10px",
+  // }
+    
   return (
     <Container>
        <LogInBox>
@@ -113,11 +152,15 @@ function Login(){
             </InputBox>   
             <div>or</div>
             <SocialBox>
-              <GoogleBtn>Google</GoogleBtn>
-              <NaverBtn onClick={naverLogin} id="naverIdLogin">Naver</NaverBtn>
+              <GoogleBtn clientId={`${process.env.REACT_APP_GOOGLE_ID}`} buttonText='구글 아이디로 로그인' 
+               onSuccess={responseGoogle}/>
+              <HideBtn ref={naverRef} id="naverIdLogin" />
+              <NaverBtn onClick={handleNaverBtn} id="naverIdLogin">
+                <img src='/images/naverbtn.png' alt='naver' />
+                네이버 아이디로 로그인
+              </NaverBtn>
             </SocialBox>
           </Content>
-       
           <HaveAccount>
             <p>회원이 아니신가요?</p><LinkedP to='/signup'>회원가입</LinkedP>
           </HaveAccount>
@@ -223,22 +266,46 @@ const Button = styled.div`
 
 const SocialBox = styled.div`
   height: 3.75rem;
-  width: 100%;
   ${props => props.theme.flexRow};
-  gap: 1.5rem;
+  justify-content: space-between;
 `;
-const GoogleBtn = styled.button`
-  height: 3.75rem;
-  width: 100%;
+const GoogleBtn = styled(GoogleLogin)`
+  height: 100%;
+  width: 48%;
   border: none;
   border-radius: 5px;
-  background-color: white;
-  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  >div{
+    display: flex;
+    align-items: center;
+    >svg{
+      transform: scale(1.5);
+    }
+  }
+  >span {
+    margin-left: -2px;
+  }
 `;
-const NaverBtn = styled(GoogleBtn)`
-  background-color: #71A82B;
-  color:  white;
-  object-fit: cover;
+
+const HideBtn = styled.div`
+  display: none;
+`;
+const NaverBtn = styled.button`
+  cursor: pointer;
+  width: 48%;
+  height: 100%;
+  border: none;
+  border-radius: 5px;
+  background-color: #03C75A;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  >img {
+    height: 3.3rem;
+  }
 `;
 
 const HaveAccount = styled.div`
