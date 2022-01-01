@@ -30,7 +30,7 @@ function DrawDream({ width, height }: CanvasProps) {
   const history = useHistory();
   const dispatch = useDispatch();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [mousePosition, setMousePosition] = useState<Coordinate | undefined>(); // 마우스포인터(x,y)
+  const [mousePosition, setMousePosition] = useState<Coordinate>(); // 마우스포인터(x,y)
   const [isPainting, setIsPainting] = useState(false); //페인팅상태 선 긋는 상태
   const [lineWeight, setLineWeight] = useState<number>(2.5); // 타입수정
   const [selectColor, setSelectColor] = useState('#000000');
@@ -44,8 +44,23 @@ function DrawDream({ width, height }: CanvasProps) {
   const [errOpen, setErrOpen] = useState(false);
   const [textSlider, setTextSlider] = useState(false);
   const [paletteSlider, setPaletteSlider] = useState(false);  
+  const [checkFill, setCheckFill] = useState(false);
   // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
   const context = useRef<CanvasRenderingContext2D | null>();
+
+  // 시작시 하얀색으로 채우기
+  useEffect(()=>{
+    clearCanvas();
+  },[])
+  
+
+  // 그림판 채우기
+  useEffect(()=>{
+    if(isPainting && fill && mousePosition && checkFill){
+      fillCanvas()
+      setCheckFill(false);
+    }
+  },[checkFill])
 
   const handleColor = (e : React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     const newColor = (e.target as HTMLDivElement).style.backgroundColor;
@@ -148,7 +163,6 @@ function DrawDream({ width, height }: CanvasProps) {
     link.click();
   }
 
-
   const handleClick = ()=> {
     setOpen(!open);
   } 
@@ -180,24 +194,29 @@ function DrawDream({ width, height }: CanvasProps) {
       y: e.pageY - canvas.offsetTop  // offsetX,Y : 좌표React.MouseEvent<HTMLDivElement, MouseEvent>를 출력하도록 하는 이벤트가 걸려있는 DOM node 기준으로 좌표표시
     }
   }
+
+  const startPaint = useCallback((e:MouseEvent) => {
+    const coordinates = getCoordinates(e);
+    if (coordinates) {
+      setIsPainting(true);
+      setMousePosition(coordinates); 
+      setCheckFill(true)
+    }
+  },[]);
+
+
   // canvas에 선을 긋는 함수
-  const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate) => {
+  const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate) => { 
     if(!canvasRef.current){
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
     context.current = canvas.getContext('2d');
-
     if(context.current) { //선 스타일지정
 
       context.current.lineJoin = 'round';
       context.current.lineWidth = lineWeight;
       context.current.fillStyle = selectColor;
-
-      if(fill){
-        canvas.style.cursor = cursors[2];
-        context.current.fillRect(0, 0, canvas.width, canvas.height); //왜 느릴까..? 두세번 클릭해야함..
-      }else{
         if(eraser){
           canvas.style.cursor = cursors[1];
           // context.clearRect(newMousePosition.x-context.lineWidth/2, newMousePosition.y-context.lineWidth/2, context.lineWidth, context.lineWidth)
@@ -213,23 +232,29 @@ function DrawDream({ width, height }: CanvasProps) {
           context.current.closePath();
     
           context.current.stroke();
-      }
+      
     }
   }
 
-  const startPaint = useCallback((e:MouseEvent) => {
-    const coordinates = getCoordinates(e);
-    if (coordinates) {
-      setIsPainting(true);
-      setMousePosition(coordinates);
-    }
-  },[]);
+  const fillCanvas = () => {  
+    if(!canvasRef.current){
+      return;
+    } 
+    const canvas: HTMLCanvasElement = canvasRef.current;
+    context.current = canvas.getContext('2d');
+    if(context.current) { 
+      context.current.fillStyle = selectColor;
+      if(fill){
+        canvas.style.cursor = cursors[2];
+        context.current.fillRect(0, 0, canvas.width, canvas.height);
+      }
+  }
+}
   
   // 페인팅
   const paint = useCallback((e:MouseEvent) => {
     e.preventDefault(); 
     e.stopPropagation();
-
     if (isPainting) {
       const newMousePosition = getCoordinates(e);
       if (mousePosition && newMousePosition) {
@@ -243,11 +268,12 @@ function DrawDream({ width, height }: CanvasProps) {
     setIsPainting(false);
   },[]);
 
-  const clearCanvas = () => {
+  const clearCanvas = useCallback(() => {
     if (!canvasRef.current) {
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
+    context.current = canvas.getContext('2d');
 
     if(context.current){
       context.current.fillStyle = 'white';
@@ -255,7 +281,7 @@ function DrawDream({ width, height }: CanvasProps) {
       context.current.fillStyle = selectColor;
     }
     // canvas.getContext('2d')!!.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  },[])
 
   // const undo1 = () => {  // 뒤로가기 만들수 있다!
 	// 	firstCanvas.current.undo();
@@ -367,14 +393,6 @@ function DrawDream({ width, height }: CanvasProps) {
                 <StyledHappy onClick={()=>handleEmotion(2)} fill={emotion}/>
                 <StyledBad onClick={()=>handleEmotion(3)} fill={emotion}/>
                 <StyledWhat onClick={()=>handleEmotion(4)} fill={emotion}/>
-                {/* {emotionList.map((el,idx)=>{
-                  return (
-                    emotion === el.name ?    
-                     <input type='image' src={el.img} key={idx} alt='face' onClick={()=>handleEmotion(idx)}/>
-                       : 
-                      <input type='image' src={el.img} key={idx} alt='face' onClick={()=>handleEmotion(idx)}/>)
-                 })
-                } */}
               </Emotions>
               <h5>{getDaytoYear()}</h5>
             </TextBox>
@@ -393,7 +411,7 @@ function DrawDream({ width, height }: CanvasProps) {
             </Palette>
             <ButtonBox>
               <UpperBtn>
-                <LineWeight type='range' min='1.0' max='20.0' value={lineWeight} step='1.0' onChange={(e) => handleBrushW(e)}/>
+                <LineWeight type='range' min='1.0' max='40.0' value={lineWeight} step='1.0' onChange={(e) => handleBrushW(e)}/>
                 <Icon type='image' src='/images/new-icon.svg' alt='new' onClick={clearCanvas}/>
                 <Icon type='image' src='/images/save-icon.svg' alt='save' onClick={handleSave}/>
               </UpperBtn>

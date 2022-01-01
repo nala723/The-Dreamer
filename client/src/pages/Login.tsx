@@ -64,7 +64,7 @@ function Login(){
     const loginId = await new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_ID,
       callbackUrl: 'http://localhost:3000/login',
-      isPopup: true,
+      isPopup: false,
       loginButton: { color: 'green', type: 3, height: 40},
       callbackHandle: true
     }) 
@@ -76,7 +76,6 @@ function Login(){
         const username = loginId.user.name
         const profile = loginId.user.profile_image
 
-        console.log(status);  
          if( !email  || !username ) {
           alert("필수 정보제공에 동의해주세요.");
           loginId.reprompt();

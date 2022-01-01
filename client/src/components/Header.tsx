@@ -24,9 +24,24 @@ function Header (props: { themeToggler: () => void; t: any; }){
     { menu: '꿈 그리기', url: '/drawdream'},
     { menu: '로그인', url: '/login'}
   ];
-  const profileImg = 
-     (typeof profile !== 'object' && typeof profile === 'string') ?
-     profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
+  
+  let profileImg: any
+
+  if(profile === null){
+    dispatch(
+      SignInAct({
+        email: '',
+        username: '',
+        accessToken: "",
+        profile: "",
+        isSocial: false
+      })
+    )
+  } else{
+    profileImg = (typeof profile !== 'object' && typeof profile === 'string') ?
+    profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
+  }
+
     //  profile.match(/\.(jpg|jpeg|png|gif)$/) ?
     // '/images/search-icon.svg'
 

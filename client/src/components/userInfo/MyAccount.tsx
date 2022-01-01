@@ -47,11 +47,11 @@ function MyAccount() {
     { name: 'Password', type: 'password', key: 'Password'},
     { name: 'Password', type: 'password', key: 'PasswordCheck'},
   ]
+  
   const profileImg = 
     (typeof profile !== 'object' && typeof profile === 'string')  ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
     // '/images/search-icon.svg'
-  console.log(profile, profileImg);
 
     // 최초 렌더링시 유저정보 받아오기
   useEffect(()=>{
