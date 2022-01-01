@@ -114,9 +114,8 @@ function MyLikes() {
     // 정규식으로 괄호 제거
    search = search.replace(/[[(){}]/gi,'') 
    const regex =  new RegExp(search,'gi');
-   const searched = dream.filter((el)=>{ // 못찾는다.
-   return  el.title.replace(/[[(){}]/gi,'').match(regex)
-    //  return el.title.match(regex) || el.description.match(regex)
+   const searched = dream.filter((el)=>{ 
+   return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
    }) 
    setLikes(searched);
    sethasText(false);
@@ -135,7 +134,6 @@ function MyLikes() {
     const regex =  new RegExp(search,'gi');
     const searched = dream.filter((el)=>{
       return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
-      // return el.title.match(regex) || el.description.match(regex)
     }).map((el)=> {
       return el.title.slice(0,30)
     })
@@ -194,6 +192,7 @@ function MyLikes() {
     let splitarr: string[] | string = likes[idx]['link'].split('=');
     splitarr = splitarr[splitarr.length-1]
     dispatch(DisLikeDrmAct(splitarr));
+    setLikes(dream);
   }
 
 
