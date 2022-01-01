@@ -110,20 +110,16 @@ function MyLikes() {
     if(search === ''){
       setIsOpen(true);
       return;
-    } // search, 혹은 option 을 살핀다.
-    let regex: RegExp
-    if(search.includes(']')){
-      search = search.replace(/\[/gi,'') 
-      regex =  new RegExp(search,'gi');
-    }else{
-      regex = new RegExp(search,'gi');
-    }
+    } 
+    // 정규식으로 괄호 제거
+   search = search.replace(/[[(){}]/gi,'') 
+   const regex =  new RegExp(search,'gi');
    const searched = dream.filter((el)=>{ // 못찾는다.
-     return el.title.match(regex) || el.description.match(regex)
+   return  el.title.replace(/[[(){}]/gi,'').match(regex)
+    //  return el.title.match(regex) || el.description.match(regex)
    }) 
    setLikes(searched);
    sethasText(false);
-  //  console.log(input,search,options,searched)
   }
 
   // input에 따른 dropbox 검색 위해
@@ -135,16 +131,11 @@ function MyLikes() {
     }
     setInput(search);
    
-    // let regex: RegExp
-    // if(search.includes(']')){
-    //   search = search.replace(/\[/gi,'') // 괄호 다제거하게하자..
-    //   regex =  new RegExp(search,'gi');
-    //   console.log(search,'search?')
-    // }else{
-    const regex = new RegExp(search,'gi');
-    // }
+    search = search.replace(/[[(){}]/gi,'') 
+    const regex =  new RegExp(search,'gi');
     const searched = dream.filter((el)=>{
-      return el.title.match(regex) || el.description.match(regex)
+      return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
+      // return el.title.match(regex) || el.description.match(regex)
     }).map((el)=> {
       return el.title.slice(0,30)
     })

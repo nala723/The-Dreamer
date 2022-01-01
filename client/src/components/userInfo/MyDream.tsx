@@ -32,7 +32,6 @@ interface EmoInter {
       happy: JSX.Element;
       bad:  JSX.Element;
       what:  JSX.Element; 
-
 }
 
 function MyDream() {
@@ -81,9 +80,7 @@ function MyDream() {
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
-                // console.log(re.picture)
                 re.picture ="data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
-                // console.log(re.picture)
                 return re;
               })
               setMyPic(data);
@@ -141,12 +138,12 @@ function MyDream() {
     // }else{
     const regex = new RegExp(search,'gi');
     // // }
-    // const searched = dream.filter((el)=>{
-    //   return el.title.match(regex) || el.description.match(regex)
-    // }).map((el)=> {
-    //   return el.title.slice(0,30)
-    // })
-    // setOptions(searched); 
+    const searched = myPic.filter((el)=>{
+      return el.title.match(regex)
+    }).map((el)=> {
+      return el.title
+    })
+    setOptions(searched); 
   }
 
   const handleDropDownClick = (clickedOption: string) => {
@@ -185,7 +182,7 @@ function MyDream() {
   };
   // 전체 목록 조회
   const handleAllsearch = () => {
-    // setLikes(dream);
+    getPictures();
   }
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
@@ -376,7 +373,6 @@ const DropDownContainer = styled.ul`
 
 const Allsearch = styled.div`
   width:  3.8rem;
-  margin-left: -0.7rem;
   cursor: pointer;
   text-align: center;
 `;
