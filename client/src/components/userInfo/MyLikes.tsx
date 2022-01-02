@@ -395,14 +395,14 @@ const DrContent = styled.div`
   cursor: pointer;
 `;
 const DrTitle = styled.h5`
-  color: ${props=> props.theme.reverse};
+  color: #494161;
   padding-top: 1rem;
   line-height: 1.1rem;
   width: 90%;
   font-weight: bold;
 `;
 const Text = styled.p`
-  color: ${props=> props.theme.reverse};
+  color: #494161;
   width: 100%;
 `;
 const Date = styled.p`

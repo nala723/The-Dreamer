@@ -204,11 +204,11 @@ function SecondSection() {
                       ‘꿈 그리기’ 페이지에서는 그림판을 이용해 꿈을 그리고, 그린 그림을 저장할 수 있습니다.
                     </p>
                     <p data-aos="fade-up" data-aos-delay="150">
-                      얼굴 아이콘을 클릭해 꿈의 타입을 선택해주세요.</p>
+                      얼굴 아이콘을 클릭해 기분을 선택해주세요.</p>
                     <p data-aos="fade-up" data-aos-delay="300">  
                       툴 박스에서 브러쉬 색상, 두께, 페인트 등을 조절할 수 있습니다.</p>
                   </Introdct>
-                  <Gif src='/images/search-ani.gif' data-aos="fade-up-left" alt='gif'/>
+                  <Gif src='/images/paint-ani.gif' data-aos="fade-up-left" alt='gif'/>
                 </GifContent>
                 {/* </Pin> */}   
             </GifBox>

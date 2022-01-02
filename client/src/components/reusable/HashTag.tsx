@@ -1,10 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function HashTag({height, width, text}: {height?: string; width?: string; text: string;}) {
-  return (
+function HashTag({height, width, text, handleSearch}: {height?: string; width?: string; text: string; handleSearch?:(search: string)=>void; }) {
+  
+  if(handleSearch){
+    return(
+      <Tag onClick={()=>handleSearch(text)}>{text}</Tag>
+    )
+  }else{
+      return (
       <Tag>{text}</Tag>
   );
+ }
 }
 
 export default HashTag;
@@ -13,7 +20,7 @@ const Tag = styled.div`
   width: auto;
   height: auto;
   background-color: ${props=>props.theme.moretransp};
-  color: #DDC9FF;
+  color: ${props=>props.theme.tagtext};
   border-radius: 1.25rem;
   display: flex;
   align-items: center;

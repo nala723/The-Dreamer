@@ -44,7 +44,7 @@ function DrawDream({ width, height }: CanvasProps) {
   const [errOpen, setErrOpen] = useState(false);
   const [textSlider, setTextSlider] = useState(false);
   const [paletteSlider, setPaletteSlider] = useState(false);  
-  const [checkFill, setCheckFill] = useState(false);
+  // const [checkFill, setCheckFill] = useState(false); //채우기 확인용, 안됨
   // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
   const context = useRef<CanvasRenderingContext2D | null>();
 
@@ -54,13 +54,13 @@ function DrawDream({ width, height }: CanvasProps) {
   },[])
   
 
-  // 그림판 채우기
-  useEffect(()=>{
-    if(isPainting && fill && mousePosition && checkFill){
-      fillCanvas()
-      setCheckFill(false);
-    }
-  },[checkFill])
+  // 그림판 채우기 , 안됨
+  // useEffect(()=>{
+  //   if(isPainting && fill && mousePosition && checkFill){
+  //     fillCanvas()
+  //     setCheckFill(false);
+  //   }
+  // },[checkFill])
 
   const handleColor = (e : React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     const newColor = (e.target as HTMLDivElement).style.backgroundColor;
@@ -200,7 +200,7 @@ function DrawDream({ width, height }: CanvasProps) {
     if (coordinates) {
       setIsPainting(true);
       setMousePosition(coordinates); 
-      setCheckFill(true)
+      // setCheckFill(true);
     }
   },[]);
 
@@ -217,6 +217,10 @@ function DrawDream({ width, height }: CanvasProps) {
       context.current.lineJoin = 'round';
       context.current.lineWidth = lineWeight;
       context.current.fillStyle = selectColor;
+      if(fill){
+        canvas.style.cursor = cursors[2];
+        context.current.fillRect(0, 0, canvas.width, canvas.height);
+      }else{
         if(eraser){
           canvas.style.cursor = cursors[1];
           // context.clearRect(newMousePosition.x-context.lineWidth/2, newMousePosition.y-context.lineWidth/2, context.lineWidth, context.lineWidth)
@@ -232,24 +236,24 @@ function DrawDream({ width, height }: CanvasProps) {
           context.current.closePath();
     
           context.current.stroke();
-      
+      }
     }
   }
 
-  const fillCanvas = () => {  
-    if(!canvasRef.current){
-      return;
-    } 
-    const canvas: HTMLCanvasElement = canvasRef.current;
-    context.current = canvas.getContext('2d');
-    if(context.current) { 
-      context.current.fillStyle = selectColor;
-      if(fill){
-        canvas.style.cursor = cursors[2];
-        context.current.fillRect(0, 0, canvas.width, canvas.height);
-      }
-  }
-}
+//   const fillCanvas = () => {  
+//     if(!canvasRef.current){
+//       return;
+//     } 
+//     const canvas: HTMLCanvasElement = canvasRef.current;
+//     context.current = canvas.getContext('2d');
+//     if(context.current) { 
+//       context.current.fillStyle = selectColor;
+//       if(fill){
+//         canvas.style.cursor = cursors[2];
+//         context.current.fillRect(0, 0, canvas.width, canvas.height);
+//       }
+//   }
+// }
   
   // 페인팅
   const paint = useCallback((e:MouseEvent) => {
@@ -614,7 +618,7 @@ const TextBox = styled.div`
   width: 100%;
   height: 2rem;
   font-size: 15px;
-  color: ${props=>props.theme.reverse};
+  color:#494161;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -629,6 +633,7 @@ ${props=> props.theme.mobile}{
   height: 100%;
   padding-left: 1rem;
   gap:1rem;
+  color:#494161;
 `;
 const Input = styled.input.attrs({
   placeholder: '제목을 입력해 주세요.',

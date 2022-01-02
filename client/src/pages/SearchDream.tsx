@@ -190,7 +190,7 @@ function SearchDream(): JSX.Element {
           <HashTag text='추천태그'/>
           :
           hashTagList.map((tag, idx)=>{
-            return( <HashTag text={tag} key={idx}/>)
+            return( <HashTag text={tag} key={idx} handleSearch={()=>handleSearch(tag)}/>)
           })
         }
       </HashSection> 
@@ -339,14 +339,14 @@ const DrContent = styled.div`
   cursor: pointer;
 `;
 const Title = styled.h5`
-  color: ${props=> props.theme.reverse};
+  color: #494161;
   padding-top: 1rem;
   line-height: 1.1rem;
   width: 90%;
   font-weight: bold;
 `;
 const Text = styled.p`
-  color: ${props=> props.theme.reverse};
+  color: #494161;
   width: 100%;
   ${props=> props.theme.mobile}{
     font-size: 15px;
