@@ -56,10 +56,9 @@ export const darkTheme: DefaultTheme = {
   point: '#FFFA81',
   mobileS: `@media only screen and (max-width: 320px)`,
   mobileM: `@media only screen and (max-width: 375px)`,
-  // middle: `@media only screen and (max-width: ${size.middle})`,
   mobile: `@media only screen and (max-width: 425px)`,
-  // change: `@media only screen and (max-width: ${size.change})`,
   tablet: `@media only screen and (max-width: 768px)`,
+  midTablet: `@media screen and (max-width: 960px)`,
   laptop: `@media only screen and (max-width: 1024px)`,
   desktop: `@media only screen and (max-width: 1440px)`,
 };
@@ -105,7 +104,7 @@ export const lightTheme: DefaultTheme = {
   reverse: 'rgb(255,255,255,0.8)',
   text: '#494161',
   transp: 'rgba(211, 204, 221, 0.6)',
-  moretransp: 'rgba(255, 206, 79, 0.2)',
+  moretransp: 'rgba(255, 206, 79, 0.3)',
   anker: 'rgba(147, 133, 168)',
   tagtext: '#674043',
   point: '#3C95FF',
@@ -113,33 +112,8 @@ export const lightTheme: DefaultTheme = {
   mobileM: `@media only screen and (max-width: 375px)`,
   mobile: `@media only screen and (max-width: 425px)`,
   tablet: `@media only screen and (max-width: 768px)`,
+  midTablet: `@media screen and (max-width: 960px)`,
   laptop: `@media only screen and (max-width: 1024px)`,
   desktop: `@media only screen and (max-width: 1440px)`,
 };
 
-// 테마와 관련없이 공통으로 사용되는 변수들입니다
-//   const defalutTheme  = {
-//         ...fonts.size,
-//         ...fonts.weight,
-//         ...device,
-//         ...display
-//     };
-
-// export const darkTheme : DefaultTheme = {
-//   ...defalutTheme,
-//   colors: darkThemeColors,
-// };
-
-// export const lightTheme : DefaultTheme= {
-//   ...defalutTheme,
-//   colors: lightThemeColors,
-// };
-// export const darkTheme: FollowDefault = {
-//   darkThemeColors,
-// };
-
-// export const lightTheme: SecondDefault = {
-//   lightThemeColors,
-// };
-
-// 이렇게 했을 시 에러 안남 -> 스프레드 오퍼레이터의 문제인듯,

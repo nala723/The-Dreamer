@@ -82,3 +82,30 @@ export const colors = [
 export const cursors = [
     'url(/images/brush.cur), pointer', 'url(/images/eraser.cur), pointer', 'url(/images/bucket.cur), pointer'
 ];
+
+export const emotionList = [
+    {
+        name : 'soso',
+        img: '../assets/face-soso.svg', 
+      },
+    {
+        name : 'wink',
+        img: '../assets/face-wink.svg',  
+      },
+    {
+      name : 'happy',
+      img: '../assets/face-happy.svg', 
+    },
+    {
+      name : 'bad',
+      img: '../assets/face-bad.svg'
+    },
+    {
+     name : 'what',
+     img: '../assets/face-what.svg'
+    }
+]
+
+export const hashTagList = [
+    '고백받는', '로또 당첨되는', '돼지', '시험 합격하는', '돈', '취업하는', '가족'
+]

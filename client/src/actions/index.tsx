@@ -7,6 +7,14 @@ const SEARCH_DREAM = 'SEARCH_DREAM' as const;
 const SEARCH_DREAM_SUCCESS = 'SEARCH_DREAM_SUCCESS' as const;
 const SEARCH_DREAM_ERROR = 'SEARCH_DREAM_ERROR' as const;
 
+const USER_INFO = 'USER_INFO' as const;
+const USER_EDIT_INFO = "USER_EDIT_INFO" as const;
+const WITHDRAWL = "WITHDRAWL" as const;
+const GET_NEW_TOKEN = "GET_NEW_TOKEN" as const;
+
+const LIKE_DREAM = 'LIKE_DREAM' as const;
+const DISLIKE_DREAM = 'DISLIKE_DREAM' as const;
+
 // 액션 생성함수 선언
 
 export const SearchDreamAct = (data: string) =>  { 
@@ -22,9 +30,19 @@ export const SearchDreamAct = (data: string) =>  {
                     },
                 })
                 if(response.data.items){
+                     const dataArray = (response.data.items).map((el: Data) => {
+                        el['title'] = el.title.replace(/[<][^>]*[>]/gi,' ')
+                        el['description'] = el.description.replace(/[<][^>]*[>]/gi,' ')
+                       return  el = {
+                            title: el['title'],
+                            description:  el['description'],
+                            link: el['link'],
+                             }   
+                    }) 
+
                     dispatch({ 
                         type: SEARCH_DREAM_SUCCESS,
-                        payload: response.data.items
+                        payload: dataArray
                     })
                   }    
 
@@ -43,15 +61,63 @@ export const SearchDreamAct = (data: string) =>  {
     }
 }
 
-interface Data { // 나중에 필요할지도! 일단 kipppp
-    bloggerlink: string;
-    bloggername: string;
-    description: string;
-    link: string;
-    postdate: string;
-    title: string;
+export const SignInAct = (data: UserInfo) => {
+    return {
+        type: USER_INFO,
+        payload: data
+    }
 }
 
+export const GetTokenAct = (data: string) => {
+    return {
+        type: GET_NEW_TOKEN,
+        payload: data
+    }
+}
+
+export const EditUserAct = (data : {username: string, profile: string, email: string})=> {
+    return {
+        type: USER_EDIT_INFO,
+        payload: data
+    }
+}
+
+export const WithDrawlAct = (data: UserInfo)=> {
+    return {
+        type: WITHDRAWL,
+        payload: data
+    }
+}
+
+export const LikeDrmAct = (data: Data[]) => {
+    return {
+        type: LIKE_DREAM,
+        payload: data
+    }
+}
+
+export const DisLikeDrmAct = (data: string)=> {
+    return {
+        type: DISLIKE_DREAM,
+        payload: data
+    }
+}
+
+interface Data { // 나중에 필요할지도! 일단 kipppp
+    [index: string] : any
+    description: string;
+    link: string;
+    title: string;
+    islike?: boolean
+}
+
+interface UserInfo { // 나중에 필요할지도! 일단 kipppp
+    accessToken: string;
+    email: string;
+    username: string;
+    profile: string;
+    isSocial: boolean;
+}
 
 // 모든 액션 겍체들에 대한 타입을 준비해줍니다.
 // ReturnType<typeof _____> 는 특정 함수의 반환값을 추론해줍니다
@@ -72,35 +138,110 @@ interface SearchDrmErr_Action {
 type Action = 
     | SearchDrm_Action
     | SearchDrmSuccess_Action
-    | SearchDrmErr_Action;
+    | SearchDrmErr_Action
+    | ReturnType<typeof SignInAct>
+    | ReturnType<typeof GetTokenAct>
+    | ReturnType<typeof EditUserAct>
+    | ReturnType<typeof WithDrawlAct>
+    | ReturnType<typeof LikeDrmAct>
+    | ReturnType<typeof DisLikeDrmAct>
 
 // 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
 
 type ActionState = {
-    loading: boolean,
-    data: Data[],
-    error: string | null
+    search: {
+        loading: boolean,
+        data: Data[],
+        error: string | null,
+    },
+    user: {
+        accessToken: string;
+        email: string;
+        username: string;
+        profile: string; 
+        isSocial: boolean;
+    },
+    dream: Data[];
 }
+//임시로 리덕스로.. 나중에 서버랑 연결해주자..이렇게 하면 다른 아이디로 해도 남아있을듯
+//혹은 로그인 로그아웃시 없어지거나
 
 // 초기상태를 선언합니다.
 const initialState: ActionState = {
-    loading: false,
-    data: [],
-    error: null
+    search: {
+        loading: false,
+        data: [],
+        error: null,
+    },
+    user: {
+        accessToken: '',
+        email: '',
+        username: '',
+        profile: '',
+        isSocial: false
+    },
+    dream: [],
 };
 
 // 리듀서를 작성합니다.
 // 리듀서에서는 state 와 함수의 반환값이 일치하도록 작성하세요.
 // 액션에서는 우리가 방금 만든 CounterAction 을 타입으로 설정합니다.
-export default function searchReducer (state: ActionState = initialState, action: Action): ActionState {
+export function searchReducer (state: ActionState = initialState, action: Action): ActionState {
     switch (action.type) {
         case SEARCH_DREAM:
-            return { loading: true, data: [], error: null };
+            return Object.assign({}, state, {
+                search: { loading: true, data: [], error: null }
+            })
         case SEARCH_DREAM_SUCCESS:
-            return { loading: false, data: action.payload, error: null };
+            return Object.assign({}, state, {
+                search: { loading: false, data: action.payload, error: null }
+            })
         case SEARCH_DREAM_ERROR:
-            return { loading: false, data: [], error: action.payload };           
+            return Object.assign({}, state, {
+                search: { loading: false, data: [], error: action.payload }
+            })         
         default:
             return state;
     }
 }
+export function usersReducer (state: ActionState = initialState, action: Action): ActionState {
+    switch (action.type) {
+        case USER_INFO:
+            return Object.assign({}, state, {
+                user: action.payload
+            })
+        case USER_EDIT_INFO:
+            return Object.assign({}, state, {
+                user: { ...state.user, ...action.payload}
+            })        
+        case GET_NEW_TOKEN:
+            return Object.assign({}, state, {
+                user: { ...state.user, accessToken: action.payload }
+            })
+        case WITHDRAWL:
+            return Object.assign({}, state, {
+                user: action.payload
+            })               
+        default:
+            return state;
+    }
+}
+
+export function dreamReducer (state: ActionState = initialState, action: Action): ActionState {
+    switch (action.type) {
+        case LIKE_DREAM:
+            return Object.assign({}, state, {
+                dream: [...state.dream, ...action.payload]
+            })
+        case DISLIKE_DREAM:
+            return Object.assign({}, state, {
+                dream: state.dream.filter((el)=> {
+                    let splitarr: string[] | string = el['link'].split('=')
+                    splitarr = splitarr[splitarr.length-1]
+                   return splitarr !== action.payload
+                })
+            })         
+        default:
+            return state;
+    }
+}   

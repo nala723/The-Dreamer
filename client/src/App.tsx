@@ -7,6 +7,9 @@ import { ThemeProvider } from 'styled-components';
 import { darkTheme, lightTheme } from './styles/theme';
 import ParticlesConfig from './config/particle-config';
 import useDarkTheme from './config/useDarkTheme';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
 
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));

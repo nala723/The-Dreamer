@@ -4,7 +4,7 @@ import reset from 'styled-reset'; // style-reset 패키지
 const GlobalStyles = createGlobalStyle` 
     ${reset}
  
-    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond&family=Gowun+Batang&family=Noto+Serif+KR:wght@200&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&family=Gowun+Batang&family=Noto+Serif+KR:wght@200&display=swap');
 
     a{
         text-decoration: none;
@@ -40,6 +40,13 @@ const GlobalStyles = createGlobalStyle`
     h1 {
         ${props=>props.theme.textBlur};
         letter-spacing: 0.3rem;
+        ${props=> props.theme.laptop}{
+         font-size: 30px;
+        }
+        ${props=> props.theme.mobile}{
+         font-size: 22px;
+         letter-spacing: 0.1rem;
+        }
     }
  
 `;

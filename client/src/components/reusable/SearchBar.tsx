@@ -1,27 +1,40 @@
 import React,{ useState } from 'react';
 import styled from 'styled-components';
 
-function SearchBar({height, width, scale, font, handleSearch}: 
-  {height: string; width: string; scale: string; font: string; handleSearch: (search: string)=>void;}) {
-  
+interface SearchProps {
+  height: string; 
+  width: string;
+  scale: string; 
+  font: string; 
+  handleSearch: (search: string)=>void; 
+  handleInput?: (search: string)=> void; 
+  input?: string; 
+  landing?: string;
+}
+
+function SearchBar(props: SearchProps) {
+  const { height, width, scale, font, handleSearch, handleInput, input, landing } = props;
   const [search, setSearch] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value)
+    handleInput && handleInput(e.target.value)
   }  
   const handleSumbit = () => {
-    if(search === ''){
-      return; //경고 모달
-    }else{
-      handleSearch(search);
-    }
-    setSearch('')
+      if(input){
+        handleSearch(input);
+      }else{
+        handleSearch(search);
+      }
   }
 
   return (
     <SearchBox width={width} onKeyUp={(e)=> {e.preventDefault(); e.key==='Enter'&& handleSumbit()}}>
-      <Icon type='image' src="/images/search-icon.svg" alt="search"  scale={scale} onClick={(e) => {e.preventDefault(); handleSumbit()}}/>
-      <Bar font={font} height={height} placeholder= 'Search your dream..' type="search" onChange={(e) => handleChange(e)} value={search}>
+      <Icon type='image' src="/images/search-icon.svg" alt="search" 
+        scale={scale} onClick={(e) => {e.preventDefault(); handleSumbit()}} landing={landing}/>
+      <Bar font={font} height={height} landing={landing}
+        placeholder= 'Search your dream..' type="search" 
+        onChange={(e) => handleChange(e)} value={input? input : search}>
       </Bar>
     </SearchBox>
   );
@@ -36,13 +49,19 @@ const SearchBox = styled.div<{width: string;}>`
   display: flex;
   align-items: center;
 `;
-const Icon = styled.input<{scale: string;}>`
+const Icon = styled.input<{scale: string; landing?: string;}>`
   position: absolute;
   cursor: pointer;
   right: 2%;
   transform: scale${props=>props.scale};
+  ${props=> props.theme.laptop}{
+    transform: ${props=> props.landing && `scale(0.8)`};
+  }
+  ${props=> props.theme.mobile}{
+    transform: scale(0.6);
+  }    
 `;
-const Bar = styled.input<{font: string;}>`
+const Bar = styled.input<{font: string; landing?: string;}>`
   background-color: ${props=> props.theme.transp};
   display: flex;
   align-items: center;
@@ -55,6 +74,15 @@ const Bar = styled.input<{font: string;}>`
   color: #494161;
     ::placeholder{
       color: #555562;
+      ${props=> props.theme.midTablet}{
+        font-size: ${props=> props.landing && `22px`};
+      }  
+      ${props=> props.theme.mobile}{
+        font-size:  ${props=> props.landing && `18px`};
+      }  
+      ${props=> props.theme.mobileM}{
+        font-size:  ${props=> props.landing && `16px`};
+      } 
     }
     ::-ms-clear,
     ::-ms-reveal{
@@ -66,4 +94,16 @@ const Bar = styled.input<{font: string;}>`
     ::-webkit-search-results-decoration{
       display:none;
     }
+  ${props=> props.theme.tablet}{
+      height:  ${props=> props.landing && `4.3rem`};
+    }  
+  ${props=> props.theme.mobile}{
+      height:  ${props=> props.landing ? `3.7rem` : `2.9rem`};
+      font-size:  16px;
+      padding-bottom: 0;
+    } 
+  ${props=> props.theme.mobileM}{
+      height:  ${props=> props.landing && `3.4rem`};
+   }          
+    
 `;

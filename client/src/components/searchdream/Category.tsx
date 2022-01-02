@@ -1,5 +1,7 @@
 import React, { useEffect, useRef }  from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { SearchDreamAct } from '../../actions';
 import { dummyDatas } from '../../config/dummyDatas';
 import { gsap } from 'gsap';
 
@@ -12,12 +14,13 @@ function CateGory(): JSX.Element {
     const SclineRef = useRef<HTMLDivElement>(null);
     const cateHeadRef = useRef<HTMLDivElement[]>([]);
     cateGoryRef.current = [];
-    DeepAnim.current = [];
+    // DeepAnim.current = [];
     cateHeadRef.current = [];
+    const dispatch = useDispatch();
   
     useEffect(()=>{
       gsap.set(openRef.current, { height: 'auto', opacity: 1})
-      const headani = gsap.timeline({ ease: 'expo.inOut' })
+      const headani = gsap.timeline()
       openRefTween.current = headani 
         .to(lineRef.current,{ 
             width: '100%',
@@ -87,8 +90,8 @@ function CateGory(): JSX.Element {
         }
       })
       DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
-        // console.log('ani :',ani.reversed())
-        ani.reverse(); // -----------> 현재 얘가 작동하지 않는다. 왜지?
+        console.log('ani :',ani.reversed(),  DeepAnim.current)
+        ani.reverse(); 
         // console.log('after ani :',ani.reversed())
    
       })
@@ -98,6 +101,11 @@ function CateGory(): JSX.Element {
           }
           // console.log('el :', el.animation.reversed())   
       })
+    }
+
+    const handleSearch = (e : React.MouseEvent<HTMLDivElement, MouseEvent>, el : string): void => {
+      e.preventDefault();
+      dispatch(SearchDreamAct(el))
     }
 
 
@@ -123,7 +131,7 @@ function CateGory(): JSX.Element {
                     <DeepLine/>
                       {dum[props].map((el,idx)=>{
                         return(
-                          <DeepGory key={idx}>{el}
+                          <DeepGory key={idx} onClick={(e) => handleSearch(e, el)}>{el}
                           </DeepGory>
                         )
                       })}
@@ -150,6 +158,20 @@ const CategoryBox = styled.div`
   top: 3.875rem;
   left: 4.4%;
   cursor: pointer;
+  z-index: 60;
+  ${props=> props.theme.midTablet}{
+    width: 8.5rem;
+  }
+  ${props=> props.theme.tablet}{
+    top: 2rem;
+    left: 2.5%;
+    width: 7rem;
+    /* font-size: 15px; */
+  }
+  ${props=> props.theme.mobile}{
+    top: 4.9rem;
+  }
+  
 `;
 const CareHeader = styled.div`
   width: 100%;
@@ -164,6 +186,10 @@ const CareHeader = styled.div`
     width: 1.125rem;
     height: 1rem;
     transform: scale(1.5);
+  }
+  ${props=> props.theme.tablet}{
+    padding: 0;
+    padding-left: 1rem;
   }
 `;
 const CateTitle = styled.div`
@@ -199,6 +225,9 @@ const Category = styled.div`
   overflow: hidden;
   height: auto;
   opacity: 0;
+  ${props=> props.theme.mobile}{
+    background-color: ${props=>props.theme.reverse};
+  }
 `;
 const DeepTitle = styled(CateTitle)`
   gap: 1rem;
@@ -223,6 +252,9 @@ const DeepGory = styled(Category)`
   opacity: 1;
   align-items: center;
   padding-left: 0;
+  ${props=> props.theme.mobile}{
+    background-color: yellow;
+  }
 `;
 const CtEndLine = styled(CateLine)`
   bottom: 0;
