@@ -1,7 +1,7 @@
 const { Picture } = require('../../models');
 const { isAuthorized, remakeToken } = require('../tokenFunctions')
 const aws = require('aws-sdk');
-aws.config.loadFromPath(__dirname + '/../s3.json'); 
+aws.config.loadFromPath(__dirname + "/./../../s3.json" ); 
 const s3 = new aws.S3();
 
 module.exports = async (req, res) => {
