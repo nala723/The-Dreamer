@@ -17,6 +17,8 @@ module.exports = (req, res) => {
         //전체 다 입력한 상태에서 보내도록 해야함.
         const userData = isAuthorized(accessToken);
         const modifyImage = fs.readFileSync(req.file.path);
+        // const modifyImage = req.file.location;
+        // console.log('modifyImage :', modifyImage,'image :', image);
         const modifyPW = req.body.password;
 
         bcrypt.genSalt(10, (err, salt) => {

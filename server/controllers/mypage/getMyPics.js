@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
           where : {
               user_id:  userId
           }
-      }).then((result)=> {
+      }).then((result)=> { 
         for(let i=0; i<result.length; i++){
             obj['id'] = result[i].dataValues.id;
             obj['title'] = result[i].dataValues.title;
@@ -31,6 +31,7 @@ module.exports = async (req, res) => {
             obj['emotion'] = result[i].dataValues.emotion;
             arr.push(obj);
             obj = {};
+
          }
          res.status(200).json({arr});
       }).catch(err=>{

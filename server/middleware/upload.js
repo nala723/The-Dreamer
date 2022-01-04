@@ -1,4 +1,11 @@
 const multer = require("multer");
+// const multerS3 = require('multer-s3'); 
+// const aws = require('aws-sdk');
+// aws.config.loadFromPath(__dirname + '/../s3.json'); 
+// const s3 = new aws.S3();
+
+
+
 
 const imageFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -7,6 +14,23 @@ const imageFilter = (req, file, cb) => {
     cb("Please upload only images.", false);
   }
 };
+
+// const uploadFile = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: 'the-dreamer/user-profile',
+//     acl: 'public-read',
+//     contentType: multerS3.AUTO_CONTENT_TYPE,
+//     key: function (req, file, cb) {
+//       cb(null, `${Date.now()}_${file.originalname}`);
+//     },
+//   }),
+//   fileFilter: imageFilter,
+//   limits: { 
+//     fileSize: 1000 * 1000 * 10 
+//   }
+// })
+
 
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
