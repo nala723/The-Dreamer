@@ -80,11 +80,6 @@ function MyDream() {
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
-                console.log(re.picture);
-                if(typeof re.picture !== 'string'){
-                 re.picture ="data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
-                }
-         
                 return re;
               })
               setMyPic(data);
