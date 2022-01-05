@@ -5,6 +5,7 @@ import axios from 'axios';
 import Modal from '../components/reusable/Modal';
 import {useHistory} from 'react-router-dom';
 import {  emailIsValid, pwIsValid } from '../components/reusable/Validator';
+import { darkTheme } from '../styles/theme';
 
 type ErrorMsgType = {
   [index: string]: string
@@ -110,7 +111,7 @@ function SignUp(){
     setIsOpen(false)
     history.push('./login')
   }
-  
+  console.log(errorMessage);
   return (
      <Container>
        {isOpen && <Modal handleClick={handleClick}>회원 가입이 완료되었습니다.</Modal>}
@@ -125,9 +126,9 @@ function SignUp(){
                   <InputWrapper key={idx}>
                     <SingleInput>
                       <div>{el.name}</div>
-                      <input type={el.type} onChange={handleInput(el.key)} onBlur={validationCheck(el.key)}/>
+                      <input type={el.type} placeholder={el.name} onChange={handleInput(el.key)} onBlur={validationCheck(el.key)}/>
                     </SingleInput>
-                    {<Error>{errorMessage[el.key]}</Error>}
+                    {<Error err={errorMessage[el.key]? 'err' : ''}>{errorMessage[el.key]}</Error>}
                   </InputWrapper>
                 )
               })}
@@ -161,7 +162,15 @@ const SignupBox = styled.div`
   height: 42.125rem;
   padding: 2.75rem 0 ;
   gap: 2.7rem;
-  color:  ${props=> props.theme.transp};
+  color:  ${props=> props.theme === darkTheme ? 
+    'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168)'};
+  @media only screen and (max-width: 550px){
+    max-width: 33.438rem;
+    max-height: 42.125rem;
+    width: 80vw;
+    height: auto;
+    /* gap: 2rem; */
+  }  
 `;
 
 const Title = styled.div`
@@ -170,6 +179,9 @@ const Title = styled.div`
   text-align: center;
   > h1 {
     font-size: 3.438rem;
+    @media only screen and (max-width: 550px){
+      font-size: 3rem;
+    }
   }
 `;
 
@@ -179,16 +191,35 @@ const Content = styled.div`
   height: 24.5rem;
   gap: 2rem;
   margin-top: 0.8rem;
+  @media only screen and (max-width: 550px){
+    max-width: 28.063rem;
+    max-height: 24.5rem;
+    width: 95%;
+    height: auto;
+  }
+  ${props=>props.theme.mobile}{
+    gap: 1rem;
+    width: 100%;
+  }
+  
 `;
 
 const InputBox = styled.div`
   width: 100%;
   height: 17.938rem;
+  @media only screen and (max-width: 550px){
+    max-height: 17.938rem;
+    height: auto;
+  }
 `;
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 4.5rem;
+  @media only screen and (max-width: 550px){
+    height: 4rem;
+  }
+ 
 `;
 
 const SingleInput = styled.div`
@@ -212,22 +243,39 @@ const SingleInput = styled.div`
     font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
     font-size: 20px;
       ::placeholder{
-        color: ${props=> props.theme.transp};
+        color: transparent;
       }
   }
+  @media only screen and (max-width: 550px){
+    >div {
+     display: none;
+    }
+    >input {
+      width: 100%;
+      text-indent: 1rem;
+      ::placeholder{
+        color: ${props=> props.theme === darkTheme ?
+   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
+      }
+    }  
+  }
+  
 `;
-const Error = styled.div`
+
+const Error = styled.div<{err: string;}>`
   ${props => props.theme.flexRow};
   font-size: ${props => props.theme.fontS};
   align-items: flex-end;
   height: 1.2rem;
   color: ${props=> props.theme.point};
+  @media only screen and (max-width: 550px){
+    display: ${props=>props.err ? 'flex' : 'none'};
+  }
 `;
 
 const Button = styled.div`
   ${props => props.theme.flexRow};
   height: 3.75rem;
-  /* border: 1px solid ${props=> props.theme.transp};   */
   border-radius: 5px;
   font-size: ${props => props.theme.fontL};
   font-weight: 600;
@@ -235,12 +283,18 @@ const Button = styled.div`
   color: ${props=> props.theme.reverse};
   transition: all 0.3s ease-in-out;
   background: ${props=> props.theme.dream};  
-  /* border: transparent;  */
   :hover{
     background: transparent; 
     border: 1px solid ${props=> props.theme.transp};  
     color: ${props=> props.theme.text};
     transition: all 0.3s ease-in-out;
+  }
+  /* @media only screen and (max-width: 550px){
+    height: 3.4rem;
+  } */
+  ${props=>props.theme.mobile}{
+    height: 3rem;
+    font-weight: 500;
   }
 `;
 
@@ -253,6 +307,9 @@ const HaveAccount = styled.div`
   > p:nth-child(2){
     color: ${props=> props.theme.point};
     cursor: pointer;
+  }
+  @media only screen and (max-width: 550px){
+    margin: 0;
   }
 `;
 
