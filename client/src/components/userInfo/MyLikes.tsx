@@ -17,11 +17,13 @@ function MyLikes() {
   const [ input, setInput ] = useState('');
   const [selected, setSelected] = useState(-1);
   const [hasText, sethasText] = useState(false);
+  const [width, setWidth] = useState('');
   const clickRef = useRef<any | null>(null);
   const DreamRef = useRef<HTMLDivElement[]>([]);
 
   DreamRef.current = [];
   let Position = [];
+  let quotient: number;
   let Xposition: number;
   let Yposition: number;
 
@@ -57,7 +59,7 @@ function MyLikes() {
       ).to(
         dream,
         {
-          x: random(-size,size), // 원래 위치를 변수에 담아놨다 다시 오게하던지
+          x: random(-size,size), 
           y: random(size,size),
           duration: random(5, 10)
         }
@@ -73,18 +75,53 @@ function MyLikes() {
 
   },[dream])
 
+  useEffect(()=>{
+    window.addEventListener('resize', getWidth);
+    getWidth();
+    return (()=>{
+      window.removeEventListener('resize', getWidth);
+    })
+  },[])
+
+  function getWidth(){
+    if(window.innerWidth <= 960 && window.innerWidth > 425){
+      setWidth('midTablet');
+    }
+    if(window.innerWidth <= 425){
+      setWidth('mobile');
+    }
+    else if(window.innerWidth > 960){
+      setWidth('');
+    }
+  }
+
   const handleLink = (e: React.MouseEvent ,link : string) => {
     e.preventDefault();
     return window.open(link);
   }
   const handlePosition = (index: number) => {
-    const quotient = (Math.floor(index / 3)) * 60;
-    if(index % 3 === 0){  
-      Xposition = 15;
-    }else if(index % 3 === 1){
-      Xposition = 45;
-    }else if(index % 3 === 2){
-      Xposition = 75;
+    if(width === 'midTablet'){
+      quotient = (Math.floor(index / 2)) * 60;
+      if(index % 2 === 0){  
+        Xposition = 15;
+      
+      }else if(index % 2 === 1){
+        Xposition = 60;
+      }
+    }
+    else if(width === 'mobile'){
+      quotient = index * 60;
+      Xposition = 20;
+    }
+    else if(width === ''){
+      quotient = (Math.floor(index / 3)) * 60;
+      if(index % 3 === 0){  
+        Xposition = 15;
+      }else if(index % 3 === 1){
+        Xposition = 45;
+      }else if(index % 3 === 2){
+        Xposition = 75;
+      }
     }
     Yposition = quotient + (Math.floor(Math.random() * 10)) + 5
     Position = [Xposition + '%', Yposition + '%'];
@@ -229,6 +266,17 @@ function MyLikes() {
            <h5>전체보기</h5>
           </Allsearch>
         </ UpperSection>
+        <ResponsiveBox>
+            <RspCareHeader >
+              <h5>날짜로 보기</h5>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </RspCareHeader>
+            <RspAllsearch onClick={handleAllsearch}>
+              <h5>전체보기</h5>
+            </RspAllsearch > 
+        </ResponsiveBox>   
         <DreamSection>
         {likes && likes.map((res, idx) => {
           const position = handlePosition(idx);
@@ -253,8 +301,8 @@ function MyLikes() {
 export default MyLikes;
 
 const Container = styled.div`            
-  width: 100%;
   ${props=> props.theme.flexColumn};
+  height: 100%;
   justify-content: flex-start;
   overflow: auto;
   -ms-overflow-style: none; /* IE, Edge */
@@ -272,7 +320,21 @@ const Title = styled.div`
   h1{
     font-size: ${props=>props.theme.fontL};
   }
+  ${props=> props.theme.midTablet}{
+    text-align: center;
+    padding: 0;
+    padding-top: 1.5rem;
+  }
+  ${props=> props.theme.tablet}{
+    padding-top: 1rem;
+    height: 3.5rem;
+  }
+  ${props=> props.theme.mobile}{
+    padding-top: 0.6rem;
+    height: 2.2rem;
+  }
 `;
+
 const UpperSection = styled.div`
   width: 100%;
   height: 5.688rem;
@@ -280,8 +342,16 @@ const UpperSection = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 5rem; 
-  padding-left: 5rem;
+  padding: 0 5rem;
   color: ${props=> props.theme.text};
+  ${props=> props.theme.laptop}{
+    padding: 0 2em;
+    gap: 1.5rem;
+  } 
+  ${props=> props.theme.mobile}{
+    justify-content: center;
+    height: 4.5rem;
+  }
 `;
 
 const SearchSection = styled.div`
@@ -289,17 +359,15 @@ const SearchSection = styled.div`
   height: 5.688rem;
   display: flex;
   position: relative;
+  ${props=> props.theme.tablet}{
+    max-width: 85%;
+  }
+  ${props=> props.theme.mobile}{
+    max-width: 91vw;
+    height: 4.5rem;
+  }
 `;
 
-// const CategoryBox = styled.div`
-//   position: absolute;
-//   display: flex;
-//   flex-direction: column;
-//   width: 9.375rem;
-//   top: 3.875rem;
-//   left: 4.4%;
-//   cursor: pointer;
-// `;
 
 const CareHeader = styled.div`
   width: 9.5rem;
@@ -307,6 +375,7 @@ const CareHeader = styled.div`
   color: ${props=> props.theme.text};
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0 1rem; // 임시 ***
   cursor: pointer;
   /* justify-content: space-evenly; //일단. 주석- */
@@ -315,6 +384,9 @@ const CareHeader = styled.div`
     width: 1.125rem;
     height: 1rem;
     transform: scale(1.5);
+  }
+  ${props=> props.theme.midTablet}{
+   display: none;
   }
 `;
 const DropDownContainer = styled.ul`
@@ -349,10 +421,51 @@ const DropDownContainer = styled.ul`
 `;
 
 const Allsearch = styled.div`
-  width: 3.8rem;
-  margin-left: -0.7rem;
-  cursor: pointer;
+  min-width: 3.521rem;
   text-align: center;
+  cursor: pointer;
+  ${props=> props.theme.laptop}{
+    min-width: 3.521rem;
+    width: auto;
+    margin-left:1rem;
+  } 
+  ${props=> props.theme.tablet}{
+    min-width: 15%;
+    margin: 0;
+  }
+  ${props=> props.theme.mobile}{
+    display: none;
+  }
+`;
+
+const ResponsiveBox = styled.div`
+  display: none;
+  ${props=> props.theme.midTablet}{
+   display: flex;
+   width: 100%;
+   padding: 0 2rem;
+  }
+  ${props=> props.theme.mobile}{
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+  }
+`;
+
+const RspCareHeader = styled(CareHeader)`
+  ${props=> props.theme.midTablet}{
+    width: 6.5rem;
+    display: flex;
+    padding: 0;
+  }
+`;
+const RspAllsearch = styled(Allsearch)`
+  display: none;
+  ${props=> props.theme.mobile}{
+    color: ${props=> props.theme.text};
+    display: flex;
+    align-items: center;
+  }
 `;
 
 const DreamSection = styled.div`
@@ -383,6 +496,13 @@ const Dream = styled.div<{top: string; left: string;}>`
    fill: #DF899D;
    /* margin-bottom: -1rem; //위치 나중 수정 */
     }
+  }
+  @media only screen and (max-width: 1024px) and (min-width: 769px){ 
+    top: ${props=> `calc(${props.top} / 2 )`}; 
+    left: ${props=> `calc(${props.left} - 3rem )`}; 
+  }
+  @media only screen and (max-width: 768px) and (min-width: 600px){ 
+    top: ${props=> `calc(${props.top} / 1.3 )`}; 
   }
 `;
 const DrContent = styled.div`

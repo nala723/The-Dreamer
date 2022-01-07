@@ -53,12 +53,13 @@ function Header (props: { themeToggler: () => void; t: any; }){
    }
  };
   useEffect(() => {
-    window.addEventListener("resize", showButton);
-    return (()=>{
-      window.removeEventListener("resize", showButton);
+    window.addEventListener('resize', showButton);
+    showButton();
+    return(()=>{
+      window.removeEventListener('resize', showButton);
     })
   }, []); 
-
+  
 
   const handleClick = () => {
     setIsOpen(!isOpen);

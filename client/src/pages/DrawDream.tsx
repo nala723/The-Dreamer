@@ -645,7 +645,6 @@ ${props=> props.theme.mobile}{
 ${props=> props.theme.mobileM}{
   max-width: 80%;
 }
-
     height: 100%;
     width: 85%;
     text-indent: -2rem;
@@ -686,6 +685,8 @@ ${props=> props.theme.mobile}{
   width: 100%;
   height: auto;
   flex-direction: column-reverse;
+  -webkit-flex-direction: column-reverse;
+  -moz-flex-direction: column-reverse;
   justify-content: center;
   padding: 0.2rem 1rem 1rem 1rem;
   bottom: 0;
@@ -755,6 +756,8 @@ const ButtonBox = styled.div`
 ${props=> props.theme.midTablet}{
   width: auto;
   flex-direction: row-reverse;
+  -webkit-flex-direction: row-reverse;
+  -moz-flex-direction: row-reverse;
   gap: 0.6rem;
   height: 2rem; 
 }
@@ -804,6 +807,8 @@ ${props=> props.theme.midTablet}{
 const UpperBtn = styled.span`
 ${props=> props.theme.midTablet}{
   flex-direction: row-reverse;
+  -webkit-flex-direction: row-reverse;
+  -moz-flex-direction: row-reverse;
   gap: 0.6rem;
 }
   width: 100%;

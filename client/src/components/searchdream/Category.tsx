@@ -227,6 +227,8 @@ const Category = styled.div`
   opacity: 0;
   ${props=> props.theme.mobile}{
     background-color: ${props=>props.theme.reverse};
+    border-radius: 5px;
+    height: 1.3rem;
   }
 `;
 const DeepTitle = styled(CateTitle)`
@@ -246,14 +248,14 @@ const DeepLine = styled(CateLine)`
   height: 1px;
 `;
 const DeepGory = styled(Category)`
-  /* padding-left: 5rem;  */ // ******둘, 임시로 지움
-  /* align-items: flex-start; */ 
   height: 100%;
   opacity: 1;
   align-items: center;
   padding-left: 0;
   ${props=> props.theme.mobile}{
-    background-color: yellow;
+    background-color: rgba(131, 112, 187, 1);
+    height: 1.3rem;
+    color: white;
   }
 `;
 const CtEndLine = styled(CateLine)`

@@ -10,7 +10,6 @@ import Modal from '../components/reusable/Modal';
 import { hashTagList } from '../config/dummyDatas';
 import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
-import axios from 'axios';
 
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
@@ -77,11 +76,13 @@ function SearchDream(): JSX.Element {
   // 처음 한번 이벤트 걸어볼까? 그러고 이 안에서 함수만들고 그에 따라 상태값변하게
   useEffect(()=>{
     window.addEventListener('resize', getWidth);
+    getWidth();
     return (()=>{
       window.removeEventListener('resize', getWidth);
     })
   },[])
- 
+  
+
   function getWidth(){
     if(window.innerWidth <= 960 && window.innerWidth > 425){
       setWidth('midTablet');
@@ -328,6 +329,13 @@ const Dream = styled.div<{top: string; left: string;}>`
   top: ${props=>props.top};
   left: ${props=>props.left};
   z-index: 50;
+  @media only screen and (max-width: 1024px) and (min-width: 769px){ // ipad Pro 사이즈
+    top: ${props=> `calc(${props.top} / 2 )`}; 
+    left: ${props=> `calc(${props.left} - 3rem )`}; 
+  }
+  @media only screen and (max-width: 768px) and (min-width: 600px){ // ipad Pro 사이즈
+    top: ${props=> `calc(${props.top} / 1.3 )`}; 
+  }
 `;
 const DrContent = styled.div`
  ${props=> props.theme.flexColumn};

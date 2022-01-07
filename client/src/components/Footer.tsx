@@ -48,6 +48,8 @@ const MidBox = styled.div`
     ${props=> props.theme.flexColumn};
     height: 100%;
     flex-direction: column-reverse;
+    -webkit-flex-direction: column-reverse;
+    -moz-flex-direction: column-reverse;
     align-items: flex-start;
     justify-content: flex-end;
   }

@@ -382,7 +382,6 @@ const Introdct = styled.div`
   ${props=> props.theme.mobile}{
       max-width: 80vw;
       font-size: 15px;
-      /* max-height: 20vh; */
   }              
 `;
 const FinalBox = styled(GifBox)`

@@ -29,7 +29,6 @@ module.exports = async (req, res) => {
     }else{
       //이미 구글 로그인 한 적 있으면 바로 메시지 보내주기
         delete userInfo.dataValues.password;
-        delete userInfo.dataValues.profile;
         const access_token = generateAccessToken(userInfo.dataValues);
         const refresh_token = generateRefreshToken(userInfo.dataValues);
 

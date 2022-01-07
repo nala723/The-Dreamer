@@ -40,7 +40,7 @@ function Login(){
   }
 
   const handleSubmit = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     axios
       .post(process.env.REACT_APP_URL + `/sign/signin`,{
         email: loginInfo.Email,
@@ -93,7 +93,6 @@ function Login(){
     const email = res.profileObj.email;
     const username = res.profileObj.name;
     const profile = res.profileObj.imageUrl;
-
     socialLoginRq(email, username, profile )
   };  
 
@@ -177,6 +176,9 @@ const Container = styled.div`
   display: flex;
   ${props => props.theme.flexRow};
   height: calc(100vh - 4.375rem);
+  ${props=> props.theme.mobile}{
+   min-height: calc(100vh - 3.6rem);
+  }
 `;
 
 const LogInBox = styled.div`
@@ -257,7 +259,6 @@ const SingleInput = styled.div`
     text-indent: 3rem;
     color: ${props=> props.theme.text}; 
     background-color: transparent; 
-    font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
     font-size: 20px;
       ::placeholder{
         color: transparent;
@@ -274,6 +275,7 @@ const SingleInput = styled.div`
         color: ${props=> props.theme === darkTheme ?
    'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
       }
+      font-size: 16px;
     }  
   }
   ${props=>props.theme.mobile}{

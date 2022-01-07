@@ -80,6 +80,8 @@ function MyDream() {
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
+                re.picture = (typeof re.picture !== 'object' && typeof re.picture === 'string') ?
+                re.picture : "data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
                 return re;
               })
               setMyPic(data);
@@ -98,14 +100,13 @@ function MyDream() {
     }
   }
 
-
   // 서치하기 위함
   const handleSearch = (search: string) => {
     if(search === ''){
       setIsOpen(true);
       return;
     } 
-    // 정규식으로 괄호 제거
+  // 정규식으로 괄호 제거
    search = search.replace(/[[(){}]/gi,'') 
    const regex =  new RegExp(search,'gi');
    const searched = myPic.filter((el)=>{ 
@@ -215,39 +216,46 @@ function MyDream() {
       {openedPic && picOpenModal && <PicModal handleClick={handlePicClose} pic={openedPic}/>}
        <Title><h1>내가 그린 꿈</h1></Title>
        <UpperSection>
-          <CareHeader>
-            <h5>날짜로 보기</h5>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </CareHeader> 
-          <CareHeader>
-            <h5>종류별 보기</h5>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </CareHeader>
-          <SearchSection onKeyUp={handleKeyUp} ref={clickRef}>
-            <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch} handleInput={handleInput} input={input}/>
-            {hasText ? (
-            <DropDownContainer>
-              {options.map((option, idx) => (
-                <li
-                  key={idx}
-                  onClick={() => handleDropDownClick(option)}
-                  className={selected === idx ? "selected" : ""}
-                  role="presentation" 
-                >
-                  {option}
-                </li>
-              ))}
-            </DropDownContainer>
-          ) : null}
-          </SearchSection>
-          <Allsearch onClick={handleAllsearch}>
-           <h5>전체보기</h5>
-          </Allsearch>   
-       </ UpperSection> 
+         <ResponsiveLeft>
+            <CareHeader>
+              <h5>날짜로 보기</h5>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </CareHeader> 
+            <CareHeader>
+              <h5>종류별 보기</h5>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </CareHeader>
+            <RspAllsearch onClick={handleAllsearch}>
+              <h5>전체보기</h5>
+            </RspAllsearch > 
+          </ResponsiveLeft>
+          <ResponsiveRight >
+            <SearchSection onKeyUp={handleKeyUp} ref={clickRef}>
+              <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch} handleInput={handleInput} input={input}/>
+              {hasText ? (
+              <DropDownContainer>
+                {options.map((option, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => handleDropDownClick(option)}
+                    className={selected === idx ? "selected" : ""}
+                    role="presentation" 
+                  >
+                    {option}
+                  </li>
+                ))}
+              </DropDownContainer>
+            ) : null}
+            </SearchSection>
+            <Allsearch onClick={handleAllsearch}>
+            <h5>전체보기</h5>
+            </Allsearch>
+        </ResponsiveRight>   
+       </ UpperSection>   
        <DreamSection>
          <CardBox>
            {myPic.map((pic)=>{
@@ -294,6 +302,18 @@ const Title = styled.div`
   h1{
     font-size: ${props=>props.theme.fontL};
   }
+  ${props=> props.theme.midTablet}{
+    text-align: center;
+    padding: 0;
+    padding-top: 1.5rem;
+  }
+  ${props=> props.theme.tablet}{
+    padding-top: 1rem;
+  }
+  ${props=> props.theme.mobile}{
+    padding-top: 0.6rem;
+    height: 2.2rem;
+  }
 `;
 const UpperSection = styled.div`
   width: 100%;
@@ -304,29 +324,66 @@ const UpperSection = styled.div`
   gap: 3rem; 
   padding-left: 5rem;
   color: ${props=> props.theme.text};
+  ${props=> props.theme.laptop}{
+    padding: 0 2em;
+    gap: 1.5rem;
+  } 
+  ${props=> props.theme.midTablet}{
+    flex-direction: column-reverse;
+    padding-left: 3rem;
+  } 
+  ${props=> props.theme.mobile}{
+    padding: 0 1rem;
+    justify-content: center;
+    gap: 0;
+  }
+`;
+
+const ResponsiveRight = styled.div`
+    ${props=> props.theme.flexRow};
+    height: 5.688rem;
+    justify-content: flex-start;
+    gap: 3rem;
+    ${props=> props.theme.tablet}{
+      gap: 1rem;
+  }
+  ${props=> props.theme.mobile}{
+    justify-content: center;
+    max-width: 91vw;
+    height: 4.5rem;
+  }
 `;
 
 const SearchSection = styled.div`
   width: auto;
-  height: 5.688rem;
+  height: 100%;
   display: flex;
   position: relative;
+  ${props=> props.theme.tablet}{
+    max-width: 85%;
+  }
+  ${props=> props.theme.mobile}{
+    max-width: 91vw;
+    height: 4.5rem;
+  }
 `;
 
 const CareHeader = styled.div`
-  width: 9.5rem;
+  width: 7rem;
   height: 1.7rem;
   color: ${props=> props.theme.text};
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 0 1rem; // 임시 ***
   cursor: pointer;
-  /* justify-content: space-evenly; //일단. 주석- */
   >svg {
     fill: ${props=> props.theme.transp};
     width: 1.125rem;
     height: 1rem;
     transform: scale(1.5);
+  }
+  ${props=> props.theme.mobile}{
+    width: 100%;
   }
 `;
 const DropDownContainer = styled.ul`
@@ -361,11 +418,50 @@ const DropDownContainer = styled.ul`
 `;
 
 const Allsearch = styled.div`
-  width:  3.8rem;
+  min-width:  3.8rem;
   cursor: pointer;
   text-align: center;
+  ${props=> props.theme.laptop}{
+    min-width: 3.521rem;
+    width: auto;
+  } 
+  ${props=> props.theme.tablet}{
+    min-width: 15%;
+    margin: 0;
+  }
+  ${props=> props.theme.mobile}{
+    display: none;
+  }
 `;
 
+const ResponsiveLeft = styled.div`
+  display: flex;
+  width: auto;
+  gap: 3rem;
+  ${props=> props.theme.laptop}{
+    gap: 2rem;
+  }
+  ${props=> props.theme.midTablet}{
+    width: 100%;
+    justify-content: flex-start;
+  }
+  ${props=> props.theme.mobile}{
+   
+  }
+`;
+
+const RspAllsearch = styled(Allsearch)`
+  display: none;
+  ${props=> props.theme.mobile}{
+    color: ${props=> props.theme.text};
+    display: flex;
+    align-items: center;
+  }
+  ${props=> props.theme.mobile}{
+    width:100%;
+   justify-content: flex-end;
+  }
+`;
 const DreamSection = styled.div`
     width: 100%;
     height: calc(100vh - 4.375rem - 5.5rem - 5.688rem);

@@ -148,11 +148,13 @@ function SignUp(){
 export default SignUp;
 
 const Container = styled.div`            
-  /* position: relative; */
   overflow: hidden;
   display: flex;
   ${props => props.theme.flexRow};
   height: calc(100vh - 4.375rem);
+  ${props=> props.theme.mobile}{
+   min-height: calc(100vh - 3.6rem);
+  }
 `;
 
 const SignupBox = styled.div`
@@ -169,8 +171,7 @@ const SignupBox = styled.div`
     max-height: 42.125rem;
     width: 80vw;
     height: auto;
-    /* gap: 2rem; */
-  }  
+  } 
 `;
 
 const Title = styled.div`
@@ -240,7 +241,6 @@ const SingleInput = styled.div`
     text-indent: 5rem;
     color: ${props=> props.theme.text}; 
     background-color: transparent; 
-    font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
     font-size: 20px;
       ::placeholder{
         color: transparent;
@@ -255,8 +255,9 @@ const SingleInput = styled.div`
       text-indent: 1rem;
       ::placeholder{
         color: ${props=> props.theme === darkTheme ?
-   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
+        'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
       }
+      font-size: 16px;
     }  
   }
   

@@ -57,10 +57,10 @@ function Landing() {
     const watch = () => {
       window.addEventListener("scroll", handleScrollBtn);
     };
-    watch(); // addEventListener 함수를 실행
+    watch();
     return () => {
       window.removeEventListener("scroll", handleScrollBtn);
-    }; // addEventListener 함수를 삭제! 꼭 필요하다!
+    }; 
   });
 
   const handleSearch = (search: string) => {
@@ -119,10 +119,7 @@ const ScrollAni = (start: string, end: string) => keyframes`
 
 `;
 
-const Container = styled.div`
-${props=> props.theme.laptop}{
-  min-height: 1100vh; /*아이패드는 더 많이 필요..? */
-}              
+const Container = styled.div`            
   position: relative;
   overflow: hidden;
   display: flex;
@@ -130,6 +127,12 @@ ${props=> props.theme.laptop}{
   width: 100%;
   height: 728.24rem;
   background: ${props=> props.theme.landing};
+  ${props=> props.theme.laptop}{
+    min-height: 1100vh; 
+  }
+  ${props=> props.theme.mobile}{
+    height: 660rem;
+  }  
 `;
 const MainSection = styled.section`
   position: absolute; 

@@ -18,9 +18,9 @@ module.exports = async(req, res) => {
             }
 
             const userData = isAuthorized(accessToken);
-            // const saveImage = fs.readFileSync(req.file.path);
-            const saveImage = req.file.location
-            console.log('있나~:', saveImage)
+            const saveImage = fs.readFileSync(req.file.path);
+            // const saveImage = req.file.location
+            // console.log('있나~:', saveImage)
             await Picture.create({
                 title : req.body.title,
                 picture : saveImage,
