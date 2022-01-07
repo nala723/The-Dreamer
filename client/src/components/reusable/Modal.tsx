@@ -70,7 +70,6 @@ const ModalSection = styled.div<{size: string;}>`
   background: ${props=>props.theme.default};
   width: 27.563rem;
   height: ${props=> props.size ? props.size : '19.625rem'};
-  /* gap: ${props=> props.size && '1rem'}; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,14 +78,24 @@ const ModalSection = styled.div<{size: string;}>`
   &.active {
     z-index:999;
   }
+  ${props=> props.theme.mobile}{
+    width: 90vw;
+    height: calc(${props=> props.size ? props.size : '19.625rem'} / 1.15 );
+  }
 `;
 const ModalTitle = styled.div`
   width:100%;
   padding: 1rem 0 0 1rem;
+  ${props=> props.theme.mobile}{
+    padding-left: 0;
+  }
 `;
 const Img = styled.img.attrs<{src: string;}>(props=>({
   src: props.theme.imgsrc
 }))`
+  ${props=> props.theme.mobile}{
+    transform: scale(0.7);
+  }
 `;
 const Content = styled.div<{size: string;}>`
   ${props=> props.theme.flexColumn};
@@ -113,6 +122,17 @@ const Content = styled.div<{size: string;}>`
     height: 2rem;
     text-align: center;
   }
+  ${props=> props.theme.mobile}{
+    padding-top: 0;
+    justify-content: center;
+    height:  ${props=> props.size ? '54%' : '47%'};
+    >p{
+      width: 90%;
+      margin-top: 0.7rem;
+      display: ${props=> props.size ? 'block' : 'none'};
+    }
+  }
+  
 `;
 const OkBtn = styled.div<{signout : string;}>`
   ${props=> props.signout ? props.theme.flexRow : props.theme.flexColumn}
@@ -129,7 +149,7 @@ const OkBtn = styled.div<{signout : string;}>`
     transition: all 0.3s ease-in-out;
     background: ${props=> props.theme.dream};  
     border: transparent; 
-    color: ${props=> props.theme.reverse};
+    color: #494161;
     :hover{
       background: transparent; 
       border: 1px solid ${props=> props.theme.transp}; 

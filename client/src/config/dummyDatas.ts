@@ -109,3 +109,42 @@ export const emotionList = [
 export const hashTagList = [
     '고백받는', '로또 당첨되는', '돼지', '시험 합격하는', '돈', '취업하는', '가족'
 ]
+
+export const dummyPics = [
+    {
+        id: 1,
+        title: 'catcatcat',
+        picture: '/images/haha.png',
+        createdAt: '2022-01-07T03:24:00',
+        emotion: 'happy'
+    },
+    {
+        id: 2,
+        title: '하히후헤호',
+        picture: '/images/haha.png',
+        createdAt: '2022-01-04T03:24:00',
+        emotion: 'what'
+    },
+    {
+        id: 3,
+        title: 'catcatcat',
+        picture:  '/images/haha.png',
+        createdAt: '2022-01-05T03:24:00',
+        emotion: 'bad'
+    },
+    {
+        id: 4,
+        title: 'catcatcat',
+        picture:  '/images/haha.png',
+        createdAt: '2022-01-05T03:24:00',
+        emotion: 'wink'
+    },
+    {
+        id: 5,
+        title: 'catcatcat',
+        picture: '/images/haha.png',
+        createdAt: '2022-01-05T03:24:00',
+        emotion: 'wink'
+    }
+
+]

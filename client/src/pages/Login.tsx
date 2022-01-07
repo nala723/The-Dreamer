@@ -282,7 +282,6 @@ const SingleInput = styled.div`
     height: 3.5rem;
   }
 `;
-
 const Error = styled.div<{err: string;}>`
   ${props => props.theme.flexRow};
   font-size: ${props => props.theme.fontS};

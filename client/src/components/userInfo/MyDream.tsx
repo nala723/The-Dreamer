@@ -16,6 +16,7 @@ import { ReactComponent as Bad } from '../../assets/face-bad.svg';
 import { ReactComponent as What } from '../../assets/face-what.svg';
 import PicModal from '../reusable/PicModal';
 import Modal from '../reusable/Modal';
+import { dummyPics } from '../../config/dummyDatas'; // 임시 더미
 
 interface PicInter {
   id : number;
@@ -43,7 +44,7 @@ function MyDream() {
   const [ input, setInput ] = useState('');
   const [ selected, setSelected ] = useState(-1);
   const [ hasText, sethasText ] = useState(false);
-  const [ myPic, setMyPic ] = useState<PicInter[]>([]);
+  const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
   const history = useHistory();
   const dispatch = useDispatch();
   const clickRef = useRef<any | null>(null);
@@ -60,7 +61,7 @@ function MyDream() {
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
 
   useEffect(() => {
-    getPictures();
+    // getPictures(); // 임시 주석
     document.addEventListener('click',handleClickOutside);
     return () => {
       document.removeEventListener('click',handleClickOutside);
@@ -80,8 +81,8 @@ function MyDream() {
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
-                re.picture = (typeof re.picture !== 'object' && typeof re.picture === 'string') ?
-                re.picture : "data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
+                // re.picture = (typeof re.picture !== 'object' && typeof re.picture === 'string') ?
+                // re.picture : "data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
                 return re;
               })
               setMyPic(data);
@@ -172,7 +173,8 @@ function MyDream() {
   };
   // 전체 목록 조회
   const handleAllsearch = () => {
-    getPictures();
+    return; // 임시 더미 ***
+    // getPictures(); 
   }
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
@@ -445,9 +447,6 @@ const ResponsiveLeft = styled.div`
     width: 100%;
     justify-content: flex-start;
   }
-  ${props=> props.theme.mobile}{
-   
-  }
 `;
 
 const RspAllsearch = styled(Allsearch)`
@@ -466,6 +465,11 @@ const DreamSection = styled.div`
     width: 100%;
     height: calc(100vh - 4.375rem - 5.5rem - 5.688rem);
     padding: 2rem 5rem;
+    ${props=> props.theme.mobile}{
+    min-height: 80vh;
+    height: auto;
+    padding: 2rem;
+  }
 `;
 
 const CardBox = styled.div`
