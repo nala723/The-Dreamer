@@ -5,7 +5,7 @@ import {  useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../actions';
 import Modal from '../components/reusable/Modal';
 import Footer from '../components/Footer';
-import SecondSection from '../components/landing/Second';
+import SecondSection from '../components/landing/SecondSection';
 import { keyframes } from 'styled-components';
 import SearchBar from '../components/reusable/SearchBar';
 
@@ -153,7 +153,6 @@ const ContentsBox = styled.div`
       letter-spacing: 0.4rem;
       ${props=> props.theme.mobile}{ // 가운데 보고 수정...정규식이나..
         letter-spacing: 0.2rem;
-        max-width: 50%;
         text-align: center;
         line-height: 2rem; 
       }
@@ -178,6 +177,9 @@ const SearchBox = styled.div`
   ${props=> props.theme.tablet}{
       min-width: 80vw;
       width: 80vw;
+    }
+  ${props=> props.theme.mobile}{
+     min-width: 90vw;
     }
            
 `;  

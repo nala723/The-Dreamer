@@ -120,11 +120,10 @@ function DrawDream({ width, height }: CanvasProps) {
     const blobBin = Buffer.from(image, 'base64').toString('binary');
 		const array = [];
 		for (let i = 0; i < blobBin.length; i += 1) {
-			array.push(blobBin.charCodeAt(i));//인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장한다. 
+			array.push(blobBin.charCodeAt(i));//인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장한다. (UTF-16 코드를 나타내는 0부터 65535 사이의 정수를 반환)
 		}
 		const u8arr = new Uint8Array(array); //8비트의 형식화 배열을 생성한다. 
 		const file = new Blob([u8arr], { type: "image/png" }); // Blob 객체 생성
-    console.log(typeof file);
 		const formdata = new FormData(); // formData 생성
 		formdata.append("picture", file); // formdata에 file data 추가
     formdata.append('title', title);

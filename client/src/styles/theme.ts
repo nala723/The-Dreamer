@@ -33,7 +33,6 @@ export const darkTheme: DefaultTheme = {
   fontNormal: 400,
   fontBold: 700,
   toggle: '#002F75',
-  toggleicon: '🌙',
   dream: `linear-gradient(#ffb9c5 10%, #ff9fc2 30%, #ffbfba 80%, #fffcac)`,
   circle: `white`,
   landing: `linear-gradient(
@@ -94,7 +93,6 @@ export const lightTheme: DefaultTheme = {
   fontNormal: 400,
   fontBold: 700,
   toggle: '#76DEFF',
-  toggleicon: '☀️',
   dream: `linear-gradient(#ffb9c5 10%, #ff9fc2 30%, #ffbfba 80%, #fffcac)`,
   circle: `linear-gradient(
     #000729, 45%, #40344E, 90%,rgb(209,155,161,0.95) 100%

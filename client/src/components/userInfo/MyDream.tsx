@@ -16,6 +16,7 @@ import { ReactComponent as Bad } from '../../assets/face-bad.svg';
 import { ReactComponent as What } from '../../assets/face-what.svg';
 import PicModal from '../reusable/PicModal';
 import Modal from '../reusable/Modal';
+import Calender from "../reusable/Calender";
 import { dummyPics } from '../../config/dummyDatas'; // 임시 더미
 
 interface PicInter {
@@ -219,18 +220,8 @@ function MyDream() {
        <Title><h1>내가 그린 꿈</h1></Title>
        <UpperSection>
          <ResponsiveLeft>
-            <CareHeader>
-              <h5>날짜로 보기</h5>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </CareHeader> 
-            <CareHeader>
-              <h5>종류별 보기</h5>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </CareHeader>
+            <Calender />
+            <Calender />
             <RspAllsearch onClick={handleAllsearch}>
               <h5>전체보기</h5>
             </RspAllsearch > 

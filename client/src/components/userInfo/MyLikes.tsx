@@ -7,6 +7,7 @@ import { DisLikeDrmAct } from '../../actions';
 import { RootState } from '../../reducers';
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import gsap from 'gsap';
+import Calender from '../reusable/Calender';
 
 function MyLikes() {
   const [isOpen, setIsOpen] = useState(false);
@@ -239,12 +240,7 @@ function MyLikes() {
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
         <Title><h1>좋아하는 꿈</h1></Title>
         <UpperSection >
-          <CareHeader>
-          <h5>날짜로 보기</h5>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-          </CareHeader>         
+         <Calender />       
           <SearchSection onKeyUp={handleKeyUp} ref={clickRef}>
             <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch} handleInput={handleInput} input={input}/>
             {hasText ? (
@@ -268,7 +264,7 @@ function MyLikes() {
         </ UpperSection>
         <ResponsiveBox>
             <RspCareHeader >
-              <h5>날짜로 보기</h5>
+              <h5>날짜별 보기</h5>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
@@ -303,7 +299,7 @@ export default MyLikes;
 const Container = styled.div`            
   ${props=> props.theme.flexColumn};
   height: 100%;
-  justify-content: flex-start;
+  justify-content: relative;
   overflow: auto;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
@@ -357,6 +353,7 @@ const UpperSection = styled.div`
 const SearchSection = styled.div`
   width: auto;
   height: 5.688rem;
+  left: 15%;
   display: flex;
   position: relative;
   ${props=> props.theme.tablet}{

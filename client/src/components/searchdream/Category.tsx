@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../../actions';
 import { dummyDatas } from '../../config/dummyDatas';
 import { gsap } from 'gsap';
+import {ReactComponent as Arrow} from '../../assets/arrow.svg';
 
 function CateGory(): JSX.Element {
     const openRef = useRef(null);
@@ -14,7 +15,6 @@ function CateGory(): JSX.Element {
     const SclineRef = useRef<HTMLDivElement>(null);
     const cateHeadRef = useRef<HTMLDivElement[]>([]);
     cateGoryRef.current = [];
-    // DeepAnim.current = [];
     cateHeadRef.current = [];
     const dispatch = useDispatch();
   
@@ -115,9 +115,7 @@ function CateGory(): JSX.Element {
       <CategoryBox>
         <CareHeader onClick={handleOpen}>
         <h5>카테고리</h5>
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
+        <Arrow />
         </CareHeader>
         <CateTitle ref={openRef}>
           <CateLine ref={lineRef}/>

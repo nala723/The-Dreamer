@@ -198,9 +198,9 @@ function MyAccount() {
             imgforaxios && formData.append("profile",imgforaxios);
             formData.append("password",currentInput.Password);
             // 잘 가는지 확인
-            for(const pair of formData.entries()) {
-              console.log(pair[0]+ ', '+ pair[1]);
-           }
+          //   for(const pair of formData.entries()) {
+          //     console.log(pair[0]+ ', '+ pair[1]);
+          //  }
                 axios
                 .patch(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,formData,{
                        headers: {
@@ -517,7 +517,9 @@ const InfoList = styled.div`
   text-indent: 0.5rem;
   > div{
     width: 4.875rem;
-    color:  ${props=> props.theme.transp};
+    color: ${props=> props.theme === darkTheme ?
+   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
+      
   }
   > div:nth-child(2){
     width: 21.813rem;

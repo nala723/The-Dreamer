@@ -422,6 +422,9 @@ const SearchBox = styled.div`
   ${props=> props.theme.tablet}{
       min-width: 80vw;
       width: 80vw;
-    }  
+    }
+  ${props=> props.theme.mobile}{
+     min-width: 90vw;
+    }    
     
 `;  

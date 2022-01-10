@@ -7,6 +7,7 @@ import { ThemeProvider } from 'styled-components';
 import { darkTheme, lightTheme } from './styles/theme';
 import ParticlesConfig from './config/particle-config';
 import useDarkTheme from './config/useDarkTheme';
+import Loading from './config/Loading';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
@@ -31,7 +32,7 @@ function App() {
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyle />
         <Router>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<Loading></Loading>}>
             <Header themeToggler={themeToggler} t={theme}/>
             <Switch>
               <Route exact path="/" component={Landing} />
