@@ -224,6 +224,7 @@ const Category = styled.div`
   height: auto;
   opacity: 0;
   ${props=> props.theme.mobile}{
+    /* background-color: #030231; */
     background-color: ${props=>props.theme.reverse};
     border-radius: 5px;
     height: 1.3rem;

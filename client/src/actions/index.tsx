@@ -103,7 +103,7 @@ export const DisLikeDrmAct = (data: string)=> {
     }
 }
 
-interface Data { // 나중에 필요할지도! 일단 kipppp
+export interface Data { // 나중에 필요할지도! 일단 kipppp
     [index: string] : any
     description: string;
     link: string;

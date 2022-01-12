@@ -8,6 +8,7 @@ import { RootState } from '../../reducers';
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import gsap from 'gsap';
 import Calender from '../reusable/Calender';
+import { Data } from '../../actions'; 
 
 function MyLikes() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,11 @@ function MyLikes() {
   const [selected, setSelected] = useState(-1);
   const [hasText, sethasText] = useState(false);
   const [width, setWidth] = useState('');
+  const [ sortLike, setSorLike ] = useState<{
+    latestLike: boolean, selectLike: string[]
+  }>({ 
+    latestLike: false, selectLike: []
+  });
   const clickRef = useRef<any | null>(null);
   const DreamRef = useRef<HTMLDivElement[]>([]);
 
@@ -34,6 +40,12 @@ function MyLikes() {
       document.removeEventListener('click',handleClickOutside);
     }
   },[])
+
+  useEffect(()=>{
+    if(sortLike.latestLike || sortLike.selectLike.length > 0){
+      return handleSortLike(dream);
+    }
+  },[sortLike])
 
   useEffect(()=>{
     let tl: gsap.core.Timeline;
@@ -219,6 +231,41 @@ function MyLikes() {
     setLikes(dream);
   }
 
+  const updateMenu = (arg: number | string[] ) => {
+    if(typeof arg === 'string'){
+      if (arg === 'latest'){
+        // getPictures();
+        setLikes(dream);
+       setSorLike({latestLike: false, selectLike: []});
+      }
+      else if (arg === 'oldest'){
+        if(likes[0].likedate >= likes[likes.length-1].likedate){
+          return;
+        }
+        setSorLike({latestLike: true, selectLike: []});
+      }
+    }
+    else if (typeof arg === 'object'){
+      setSorLike({latestLike: false, selectLike: arg});
+    }
+
+  }
+
+  let newState : Data[]
+
+  const handleSortLike = (data: Data[]) => {
+ 
+    if(sortLike.latestLike && sortLike.selectLike.length <= 0){
+      newState = [...data]
+      newState = newState.reverse()
+    }
+    if(sortLike.selectLike.length > 0 && !sortLike.latestLike){
+      newState = data.filter((el: any)=>{
+        return (sortLike.selectLike.includes(el.likedate))
+      })
+    }
+    setLikes(newState)
+  }
 
   // 꿈 모달 닫기
   const handleClick = () => {
@@ -240,7 +287,7 @@ function MyLikes() {
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
         <Title><h1>좋아하는 꿈</h1></Title>
         <UpperSection >
-         <Calender />       
+         <Calender updateMenu={updateMenu}/>       
           <SearchSection onKeyUp={handleKeyUp} ref={clickRef}>
             <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch} handleInput={handleInput} input={input}/>
             {hasText ? (

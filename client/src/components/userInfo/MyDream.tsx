@@ -9,31 +9,17 @@ import { Buffer } from "buffer";
 import axios from "axios";
 import gsap from "gsap";
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
-import { ReactComponent as Soso } from '../../assets/face-soso.svg';
-import { ReactComponent as Wink } from '../../assets/face-wink.svg';
-import { ReactComponent as Happy } from '../../assets/face-happy.svg';
-import { ReactComponent as Bad } from '../../assets/face-bad.svg';
-import { ReactComponent as What } from '../../assets/face-what.svg';
 import PicModal from '../reusable/PicModal';
 import Modal from '../reusable/Modal';
 import Calender from "../reusable/Calender";
-import { dummyPics } from '../../config/dummyDatas'; // 임시 더미
+import { dummyDatas, dummyPics,emotionList } from '../../config/dummyDatas'; // 임시 더미
 
-interface PicInter {
+export interface PicInter {
   id : number;
   title: string;
   picture: string;
   createdAt: string;
   emotion: string;
-}
-
-interface EmoInter {
-      [index: string] : JSX.Element;
-      soso : JSX.Element;
-      wink :  JSX.Element;
-      happy: JSX.Element;
-      bad:  JSX.Element;
-      what:  JSX.Element; 
 }
 
 function MyDream() {
@@ -46,19 +32,15 @@ function MyDream() {
   const [ selected, setSelected ] = useState(-1);
   const [ hasText, sethasText ] = useState(false);
   const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
+  const [ sortPic, setSorPic ] = useState<{
+    latestPic: boolean, selectPic: string[]
+  }>({ 
+    latestPic: false, selectPic: []
+  });
   const history = useHistory();
   const dispatch = useDispatch();
   const clickRef = useRef<any | null>(null);
 
-  const emotionList: EmoInter = 
-    {
-        soso : <Soso/>,
-        wink :  <Wink/>,
-        happy: <Happy />,
-        bad:  <Bad />,
-        what:  <What /> 
-  
-    }
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
 
   useEffect(() => {
@@ -68,6 +50,12 @@ function MyDream() {
       document.removeEventListener('click',handleClickOutside);
     }
   },[])
+
+  useEffect(()=>{
+    if(sortPic.latestPic || sortPic.selectPic.length > 0){
+      return handleSortPic(dummyPics);
+    }
+  },[sortPic])
 
   const getPictures = () => {
       axios
@@ -82,10 +70,15 @@ function MyDream() {
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
+                re.createdAt = (re.createdAt).split('T')[0].slice(2).split('-').join('.')
                 // re.picture = (typeof re.picture !== 'object' && typeof re.picture === 'string') ?
                 // re.picture : "data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
+                // 밑에 렌더링할때 날짜 문자열 자름 처리한것 수정 (위에서 이미 처리햇으므로)
                 return re;
               })
+              if(sortPic.latestPic || sortPic.selectPic.length > 0){
+                return handleSortPic(data);
+              }
               setMyPic(data);
             }    
         })
@@ -199,6 +192,44 @@ function MyDream() {
         history.push('/notfound');
       })  
   }
+      // 최신 순: 전체보기와 같음
+    // 마지막 순: 받은 것들 거꾸로
+    // 날짜 받은 날짜 보고..일치하는 범위 혹은 날짜.
+
+  const updateMenu = (arg: string | string[] ) => {
+    if (typeof arg === 'string'){
+      if (arg === 'oldest'){
+        // getPictures();
+        setMyPic(dummyPics);
+       setSorPic({latestPic: false, selectPic: []});
+      }
+      else if (arg === 'latest'){
+        if(myPic[0].createdAt >= myPic[myPic.length-1].createdAt){
+          return;
+        }
+        setSorPic({latestPic: true, selectPic: []});
+      }
+    }
+    else if (typeof arg === 'object'){
+      setSorPic({latestPic: false, selectPic: arg});
+    }
+  }
+
+  let newState :PicInter[];
+  
+  const handleSortPic = (data: PicInter[]) => {
+ 
+    if(sortPic.latestPic && sortPic.selectPic.length <= 0){
+      newState = [...data]
+      newState = newState.reverse()
+    }
+    if(sortPic.selectPic.length > 0 && !sortPic.latestPic){
+      newState = data.filter((el: any)=>{
+        return (sortPic.selectPic.includes(el.createdAt))
+      })
+    }
+    setMyPic(newState)
+  }
 
   const handleClick = () => {
     setIsOpen(false)
@@ -220,9 +251,9 @@ function MyDream() {
        <Title><h1>내가 그린 꿈</h1></Title>
        <UpperSection>
          <ResponsiveLeft>
-            <Calender />
-            <Calender />
-            <RspAllsearch onClick={handleAllsearch}>
+            <Calender updateMenu={updateMenu}/>
+            <Calender title='종류별 보기' updateMenu={updateMenu}/>
+            <RspAllsearch onClick={handleAllsearch} >
               <h5>전체보기</h5>
             </RspAllsearch > 
           </ResponsiveLeft>
@@ -251,19 +282,24 @@ function MyDream() {
        </ UpperSection>   
        <DreamSection>
          <CardBox>
-           {myPic.map((pic)=>{
+           {myPic.map((pic,idx)=>{
              return(
-               <Card key={pic.id}>
+               <Card key={idx}>
                  <CardDiv onClick={()=> handlePicOpen(pic)}>
                    <div>
                     <Delete onClick={(e)=> handleDislike(e,pic.id)}/>
-                     <p>{(pic.createdAt).split('T')[0]}</p>
+                     <p>{pic.createdAt}</p>
                    </div>
                   <img src={pic.picture} alt='pic' />
                  </ CardDiv>
                  <Content>
                    <p>{pic.title}</p>
-                   {emotionList[pic.emotion]}
+                   {emotionList.map((el)=>{
+                     if(el.name === pic.emotion){
+                       return el.img
+                     }
+                   })
+                  }
                  </Content>
                </Card>
              )
@@ -350,6 +386,7 @@ const ResponsiveRight = styled.div`
 const SearchSection = styled.div`
   width: auto;
   height: 100%;
+  left: 15%;
   display: flex;
   position: relative;
   ${props=> props.theme.tablet}{
