@@ -33,10 +33,11 @@ function MyDream() {
   const [ hasText, sethasText ] = useState(false);
   const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
   const [ sortPic, setSorPic ] = useState<{
-    latestPic: boolean, selectPic: string[]
+    latestPic: boolean, selectPic: string[], sortEmotion : string
   }>({ 
-    latestPic: false, selectPic: []
+    latestPic: false, selectPic: [], sortEmotion : ''
   });
+  const [width, setWidth] = useState('');
   const history = useHistory();
   const dispatch = useDispatch();
   const clickRef = useRef<any | null>(null);
@@ -46,13 +47,26 @@ function MyDream() {
   useEffect(() => {
     // getPictures(); // 임시 주석
     document.addEventListener('click',handleClickOutside);
+    window.addEventListener('resize', getWidth);
+    getWidth();
     return () => {
       document.removeEventListener('click',handleClickOutside);
+      window.removeEventListener('resize', getWidth);
     }
   },[])
 
+  function getWidth(){
+    if(window.innerWidth <= 425){
+      setWidth('mobile');
+    }
+    else if(window.innerWidth > 960){
+      setWidth('');
+    }
+  }
+
+
   useEffect(()=>{
-    if(sortPic.latestPic || sortPic.selectPic.length > 0){
+    if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
       return handleSortPic(dummyPics);
     }
   },[sortPic])
@@ -76,7 +90,7 @@ function MyDream() {
                 // 밑에 렌더링할때 날짜 문자열 자름 처리한것 수정 (위에서 이미 처리햇으므로)
                 return re;
               })
-              if(sortPic.latestPic || sortPic.selectPic.length > 0){
+              if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
                 return handleSortPic(data);
               }
               setMyPic(data);
@@ -201,17 +215,19 @@ function MyDream() {
       if (arg === 'oldest'){
         // getPictures();
         setMyPic(dummyPics);
-       setSorPic({latestPic: false, selectPic: []});
       }
       else if (arg === 'latest'){
         if(myPic[0].createdAt >= myPic[myPic.length-1].createdAt){
           return;
         }
-        setSorPic({latestPic: true, selectPic: []});
+        setSorPic({...sortPic, latestPic: true});
+      }
+      else{
+        setSorPic({...sortPic, sortEmotion: arg});
       }
     }
     else if (typeof arg === 'object'){
-      setSorPic({latestPic: false, selectPic: arg});
+      setSorPic({...sortPic, selectPic: arg});
     }
   }
 
@@ -228,7 +244,13 @@ function MyDream() {
         return (sortPic.selectPic.includes(el.createdAt))
       })
     }
+    if(sortPic.sortEmotion && !sortPic.latestPic && sortPic.selectPic.length <= 0){
+      newState = data.filter((el: any)=>{
+        return (sortPic.sortEmotion === el.emotion)
+      })
+    }
     setMyPic(newState)
+    setSorPic({latestPic: false, selectPic: [], sortEmotion: ''});
   }
 
   const handleClick = () => {
@@ -251,8 +273,8 @@ function MyDream() {
        <Title><h1>내가 그린 꿈</h1></Title>
        <UpperSection>
          <ResponsiveLeft>
-            <Calender updateMenu={updateMenu}/>
-            <Calender title='종류별 보기' updateMenu={updateMenu}/>
+            <Calender title={width? '날짜별' : '날짜별 보기'} updateMenu={updateMenu}/>
+            <Calender title={width? '종류별' : '종류별 보기'} emo='emotion' updateMenu={updateMenu}/>
             <RspAllsearch onClick={handleAllsearch} >
               <h5>전체보기</h5>
             </RspAllsearch > 
@@ -342,6 +364,7 @@ const Title = styled.div`
   ${props=> props.theme.mobile}{
     padding-top: 0.6rem;
     height: 2.2rem;
+    /* padding-bottom: 0.6rem;  타이틀 내리고싶으면*/
   }
 `;
 const UpperSection = styled.div`
@@ -350,21 +373,24 @@ const UpperSection = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 3rem; 
-  padding-left: 5rem;
+  gap: 2rem; 
+  padding: 0 2rem 0 5rem;
   color: ${props=> props.theme.text};
   ${props=> props.theme.laptop}{
-    padding: 0 2em;
-    gap: 1.5rem;
+    padding:0 3.5rem;
+    font-size: 15px;
   } 
   ${props=> props.theme.midTablet}{
     flex-direction: column-reverse;
-    padding-left: 3rem;
+    align-items: flex-start;
+    padding:0 4.9rem;
+    gap: 1rem;
   } 
   ${props=> props.theme.mobile}{
     padding: 0 1rem;
     justify-content: center;
     gap: 0;
+    height: auto;
   }
 `;
 
@@ -372,9 +398,12 @@ const ResponsiveRight = styled.div`
     ${props=> props.theme.flexRow};
     height: 5.688rem;
     justify-content: flex-start;
-    gap: 3rem;
-    ${props=> props.theme.tablet}{
-      gap: 1rem;
+    gap: 3rem;   
+  ${props=> props.theme.laptop}{
+    gap: 2rem;
+  }   
+  ${props=> props.theme.tablet}{
+    gap: 1rem;
   }
   ${props=> props.theme.mobile}{
     justify-content: center;
@@ -384,9 +413,9 @@ const ResponsiveRight = styled.div`
 `;
 
 const SearchSection = styled.div`
+  max-width: 100%;
   width: auto;
   height: 100%;
-  left: 15%;
   display: flex;
   position: relative;
   ${props=> props.theme.tablet}{
@@ -398,24 +427,7 @@ const SearchSection = styled.div`
   }
 `;
 
-const CareHeader = styled.div`
-  width: 7rem;
-  height: 1.7rem;
-  color: ${props=> props.theme.text};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  >svg {
-    fill: ${props=> props.theme.transp};
-    width: 1.125rem;
-    height: 1rem;
-    transform: scale(1.5);
-  }
-  ${props=> props.theme.mobile}{
-    width: 100%;
-  }
-`;
+
 const DropDownContainer = styled.ul`
   background-color: ${props=> props.theme.transp};
   display: block;
@@ -466,14 +478,21 @@ const Allsearch = styled.div`
 
 const ResponsiveLeft = styled.div`
   display: flex;
-  width: auto;
+  position: relative;
+  width: 18rem;
+  min-width: 15rem;
   gap: 3rem;
+  height: 100%;
   ${props=> props.theme.laptop}{
     gap: 2rem;
   }
   ${props=> props.theme.midTablet}{
+    width: 16rem;
+  }
+  ${props=> props.theme.mobile}{
     width: 100%;
-    justify-content: flex-start;
+    height: 1.5rem;
+    align-items: center;
   }
 `;
 
@@ -483,16 +502,19 @@ const RspAllsearch = styled(Allsearch)`
     color: ${props=> props.theme.text};
     display: flex;
     align-items: center;
-  }
-  ${props=> props.theme.mobile}{
     width:100%;
-   justify-content: flex-end;
+    justify-content: flex-end;
+    
   }
+
 `;
 const DreamSection = styled.div`
     width: 100%;
     height: calc(100vh - 4.375rem - 5.5rem - 5.688rem);
     padding: 2rem 5rem;
+    ${props=> props.theme.midTablet}{
+    padding-top: 2.6rem;
+  }  
     ${props=> props.theme.mobile}{
     min-height: 80vh;
     height: auto;

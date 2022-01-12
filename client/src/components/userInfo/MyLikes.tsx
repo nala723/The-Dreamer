@@ -287,39 +287,35 @@ function MyLikes() {
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
         <Title><h1>좋아하는 꿈</h1></Title>
         <UpperSection >
-         <Calender updateMenu={updateMenu}/>       
+          <ResponsiveLeft>
+            <Calender title={width? '날짜별' : '날짜별 보기'} updateMenu={updateMenu}/> 
+            <RspAllsearch onClick={handleAllsearch} >
+              <h5>전체보기</h5>
+            </RspAllsearch > 
+          </ ResponsiveLeft>
+          <ResponsiveRight >      
           <SearchSection onKeyUp={handleKeyUp} ref={clickRef}>
             <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch} handleInput={handleInput} input={input}/>
             {hasText ? (
             <DropDownContainer>
-              {options.map((option, idx) => (
-                <li
-                  key={idx}
-                  onClick={() => handleDropDownClick(option)}
-                  className={selected === idx ? "selected" : ""}
-                  role="presentation" 
-                >
-                  {option}
-                </li>
-              ))}
-            </DropDownContainer>
-          ) : null}
-          </SearchSection>
-          <Allsearch onClick={handleAllsearch}>
-           <h5>전체보기</h5>
-          </Allsearch>
+                {options.map((option, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => handleDropDownClick(option)}
+                    className={selected === idx ? "selected" : ""}
+                    role="presentation" 
+                  >
+                    {option}
+                  </li>
+                ))}
+              </DropDownContainer>
+            ) : null}
+            </SearchSection>
+            <Allsearch onClick={handleAllsearch}>
+            <h5>전체보기</h5>
+            </Allsearch>
+          </ ResponsiveRight >
         </ UpperSection>
-        <ResponsiveBox>
-            <RspCareHeader >
-              <h5>날짜별 보기</h5>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </RspCareHeader>
-            <RspAllsearch onClick={handleAllsearch}>
-              <h5>전체보기</h5>
-            </RspAllsearch > 
-        </ResponsiveBox>   
         <DreamSection>
         {likes && likes.map((res, idx) => {
           const position = handlePosition(idx);
@@ -384,23 +380,53 @@ const UpperSection = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 5rem; 
-  padding: 0 5rem;
+  gap: 2rem; 
+  padding: 0 2rem 0 5rem;
   color: ${props=> props.theme.text};
   ${props=> props.theme.laptop}{
-    padding: 0 2em;
-    gap: 1.5rem;
+    padding:0 3.5rem;
+    font-size: 15px;
+  } 
+  ${props=> props.theme.midTablet}{
+    flex-direction: column-reverse;
+    padding-left: 3rem;
+  } 
+  ${props=> props.theme.midTablet}{
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding:0 4.9rem;
+    gap: 1rem;
   } 
   ${props=> props.theme.mobile}{
+    padding: 0 1rem;
     justify-content: center;
+    gap: 0;
+    height: auto;
+  }
+`;
+
+const ResponsiveRight = styled.div`
+    ${props=> props.theme.flexRow};
+    height: 5.688rem;
+    justify-content: flex-start;
+    gap: 3rem;
+  ${props=> props.theme.laptop}{
+    gap: 2rem;
+  }   
+  ${props=> props.theme.tablet}{
+    gap: 1rem;
+  }
+  ${props=> props.theme.mobile}{
+    justify-content: center;
+    max-width: 91vw;
     height: 4.5rem;
   }
 `;
 
 const SearchSection = styled.div`
+  max-width: 100%;
   width: auto;
-  height: 5.688rem;
-  left: 15%;
+  height: 100%;
   display: flex;
   position: relative;
   ${props=> props.theme.tablet}{
@@ -412,27 +438,6 @@ const SearchSection = styled.div`
   }
 `;
 
-
-const CareHeader = styled.div`
-  width: 9.5rem;
-  height: 1.7rem;
-  color: ${props=> props.theme.text};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem; // 임시 ***
-  cursor: pointer;
-  /* justify-content: space-evenly; //일단. 주석- */
-  >svg {
-    fill: ${props=> props.theme.transp};
-    width: 1.125rem;
-    height: 1rem;
-    transform: scale(1.5);
-  }
-  ${props=> props.theme.midTablet}{
-   display: none;
-  }
-`;
 const DropDownContainer = styled.ul`
   background-color: ${props=> props.theme.transp};
   display: block;
@@ -471,7 +476,7 @@ const Allsearch = styled.div`
   ${props=> props.theme.laptop}{
     min-width: 3.521rem;
     width: auto;
-    margin-left:1rem;
+    /* margin-left:1rem; */
   } 
   ${props=> props.theme.tablet}{
     min-width: 15%;
@@ -482,33 +487,41 @@ const Allsearch = styled.div`
   }
 `;
 
-const ResponsiveBox = styled.div`
-  display: none;
+const ResponsiveLeft = styled.div`
+  display: flex;
+  position: relative;
+  width: 9rem;
+  min-width: 7rem;
+  gap: 3rem;
+  height: 100%;
+  ${props=> props.theme.laptop}{
+    gap: 2rem;
+  }
   ${props=> props.theme.midTablet}{
-   display: flex;
-   width: 100%;
-   padding: 0 2rem;
+    /* width: 16rem; */
   }
   ${props=> props.theme.mobile}{
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 0 1.5rem;
+    width: 100%;
+    height: 1.5rem;
+    align-items: center;
   }
 `;
 
-const RspCareHeader = styled(CareHeader)`
+{/* const RspCareHeader = styled(CareHeader)`
   ${props=> props.theme.midTablet}{
     width: 6.5rem;
     display: flex;
     padding: 0;
   }
-`;
+`; */}
 const RspAllsearch = styled(Allsearch)`
   display: none;
   ${props=> props.theme.mobile}{
     color: ${props=> props.theme.text};
     display: flex;
     align-items: center;
+    width:100%;
+    justify-content: flex-end;
   }
 `;
 
