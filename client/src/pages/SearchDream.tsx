@@ -7,7 +7,6 @@ import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
 import Modal from '../components/reusable/Modal';
-import { hashTagList } from '../config/dummyDatas';
 import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
 
@@ -131,7 +130,7 @@ function SearchDream(): JSX.Element {
         Xposition = 75;
       }
     }
-    Yposition = quotient + (Math.floor(Math.random() * 10)) + 5
+    Yposition = quotient + (Math.floor(Math.random() * 10)) + 3
     Position = [Xposition + '%', Yposition + '%'];
     return Position;
   }
@@ -186,15 +185,7 @@ function SearchDream(): JSX.Element {
       <SearchSection>
           <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
       </SearchSection>
-      <HashSection mobile={width === 'mobile'}>
-        {width === 'mobile' ? 
-          <HashTag text='추천태그'/>
-          :
-          hashTagList.map((tag, idx)=>{
-            return( <HashTag text={tag} key={idx} handleSearch={()=>handleSearch(tag)}/>)
-          })
-        }
-      </HashSection> 
+      <HashTag handleSearch={handleSearch} />
       <DreamSection>
         {data && data.map((res :{title: string; description: string; link: string;}, idx) => {
           const position = handlePosition(idx);
@@ -251,7 +242,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  min-height: calc(100vh - 4.375rem);
+  height: auto;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
     ::-webkit-scrollbar {
@@ -311,10 +303,19 @@ const HashSection = styled.div<{mobile: boolean;}>`
 `;
 const DreamSection = styled.div`
   width: 100%;
-  height: calc(100vh - 4.375rem - 9.487rem);
+  min-height: calc(100vh - 4.375rem - 5.688rem - 3.498rem);
   position: relative;
-  ${props=> props.theme.tablet}{
-    height: calc(100vh - 4.375rem - 9.187rem);
+  top: 4rem;
+  ${props=> props.theme.laptop}{
+    top: 6.5rem;
+    min-height: calc(100vh - 4.375rem - 5.688rem - 6.396rem);
+  }
+  ${props=>props.theme.tablet}{
+    min-height: calc(100vh - 4.375rem - 4.125rem - 5.549rem);
+  }
+  ${props=>props.theme.mobile}{
+    top: 4rem;
+    min-height: calc(100vh - 3.6rem - 3.399rem - 3.2rem);
   }
 `;
 const Dream = styled.div<{top: string; left: string;}>`
