@@ -16,6 +16,7 @@ function SearchDream(): JSX.Element {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [like, setLike] = useState(false);
+  const [likeList, setLikeList] = useState<number[]>([]);
   const [banGuest, setBanGuest] = useState(false);
   const [width, setWidth] = useState('');
   const DreamRef = useRef<HTMLDivElement[]>([]);
@@ -152,25 +153,17 @@ function SearchDream(): JSX.Element {
       banGuestLike();
       return
     }
-    data[idx]['islike'] = true;
     setLike(!like);
-    const date = new Date();
-    const day = date.getFullYear() +'.'+ `${date.getMonth()+1}` + '.' + date.getDate()  
-    const obj = {
-      ...data[idx],
-      likedate : day.slice(2)
-    }
-    const dataarr = [obj]
-    dispatch(LikeDrmAct(dataarr));
+    setLikeList([...likeList,idx]);
   }
 
   const handleDislike = (e: React.MouseEvent, idx: number) => {
     e.preventDefault();
-    data[idx]['islike'] = false;
     setLike(!like);
-    let splitarr: string[] | string = data[idx]['link'].split('=');
-    splitarr = splitarr[splitarr.length-1]
-    dispatch(DisLikeDrmAct(splitarr));
+    const disLike = likeList.filter((el,index)=>{
+      return idx !== index
+    })
+    setLikeList(disLike);
   }
  
   const banGuestLike = () => {
@@ -196,7 +189,7 @@ function SearchDream(): JSX.Element {
                 <Title>{res.title}</Title>
                 <Text>{res.description.slice(0,66)+ '...'}</Text>
               </DrContent>
-              {!data[idx]['islike']? 
+              {!likeList.includes(idx)? 
                 <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
                 :
               <StyledHeart onClick={(e)=> handleDislike(e,idx)} fill='likes' />} 

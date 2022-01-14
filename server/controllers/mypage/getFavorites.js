@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
           include : [{
             model : Dream,
             required : true,
-            attributes : ['id', 'title', 'url', 'keyword', 'content', 'createdAt']
+            attributes : ['id', 'title', 'url', 'content', 'createdAt']
           }],
           where : {
             user_id : userId
@@ -35,7 +35,6 @@ module.exports = async (req, res) => {
           obj['title'] = likeList[i].dataValues.Dream.dataValues.title;
           obj['dream_id'] = likeList[i].dataValues.Dream.dataValues.id;
           obj['url'] = likeList[i].dataValues.Dream.dataValues.url;
-          obj['keyword'] = likeList[i].dataValues.Dream.dataValues.keyword;
           obj['content'] = likeList[i].dataValues.Dream.dataValues.content;
           obj['createdAt'] = likeList[i].dataValues.Dream.dataValues.createdAt;
           sendArr.push(obj);
