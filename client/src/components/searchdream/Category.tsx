@@ -224,7 +224,6 @@ const Category = styled.div`
   height: auto;
   opacity: 0;
   ${props=> props.theme.mobile}{
-    /* background-color: #030231; */
     background-color: ${props=>props.theme.reverse};
     border-radius: 5px;
     height: 1.3rem;
@@ -252,7 +251,7 @@ const DeepGory = styled(Category)`
   align-items: center;
   padding-left: 0;
   ${props=> props.theme.mobile}{
-    background-color: rgba(131, 112, 187, 1);
+    background-color: #8370bb;
     height: 1.3rem;
     color: white;
   }

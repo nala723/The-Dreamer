@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER,
     title: DataTypes.STRING,
     emotion: DataTypes.STRING,
-    picture: DataTypes.TEXT
+    picture: DataTypes.BLOB
   }, {
     sequelize,
     modelName: 'Picture',

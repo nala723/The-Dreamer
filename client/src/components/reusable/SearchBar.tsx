@@ -73,7 +73,7 @@ const Bar = styled.input<{font: string; landing?: string;}>`
   font-size: ${props=> props.font};
   color: #494161;
     ::placeholder{
-      color: #555562;
+      color: #676777;
       ${props=> props.theme.midTablet}{
         font-size: ${props=> props.landing && `22px`};
       }  

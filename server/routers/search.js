@@ -4,7 +4,7 @@ const controller = require('../controllers');
 
 router.get('/search', controller.search);
 // router.get("/:placeId", controllers.select);
-router.post("/:dreamId/like", controller.createFavorites);
-router.delete("/:dreamId/dislike", controller.cancelFavorites);
+router.post("/like", controller.createFavorites);
+router.delete("/dislike/:likeId", controller.cancelFavorites);
 
 module.exports = router;

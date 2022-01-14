@@ -1,14 +1,48 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { hashTagList } from '../../config/dummyDatas';
+import gsap from 'gsap';
+import { darkTheme } from '../../styles/theme';
 
 function HashTag({handleSearch}: { handleSearch:(search: string)=>void; }) {
-  
+  const openRef = useRef(null);
+  const openRefTl = useRef<gsap.core.Timeline>();
+  const menuRef = useRef<(HTMLLIElement | HTMLDivElement)[]>([]);
+  menuRef.current = [];
+
+  useEffect(()=>{
+    gsap.set(openRef.current, { height: 'auto', opacity: 1}) // 메뉴박스 세팅
+    
+    openRefTl.current = gsap.timeline() //  타임라인 객체를 open~에 저장
+      .to(menuRef.current, { 
+         stagger: 0.1,
+         opacity: 1,
+         display: 'block'
+      })
+      .reverse();
+
+      return () =>  { 
+          openRefTl.current && openRefTl.current.kill();
+        } 
+  },[]);  
+
+const handleOpen = () => {
+    if(openRefTl.current){
+        openRefTl.current.reversed(!openRefTl.current.reversed());
+      }
+}    
+
+const addStagerRef = (el: HTMLLIElement | HTMLDivElement | null) => {
+    if (el && !menuRef.current.includes(el)){
+      menuRef.current.push(el);
+    }
+} 
+
   return(
-    <HashSection>
-      <HeadTag>추천태그</HeadTag>
+    <HashSection ref={openRef}>
+      <HeadTag onClick={handleOpen}>추천태그</HeadTag>
       {hashTagList.map((tag, idx)=>{
-        return( <Tag key={idx} onClick={()=>handleSearch(tag)}>{tag}</Tag>)
+        return( <Tag ref={addStagerRef} key={idx} onClick={()=>handleSearch(tag)}>{tag}</Tag>)
       })}
     </HashSection> 
   );
@@ -64,12 +98,16 @@ const Tag = styled.div`
     font-size: 14px;
   }
   ${props=> props.theme.mobile}{
-    display: none;
+    opacity: 0;
+    background-color: ${props=>props.theme === darkTheme ? 'rgb(76, 66, 93)' : 'rgb(255, 225, 128)'};
   }
 `;
 const HeadTag = styled(Tag)`
  display: none;
  ${props=> props.theme.mobile}{
     display: flex;
+    opacity: 1;
+    margin-bottom: 0.8rem;
+    background-color: ${props=>props.theme.moretransp};
   }
 `;

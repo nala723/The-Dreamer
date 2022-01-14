@@ -479,11 +479,12 @@ const Allsearch = styled.div`
 const ResponsiveLeft = styled.div`
   display: flex;
   position: relative;
-  width: 18rem;
+  width: 21rem;
   min-width: 15rem;
   gap: 3rem;
   height: 100%;
   ${props=> props.theme.laptop}{
+    min-width: 14rem;
     gap: 2rem;
   }
   ${props=> props.theme.midTablet}{

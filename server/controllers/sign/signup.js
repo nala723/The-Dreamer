@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
             if(err){    
               throw err;
             }else{
-              const users = model.User.create({
+                model.User.create({
                  username : username,
                  password : hash,
                  email : email,

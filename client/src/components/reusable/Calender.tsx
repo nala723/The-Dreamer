@@ -153,13 +153,16 @@ export default Calender;
 
 const DateBox = styled.div<{emo?: string | boolean}>`
   position: absolute;
-  max-width: 7rem;
+  width: 7.5rem;
   top: 35%;
   left: ${props=> props.emo ? '53%' : '0'};
   z-index: 90;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  ${props=> props.theme.laptop}{
+    width: 7rem;
+  }
   ${props=> props.theme.mobile}{
   left: ${props=> props.emo ? '25%' : '0'};
   top: 0%;
