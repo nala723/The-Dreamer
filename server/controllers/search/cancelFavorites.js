@@ -4,7 +4,7 @@ const { isAuthorized, remakeToken } = require("../tokenFunctions");
 module.exports = async (req, res) => {
     // res.send('즐겨찾기 해제')
     try {const authorization = req.headers['authorization'];
-    const likeId = req.params.likeId
+    const dreamId = req.params.dreamId
     if(!authorization){
       res.status(401).json('invalid token')
     }
@@ -20,9 +20,9 @@ module.exports = async (req, res) => {
       }
       else{
         await User_like_dream.destroy({
-        where: { id: likeId }
+        where: { dream_id: dreamId, user_id: userId }
         }).then(re=>{
-          res.send({ message : `dislike ${req.params.likeId} dream` })
+          res.send({ message : `dislike ${req.params.dreamId} dream` })
         }).catch(err=>{
           console.log(err)
           res.status(500).send(error);

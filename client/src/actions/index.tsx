@@ -36,7 +36,7 @@ export const SearchDreamAct = (data: string) =>  {
                        return  el = {
                             title: el['title'],
                             description:  el['description'],
-                            link: el['link'],
+                            link: el['link']
                              }   
                     }) 
 
@@ -96,7 +96,7 @@ export const LikeDrmAct = (data: Data[]) => {
     }
 }
 
-export const DisLikeDrmAct = (data: string)=> {
+export const DisLikeDrmAct = (data: number)=> {
     return {
         type: DISLIKE_DREAM,
         payload: data
@@ -108,7 +108,7 @@ export interface Data { // 나중에 필요할지도! 일단 kipppp
     description: string;
     link: string;
     title: string;
-    islike?: boolean
+    id?: number;
 }
 
 interface UserInfo { // 나중에 필요할지도! 일단 kipppp
@@ -199,7 +199,29 @@ export function searchReducer (state: ActionState = initialState, action: Action
         case SEARCH_DREAM_ERROR:
             return Object.assign({}, state, {
                 search: { loading: false, data: [], error: action.payload }
-            })         
+            })
+        case LIKE_DREAM:
+            return Object.assign({}, state, {
+                search: { loading: false, data : state.search.data.map(
+                    (el)=>{ 
+                        if(el.title === action.payload[0].title){
+                            return {
+                                ...el,
+                                id: action.payload[0].id
+                            }
+                        }else{
+                            return el
+                        }  
+                        }), error: null}
+            })
+        case DISLIKE_DREAM:
+            return Object.assign({}, state, {
+                search: { loading: false, data : state.search.data.map((el)=> {
+                        if(el.id === action.payload) {
+                            delete el.id
+                        }
+                       return el }), error: null}
+            })              
         default:
             return state;
     }
@@ -227,21 +249,3 @@ export function usersReducer (state: ActionState = initialState, action: Action)
     }
 }
 
-export function dreamReducer (state: ActionState = initialState, action: Action): ActionState {
-    switch (action.type) {
-        case LIKE_DREAM:
-            return Object.assign({}, state, {
-                dream: [...state.dream, ...action.payload]
-            })
-        case DISLIKE_DREAM:
-            return Object.assign({}, state, {
-                dream: state.dream.filter((el)=> {
-                    let splitarr: string[] | string = el['link'].split('=')
-                    splitarr = splitarr[splitarr.length-1]
-                   return splitarr !== action.payload
-                })
-            })         
-        default:
-            return state;
-    }
-}   

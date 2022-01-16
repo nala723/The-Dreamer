@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef }  from 'react';
+import { useHistory } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { SearchDreamAct, LikeDrmAct, DisLikeDrmAct } from '../actions';
+import { SearchDreamAct,  GetTokenAct, LikeDrmAct, DisLikeDrmAct} from '../actions';
 import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
@@ -9,28 +10,30 @@ import CateGory from '../components/searchdream/Category';
 import Modal from '../components/reusable/Modal';
 import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
+import axios from 'axios';
 
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
-  const { username } = useSelector((state: RootState)=> state.usersReducer.user);
+  const { username, accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [like, setLike] = useState(false);
-  const [likeList, setLikeList] = useState<number[]>([]);
   const [banGuest, setBanGuest] = useState(false);
   const [width, setWidth] = useState('');
   const DreamRef = useRef<HTMLDivElement[]>([]);
   DreamRef.current = [];
   // useEffect 속에 타임라인 만들어두고,? 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
   // 만들고 저 랜덤함수 인용?(해보고 안되면 add)
-
+  console.log('렌더링')
   // 해결할것 : 카테고리 문제와 드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
   let Position = [];
   let quotient: number;
   let Xposition: number;
   let Yposition: number;
-
+ //펜딩이 왜 될까ㅠㅠ
   useEffect(()=>{
+    console.log('useEffect 렌더링')
     let tl: gsap.core.Timeline;
     // const tl = gsap.timeline({repeat: -1,  ease: 'Power1.easeInOut'});
     function random(min: number, max: number){
@@ -66,12 +69,11 @@ function SearchDream(): JSX.Element {
       floatingDream(dream, 60);
     })
     return ()=> {
+      console.log('리턴: 애니 없애자')
       tl && tl.kill();
-      // DreamGsap.current &&  DreamGsap.current.kill();
     }
 
   },[data])
-
 
   // 처음 한번 이벤트 걸어볼까? 그러고 이 안에서 함수만들고 그에 따라 상태값변하게
   useEffect(()=>{
@@ -147,23 +149,69 @@ function SearchDream(): JSX.Element {
   }
 
   // likes
-  const handleLike = (e : React.MouseEvent, idx: number) => {
+  const handleLike = async (e : React.MouseEvent, idx: number) => {
     e.preventDefault();
     if(!username){
       banGuestLike();
       return
     }
-    setLike(!like);
-    setLikeList([...likeList,idx]);
-  }
+      await axios
+      .post(process.env.REACT_APP_URL + '/search/like',{
+        url: data[idx].link,
+        content: (data[idx].description).slice(0,66)+ '...',
+        title: data[idx].title
+      },{
+        headers: {
+          authorization: `Bearer ` + accessToken
+        }
+      })
+      .then((res)=> {
+        if(res.headers.accessToken){
+            dispatch(GetTokenAct(res.headers.accessToken));
+            }
+        if(res.status === 200){
+             if(res.data.likeId){
 
-  const handleDislike = (e: React.MouseEvent, idx: number) => {
+              const likeData = [{
+                 ...data[idx],
+                 id: res.data.likeId
+               }]
+               dispatch(LikeDrmAct(likeData))
+            }
+         }
+         else{
+             history.push('/notfound');
+         }
+      })
+      .catch(error=>
+         console.log(error) 
+      )
+    }
+
+ console.log(like,'likelist??', data)
+  const handleDislike = async(e: React.MouseEvent, id: number, idx: number) => {
     e.preventDefault();
-    setLike(!like);
-    const disLike = likeList.filter((el,index)=>{
-      return idx !== index
-    })
-    setLikeList(disLike);
+    const dreamId = id
+    await axios
+      .delete(process.env.REACT_APP_URL + `/search/dislike/${dreamId}`,{
+        headers: {
+          authorization: `Bearer ` + accessToken
+        }
+      })
+      .then((res)=> {
+        if(res.headers.accessToken){
+            dispatch(GetTokenAct(res.headers.accessToken));
+          }
+        if(res.status === 200){
+               dispatch(DisLikeDrmAct(dreamId))
+          }
+        else{
+             history.push('/notfound');
+        }
+      })
+      .catch(error=>
+         console.log(error) 
+      )
   }
  
   const banGuestLike = () => {
@@ -180,7 +228,7 @@ function SearchDream(): JSX.Element {
       </SearchSection>
       <HashTag handleSearch={handleSearch} />
       <DreamSection>
-        {data && data.map((res :{title: string; description: string; link: string;}, idx) => {
+        {data && data.map((res :{title: string; description: string; link: string; id: number;}, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
@@ -189,10 +237,10 @@ function SearchDream(): JSX.Element {
                 <Title>{res.title}</Title>
                 <Text>{res.description.slice(0,66)+ '...'}</Text>
               </DrContent>
-              {!likeList.includes(idx)? 
+              { (!data[idx]['id']) ? 
                 <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
                 :
-              <StyledHeart onClick={(e)=> handleDislike(e,idx)} fill='likes' />} 
+              <StyledHeart onClick={(e)=> handleDislike(e,res.id,idx)} fill='likes' />} 
             </Dream>
           )
         })}

@@ -1,20 +1,21 @@
-import React, { useEffect, useState, useRef }  from 'react';
+ import React, { useEffect, useState, useRef }  from 'react';
 import styled from 'styled-components';
 import SearchBar from '../reusable/SearchBar';
 import Modal from '../reusable/Modal';
 import { useSelector, useDispatch } from 'react-redux';
-import { DisLikeDrmAct } from '../../actions';
 import { RootState } from '../../reducers';
+import { GetTokenAct } from '../../actions';
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import gsap from 'gsap';
 import Calender from '../reusable/Calender';
 import { Data } from '../../actions'; 
+import axios from 'axios';
 
-function MyLikes() {
+ function MyLikes() {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const { dream } = useSelector((state: RootState)=> state.dreamReducer);
-  const [ likes, setLikes ] = useState(dream);
+  const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
+  const [ dream, setDream ] = useState<Data[]>([]);
   const [ options, setOptions ] = useState<string[]>([]);
   const [ input, setInput ] = useState('');
   const [selected, setSelected] = useState(-1);
@@ -35,8 +36,12 @@ function MyLikes() {
   let Yposition: number;
 
   useEffect(() => {
+    getLikes();
+    window.addEventListener('resize', getWidth);
+    getWidth();
     document.addEventListener('click',handleClickOutside);
     return () => {
+      window.removeEventListener('resize', getWidth);
       document.removeEventListener('click',handleClickOutside);
     }
   },[])
@@ -88,13 +93,25 @@ function MyLikes() {
 
   },[dream])
 
-  useEffect(()=>{
-    window.addEventListener('resize', getWidth);
-    getWidth();
-    return (()=>{
-      window.removeEventListener('resize', getWidth);
-    })
-  },[])
+
+  const getLikes = () => {
+          axios
+            .get(process.env.REACT_APP_URL + '/mypage/like',{
+              headers: {
+                  authorization: `Bearer ` + accessToken
+                  }
+            })
+            .then(res=>{    
+              console.log(res.data);
+              if(res.headers.accessToken){
+                dispatch(GetTokenAct(res.headers.accessToken));
+              }
+              setDream(res.data.dream);
+            })
+            .catch(err=>{
+              console.log(err);
+            })
+  }
 
   function getWidth(){
     if(window.innerWidth <= 960 && window.innerWidth > 425){
@@ -167,7 +184,7 @@ function MyLikes() {
    const searched = dream.filter((el)=>{ 
    return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
    }) 
-   setLikes(searched);
+   setDream(searched);
    sethasText(false);
   }
 
@@ -228,20 +245,20 @@ function MyLikes() {
 
   // 전체 목록 조회
   const handleAllsearch = () => {
-    setLikes(dream);
+    getLikes();
   }
 
   const updateMenu = (arg: number | string[] ) => {
     if(typeof arg === 'string'){
       if (arg === 'latest'){
         // getPictures();
-        setLikes(dream);
+       getLikes();
        setSorLike({latestLike: false, selectLike: []});
       }
       else if (arg === 'oldest'){
-        if(likes[0].likedate >= likes[likes.length-1].likedate){
-          return;
-        }
+        // if(dream[0].likedate >= dream[dream.length-1].likedate){
+        //   return;
+        // }
         setSorLike({latestLike: true, selectLike: []});
       }
     }
@@ -264,7 +281,7 @@ function MyLikes() {
         return (sortLike.selectLike.includes(el.likedate))
       })
     }
-    setLikes(newState)
+    setDream(newState)
   }
 
   // 꿈 모달 닫기
@@ -272,18 +289,34 @@ function MyLikes() {
     setIsOpen(false);
   }
  // 꿈 삭제
-  const handleDislike = (e: React.MouseEvent, idx: number) => {
+  const handleDislike = (e: React.MouseEvent, id?: number) => {
     e.preventDefault();
-    let splitarr: string[] | string = likes[idx]['link'].split('=');
-    splitarr = splitarr[splitarr.length-1]
-    dispatch(DisLikeDrmAct(splitarr));
-    setLikes(dream);
+    const dreamId = id
+    axios
+      .delete(process.env.REACT_APP_URL + `/search/dislike/${dreamId}`,{
+        headers: {
+          authorization : 'Bearer ' + accessToken
+        }
+      })
+      .then(res=>{
+        console.log(res.data);
+        if(res.headers.accessToken){
+          dispatch(GetTokenAct(res.headers.accessToken));
+        }
+        const deleted = dream.filter(el=>{
+          return el.dream_id !== id
+        })
+        setDream(deleted);
+      })
+      .catch(err=>{
+        console.log(err);
+      })
   }
 
 
-  return (
+   return (
     <>
-      <Container>
+     <Container>
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
         <Title><h1>좋아하는 꿈</h1></Title>
         <UpperSection >
@@ -317,27 +350,27 @@ function MyLikes() {
           </ ResponsiveRight >
         </ UpperSection>
         <DreamSection>
-        {likes && likes.map((res, idx) => {
+        {dream && dream.map((res, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
-            <Dream ref={addToRefs} key={idx} top={y} left={x}>
-              <Delete onClick={(e)=> handleDislike(e,idx)}/>
-              <DrContent onClick={(e)=> handleLink(e,res.link)}>
+            <Dream ref={addToRefs} key={res.id} top={y} left={x}>
+              <Delete onClick={(e)=> handleDislike(e,res.dream_id)}/>
+              <DrContent onClick={(e)=> handleLink(e,res.url)}>
                 <DrTitle>{res.title}</DrTitle>
-                <Text>{res.description.slice(0,66)+ '...'}</Text>
+                <Text>{res.content}</Text>
               </DrContent>
-              <Date>{res.likedate}</Date>
+              <Date>{res.createdAt.split('T')[0].slice(2)}</Date>
             </Dream>
           )
         })}
         </DreamSection>
       </Container>
     </>
-  );
-}
+   );
+ }
 
-export default MyLikes;
+ export default MyLikes;
 
 const Container = styled.div`            
   ${props=> props.theme.flexColumn};

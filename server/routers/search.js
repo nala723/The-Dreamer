@@ -5,6 +5,6 @@ const controller = require('../controllers');
 router.get('/search', controller.search);
 // router.get("/:placeId", controllers.select);
 router.post("/like", controller.createFavorites);
-router.delete("/dislike/:likeId", controller.cancelFavorites);
+router.delete("/dislike/:dreamId", controller.cancelFavorites);
 
 module.exports = router;

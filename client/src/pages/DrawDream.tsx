@@ -153,6 +153,7 @@ function DrawDream({ width, height }: CanvasProps) {
 
   const handleClick = ()=> {
     setOpen(!open);
+    clearCanvas();
   } 
 
   const handleErr = ()=> {

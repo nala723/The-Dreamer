@@ -35,7 +35,7 @@ function MyAccount() {
     previewUrl: '',
     Password:'',
     PasswordCheck:''
-})
+  })
   const [errorMessage, setErrorMessage] = useState<{
     [index: string]: string 
   }>({

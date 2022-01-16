@@ -31,7 +31,8 @@ function MyDream() {
   const [ input, setInput ] = useState('');
   const [ selected, setSelected ] = useState(-1);
   const [ hasText, sethasText ] = useState(false);
-  const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
+  // const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
+  const [ myPic, setMyPic ] = useState<PicInter[]>([]); // ([]) 임시 더미
   const [ sortPic, setSorPic ] = useState<{
     latestPic: boolean, selectPic: string[], sortEmotion : string
   }>({ 
@@ -43,7 +44,7 @@ function MyDream() {
   const clickRef = useRef<any | null>(null);
 
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
-
+  console.log('렌더링',sortPic, myPic )
   useEffect(() => {
     // getPictures(); // 임시 주석
     document.addEventListener('click',handleClickOutside);
@@ -66,10 +67,10 @@ function MyDream() {
 
 
   useEffect(()=>{
-    if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
-      return handleSortPic(dummyPics);
-    }
-  },[sortPic])
+    // if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
+      getPictures();
+    // }
+  },[sortPic])  // 더미용
 
   const getPictures = () => {
       axios
@@ -85,8 +86,8 @@ function MyDream() {
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
                 re.createdAt = (re.createdAt).split('T')[0].slice(2).split('-').join('.')
-                // re.picture = (typeof re.picture !== 'object' && typeof re.picture === 'string') ?
-                // re.picture : "data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
+                re.picture = (typeof re.picture !== 'object' && typeof re.picture === 'string') ?
+                re.picture : "data:image/png;base64, " + Buffer.from(re.picture, 'binary').toString('base64');
                 // 밑에 렌더링할때 날짜 문자열 자름 처리한것 수정 (위에서 이미 처리햇으므로)
                 return re;
               })
@@ -181,8 +182,7 @@ function MyDream() {
   };
   // 전체 목록 조회
   const handleAllsearch = () => {
-    return; // 임시 더미 ***
-    // getPictures(); 
+    setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: ''});
   }
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
@@ -213,44 +213,40 @@ function MyDream() {
   const updateMenu = (arg: string | string[] ) => {
     if (typeof arg === 'string'){
       if (arg === 'oldest'){
-        // getPictures();
-        setMyPic(dummyPics);
+          // getPictures();
+        // setMyPic(dummyPics);
+        setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: ''});
       }
       else if (arg === 'latest'){
-        if(myPic[0].createdAt >= myPic[myPic.length-1].createdAt){
-          return;
-        }
-        setSorPic({...sortPic, latestPic: true});
+        setSorPic({...sortPic, latestPic: true, selectPic: [], sortEmotion: ''});
       }
       else{
-        setSorPic({...sortPic, sortEmotion: arg});
+        setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: arg});
       }
     }
     else if (typeof arg === 'object'){
-      setSorPic({...sortPic, selectPic: arg});
+      setSorPic({...sortPic, latestPic: false, selectPic: arg, sortEmotion: ''});
     }
+    // getPictures();
   }
 
   let newState :PicInter[];
   
   const handleSortPic = (data: PicInter[]) => {
- 
-    if(sortPic.latestPic && sortPic.selectPic.length <= 0){
+    if(sortPic.latestPic && sortPic.selectPic.length <= 0 && !sortPic.sortEmotion){
       newState = [...data]
       newState = newState.reverse()
-    }
-    if(sortPic.selectPic.length > 0 && !sortPic.latestPic){
+    }else if(sortPic.selectPic.length > 0 && !sortPic.latestPic && !sortPic.sortEmotion){
       newState = data.filter((el: any)=>{
         return (sortPic.selectPic.includes(el.createdAt))
       })
-    }
-    if(sortPic.sortEmotion && !sortPic.latestPic && sortPic.selectPic.length <= 0){
+    }else if(sortPic.sortEmotion && !sortPic.latestPic && sortPic.selectPic.length <= 0){
       newState = data.filter((el: any)=>{
         return (sortPic.sortEmotion === el.emotion)
       })
     }
     setMyPic(newState)
-    setSorPic({latestPic: false, selectPic: [], sortEmotion: ''});
+    // setSorPic({latestPic: false, selectPic: [], sortEmotion: ''});
   }
 
   const handleClick = () => {
@@ -304,9 +300,9 @@ function MyDream() {
        </ UpperSection>   
        <DreamSection>
          <CardBox>
-           {myPic.map((pic,idx)=>{
+           {myPic.map((pic)=>{
              return(
-               <Card key={idx}>
+               <Card key={pic.id}>
                  <CardDiv onClick={()=> handlePicOpen(pic)}>
                    <div>
                     <Delete onClick={(e)=> handleDislike(e,pic.id)}/>
