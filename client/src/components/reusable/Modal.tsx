@@ -30,12 +30,12 @@ function Modal(props: {
   
     const {  handleClick, children, handleSignOut, header } = props;
     return (
-        <Background ref={backRef}> {/* className={`${children ? "active" : ""}`}*/}
+        <Background ref={backRef}> 
           <ModalSection
             onClick={handleClick}
             size={header? '21.25rem' : ''}
             ref={modalRef} 
-          >{/* className={`${children ? "active" : ""}`}*/}
+          >
             <ModalTitle>
               <Img src='theme' alt='logo'/>
             </ModalTitle>
@@ -78,14 +78,9 @@ const Background = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* visibility: hidden; */
   opacity: 0;
-  /* &.active { */
-    background-color: rgba(247,241,255,0.8);
-    /* visibility: visible; */
-    /* opacity: 1; */
-    z-index:500;
-  /* } */
+  background-color: rgba(247,241,255,0.8);
+  z-index:500;
 `;
 
 const ModalSection = styled.div<{size: string;}>`
@@ -98,10 +93,7 @@ const ModalSection = styled.div<{size: string;}>`
   align-items: center;
   border-radius: 10px;
   box-shadow: 0 0 2.5rem rgba(58, 53, 54, 0.3);
-  /* opacity: 0; */
-  /* &.active { */
-    z-index:999;
-  /* } */
+  z-index:999;
   ${props=> props.theme.mobile}{
     width: 90vw;
     height: calc(${props=> props.size ? props.size : '19.625rem'} / 1.15 );
