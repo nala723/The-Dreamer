@@ -18,9 +18,8 @@ module.exports = async(req, res) => {
             }
 
             const userData = isAuthorized(accessToken);
-            // const saveImage = fs.readFileSync(req.file.path);
-            const saveImage = req.file.location
-            console.log('있나~:', saveImage)
+            const saveImage = fs.readFileSync(req.file.path); // 지금은 안됨, s3를 위해 image 데이터 타입을 text로 했기 때문
+            // const saveImage = req.file.location
             await Picture.create({
                 title : req.body.title,
                 picture : saveImage,

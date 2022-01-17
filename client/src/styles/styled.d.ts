@@ -17,7 +17,6 @@ declare module 'styled-components' {
     fontNormal: number;
     fontBold: number;
     toggle: string;
-    toggleicon: string;
        dream: string;
        circle: string;
        landing:  string;

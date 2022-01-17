@@ -1,11 +1,10 @@
-const models = require("../../models");
+const {  Dream, User_like_dream } = require("../../models");
 const { isAuthorized, remakeToken } = require("../tokenFunctions");
 
 module.exports = async (req, res) => {
+  const { url,title,content } = req.body;
   try {
-    const dreamId = req.params.dreamId;
     const authorization = req.headers["authorization"];
-
     if (!authorization) {
       res.status(401).json("invalid token");
     } else {
@@ -15,18 +14,43 @@ module.exports = async (req, res) => {
       }
       const userData = isAuthorized(accessToken);
       const userId = userData.id;
-      console.log(userData);
       if (!userId) {
         res.status(401).json("invalid user");
       } else {
-        models.User_like_dream.create({
-          user_id: userId,
-          dream_id: dreamId,
-        });
-        res.send({ message: "like this dream" });
+        const dreamInfo = await Dream.findOne({where: {url: url}});
+        if(!dreamInfo){ // db에 있는 정보인지 (없으면 새로 생성)
+          const createDream = await Dream.create({
+            url: url,
+            title: title,
+            content: content
+          }) // 정보가 있다면 - 이미 같은 유저가 추가했는지 //-> async 쪽 다시 공부.. ->여기가 문제 만들고 밑으로 내려갈수있도록 이어야
+          if(createDream){
+            const userLikeDream = await User_like_dream.create({ // dream 레코드 추가했다면 userlikedrea 조인레코드 추가
+                user_id: userId,
+                dream_id: createDream.id,
+              })
+            if(userLikeDream){
+              return res.status(200).json({ message : 'like this dream', likeId: createDream.id })
+            }      
+          }
+        } else { 
+          const hasJoinId = await User_like_dream.findOne({where: {user_id: userId, dream_id: dreamInfo.id}})
+            if(!hasJoinId) {
+              const userLikeDream = await User_like_dream.create({
+                  user_id: userId,
+                  dream_id: dreamInfo.id,
+                })
+              if(userLikeDream){
+                return res.status(200).json({ message : 'like this dream', likeId: dreamInfo.id })
+              }        
+          } else {
+              return res.status(200).json({ message: "already liked it", likeId: dreamInfo.id })
+          }
+        }
       }
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };

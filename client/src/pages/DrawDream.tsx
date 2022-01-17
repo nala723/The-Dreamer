@@ -29,7 +29,7 @@ function DrawDream({ width, height }: CanvasProps) {
   const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const history = useHistory();
   const dispatch = useDispatch();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null); // useRef 활용 - <canvas>와 같은 DOM노드에 쉽게 접근
   const [mousePosition, setMousePosition] = useState<Coordinate>(); // 마우스포인터(x,y)
   const [isPainting, setIsPainting] = useState(false); //페인팅상태 선 긋는 상태
   const [lineWeight, setLineWeight] = useState<number>(2.5); // 타입수정
@@ -44,8 +44,6 @@ function DrawDream({ width, height }: CanvasProps) {
   const [errOpen, setErrOpen] = useState(false);
   const [textSlider, setTextSlider] = useState(false);
   const [paletteSlider, setPaletteSlider] = useState(false);  
-  // const [checkFill, setCheckFill] = useState(false); //채우기 확인용, 안됨
-  // earasing 모드 - 현재 마우스 버튼을 누르고 있는 상태인지 확인 - 일단 painting으로 다 해보고
   const context = useRef<CanvasRenderingContext2D | null>();
 
   // 시작시 하얀색으로 채우기
@@ -53,16 +51,8 @@ function DrawDream({ width, height }: CanvasProps) {
     clearCanvas();
   },[])
   
-
-  // 그림판 채우기 , 안됨
-  // useEffect(()=>{
-  //   if(isPainting && fill && mousePosition && checkFill){
-  //     fillCanvas()
-  //     setCheckFill(false);
-  //   }
-  // },[checkFill])
-
   const handleColor = (e : React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    e.preventDefault();
     const newColor = (e.target as HTMLDivElement).style.backgroundColor;
     setSelectColor(newColor);
     setEraser(false);
@@ -70,7 +60,6 @@ function DrawDream({ width, height }: CanvasProps) {
       setBrush(true);
     }
   }
-  
   // 굵기 조절
   const handleBrushW = (e: any)  => {
     setLineWeight(e.target.value);
@@ -120,11 +109,10 @@ function DrawDream({ width, height }: CanvasProps) {
     const blobBin = Buffer.from(image, 'base64').toString('binary');
 		const array = [];
 		for (let i = 0; i < blobBin.length; i += 1) {
-			array.push(blobBin.charCodeAt(i));//인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장한다. 
+			array.push(blobBin.charCodeAt(i));//인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장한다. (UTF-16 코드를 나타내는 0부터 65535 사이의 정수를 반환)
 		}
 		const u8arr = new Uint8Array(array); //8비트의 형식화 배열을 생성한다. 
 		const file = new Blob([u8arr], { type: "image/png" }); // Blob 객체 생성
-    console.log(typeof file);
 		const formdata = new FormData(); // formData 생성
 		formdata.append("picture", file); // formdata에 file data 추가
     formdata.append('title', title);
@@ -165,6 +153,7 @@ function DrawDream({ width, height }: CanvasProps) {
 
   const handleClick = ()=> {
     setOpen(!open);
+    clearCanvas();
   } 
 
   const handleErr = ()=> {
@@ -190,8 +179,10 @@ function DrawDream({ width, height }: CanvasProps) {
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
     return {
-      x: e.pageX - canvas.offsetLeft, //pageX,~Y : 전체문서를 기준으로 한 마우스 클릭 좌표
-      y: e.pageY - canvas.offsetTop  // offsetX,Y : 좌표React.MouseEvent<HTMLDivElement, MouseEvent>를 출력하도록 하는 이벤트가 걸려있는 DOM node 기준으로 좌표표시
+      x: e.offsetX, 
+      y: e.offsetY  
+      // x: e.pageX - canvas.offsetLeft, //pageX,~Y : 전체문서를 기준으로 한 마우스 클릭 좌표
+      // y: e.pageY - canvas.offsetTop  // offsetX,Y : 좌표React.MouseEvent<HTMLDivElement, MouseEvent>를 출력하도록 하는 이벤트가 걸려있는 DOM node 기준으로 좌표표시
     }
   }
 
@@ -200,7 +191,6 @@ function DrawDream({ width, height }: CanvasProps) {
     if (coordinates) {
       setIsPainting(true);
       setMousePosition(coordinates); 
-      // setCheckFill(true);
     }
   },[]);
 
@@ -216,11 +206,6 @@ function DrawDream({ width, height }: CanvasProps) {
 
       context.current.lineJoin = 'round';
       context.current.lineWidth = lineWeight;
-      context.current.fillStyle = selectColor;
-      if(fill){
-        canvas.style.cursor = cursors[2];
-        context.current.fillRect(0, 0, canvas.width, canvas.height);
-      }else{
         if(eraser){
           canvas.style.cursor = cursors[1];
           // context.clearRect(newMousePosition.x-context.lineWidth/2, newMousePosition.y-context.lineWidth/2, context.lineWidth, context.lineWidth)
@@ -230,31 +215,15 @@ function DrawDream({ width, height }: CanvasProps) {
           canvas.style.cursor = cursors[0];
           context.current.strokeStyle = selectColor; 
         }
-          context.current.beginPath();
-          context.current.moveTo(originalMousePosition.x, originalMousePosition.y);
-          context.current.lineTo(newMousePosition.x, newMousePosition.y);
-          context.current.closePath();
+          context.current.beginPath(); // 라인 그리기 할거다
+          context.current.moveTo(originalMousePosition.x, originalMousePosition.y); // 라인 시작 위치
+          context.current.lineTo(newMousePosition.x, newMousePosition.y); // 라인 끝 위치
+          context.current.closePath(); // 그은 라인들을 이어줌(ex: 삼각형)
     
-          context.current.stroke();
-      }
+          context.current.stroke(); // 선 긋는 메소드 이것 불러줘야 선 그어짐
     }
   }
 
-//   const fillCanvas = () => {  
-//     if(!canvasRef.current){
-//       return;
-//     } 
-//     const canvas: HTMLCanvasElement = canvasRef.current;
-//     context.current = canvas.getContext('2d');
-//     if(context.current) { 
-//       context.current.fillStyle = selectColor;
-//       if(fill){
-//         canvas.style.cursor = cursors[2];
-//         context.current.fillRect(0, 0, canvas.width, canvas.height);
-//       }
-//   }
-// }
-  
   // 페인팅
   const paint = useCallback((e:MouseEvent) => {
     e.preventDefault(); 
@@ -271,6 +240,21 @@ function DrawDream({ width, height }: CanvasProps) {
   const exitPaint = useCallback(() => {
     setIsPainting(false);
   },[]);
+
+  const fillCanvas =(()=>{
+    if(!canvasRef.current){
+      return;
+    }
+    const canvas: HTMLCanvasElement = canvasRef.current;
+    context.current = canvas.getContext('2d');
+    if(context.current) { //선 스타일지정
+      context.current.fillStyle = selectColor;
+      if(fill){
+        canvas.style.cursor = cursors[2];
+        context.current.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  })
 
   const clearCanvas = useCallback(() => {
     if (!canvasRef.current) {
@@ -297,11 +281,14 @@ function DrawDream({ width, height }: CanvasProps) {
     if (!canvasRef.current) {
       return;
     }
+    if(fill){
+      return fillCanvas(); // 모바일에서 채우기 모르겠다..
+    }
     const canvas: HTMLCanvasElement = canvasRef.current;
     const touch = event.touches[0];    // event로 부터 touch 좌표를 얻어낼수 있습니다.
     const mouseEvent = new MouseEvent("mousedown", {	
-      clientX: touch.clientX,
-      clientY: touch.clientY
+      clientX: touch.pageX - canvas.offsetLeft,
+      clientY: touch.pageY - canvas.offsetTop
     });
     canvas.dispatchEvent(mouseEvent); // 앞서 만든 마우스 이벤트를 디스패치해줍니다
   }, []); 
@@ -314,13 +301,14 @@ function DrawDream({ width, height }: CanvasProps) {
       const canvas: HTMLCanvasElement = canvasRef.current;
       const touch = event.touches[0];
       const mouseEvent = new MouseEvent("mousemove", {
-        clientX: touch.clientX,
-        clientY: touch.clientY
+        clientX: touch.pageX - canvas.offsetLeft,
+        clientY: touch.pageY - canvas.offsetTop
       });
       canvas.dispatchEvent(mouseEvent);
     },
     []
   );
+
   const exitTouch = useCallback((event: TouchEvent) => {
     event.preventDefault();
 
@@ -344,6 +332,7 @@ function DrawDream({ width, height }: CanvasProps) {
     canvas.addEventListener('mousemove', paint);
     canvas.addEventListener('mouseup', exitPaint);
     canvas.addEventListener('mouseleave', exitPaint);
+    canvas.addEventListener('click', fillCanvas);
 
     canvas.addEventListener('touchstart', startTouch);
     canvas.addEventListener('touchmove', touch);
@@ -354,12 +343,14 @@ function DrawDream({ width, height }: CanvasProps) {
       canvas.removeEventListener('mousemove', paint);
       canvas.removeEventListener('mouseup', exitPaint);
       canvas.removeEventListener('mouseleave', exitPaint);
+      canvas.removeEventListener('click', fillCanvas);
 
       canvas.removeEventListener('touchstart', startTouch);
       canvas.removeEventListener('touchmove', touch);
       canvas.removeEventListener('touchend', exitTouch);
+
     }
-  },[startPaint, paint, exitPaint])
+  },[startPaint, paint, exitPaint, fillCanvas])
  
 
   const getDaytoYear = () => {
@@ -448,11 +439,11 @@ const Container = styled.div`
   height: calc(100vh - 4.375rem);
   justify-content: flex-start;
   overflow: auto;
-  /* -ms-overflow-style: none; 
+  -ms-overflow-style: none; 
   scrollbar-width: none;
     ::-webkit-scrollbar {
     display: none;
-  } */
+  }
   ${props=> props.theme.mobile}{
    min-height: calc(100vh - 3.6rem);
   }
@@ -645,7 +636,6 @@ ${props=> props.theme.mobile}{
 ${props=> props.theme.mobileM}{
   max-width: 80%;
 }
-
     height: 100%;
     width: 85%;
     text-indent: -2rem;
@@ -686,6 +676,8 @@ ${props=> props.theme.mobile}{
   width: 100%;
   height: auto;
   flex-direction: column-reverse;
+  -webkit-flex-direction: column-reverse;
+  -moz-flex-direction: column-reverse;
   justify-content: center;
   padding: 0.2rem 1rem 1rem 1rem;
   bottom: 0;
@@ -755,6 +747,8 @@ const ButtonBox = styled.div`
 ${props=> props.theme.midTablet}{
   width: auto;
   flex-direction: row-reverse;
+  -webkit-flex-direction: row-reverse;
+  -moz-flex-direction: row-reverse;
   gap: 0.6rem;
   height: 2rem; 
 }
@@ -804,6 +798,8 @@ ${props=> props.theme.midTablet}{
 const UpperBtn = styled.span`
 ${props=> props.theme.midTablet}{
   flex-direction: row-reverse;
+  -webkit-flex-direction: row-reverse;
+  -moz-flex-direction: row-reverse;
   gap: 0.6rem;
 }
   width: 100%;

@@ -53,7 +53,6 @@ const Background = styled.div`
     z-index:500;
   }
 `;
-
 const ModalSection = styled.div`
   position: relative;
   background: ${props=>props.theme.default};
@@ -68,18 +67,43 @@ const ModalSection = styled.div`
   &.active {
     z-index:999;
   }
+  ${props=> props.theme.tablet}{
+   width: 100vw;
+  }
+  ${props=> props.theme.mobile}{
+    padding: 1rem 0;
+  } 
 `;
 const ModalTitle = styled.div`
   width:100%;
+  ${props=> props.theme.mobile}{
+    display: flex;
+    align-items: flex-start;
+  } 
 `;
 const Img = styled.img.attrs<{src: string;}>(props=>({
   src: props.theme.imgsrc
 }))`
+  ${props=> props.theme.mobile}{
+  transform: scale(0.8);
+  } 
 `;
 const Content = styled.div`
 margin: 3rem;
 margin-top: 3rem;
-background-color: white;
+${props=> props.theme.tablet}{
+  margin-bottom: 2rem;
+  img{
+     width: 90vw;
+     height: auto;
+    }
+  }
+  ${props=> props.theme.mobile}{
+  margin: 1rem;
+  img{
+     width: 100vw;
+    }
+  }  
 
 `;
 

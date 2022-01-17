@@ -30,6 +30,7 @@ const GlobalStyles = createGlobalStyle`
         list-style: none;
    }
     input {
+        font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
         text-indent: 1.5rem;
         outline: none;
         border: transparent;

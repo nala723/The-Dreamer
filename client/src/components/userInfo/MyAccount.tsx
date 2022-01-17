@@ -8,6 +8,7 @@ import { Buffer } from 'buffer';
 import Modal from '../reusable/Modal';
 import { pwIsValid } from '../../components/reusable/Validator';
 import axios from 'axios';
+import { darkTheme } from '../../styles/theme';
 
 
 
@@ -34,7 +35,7 @@ function MyAccount() {
     previewUrl: '',
     Password:'',
     PasswordCheck:''
-})
+  })
   const [errorMessage, setErrorMessage] = useState<{
     [index: string]: string 
   }>({
@@ -197,9 +198,9 @@ function MyAccount() {
             imgforaxios && formData.append("profile",imgforaxios);
             formData.append("password",currentInput.Password);
             // 잘 가는지 확인
-            for(const pair of formData.entries()) {
-              console.log(pair[0]+ ', '+ pair[1]);
-           }
+          //   for(const pair of formData.entries()) {
+          //     console.log(pair[0]+ ', '+ pair[1]);
+          //  }
                 axios
                 .patch(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,formData,{
                        headers: {
@@ -327,6 +328,7 @@ const Handlewithdraw = async() => {
       }
       {okWdModal && <Modal handleClick={confirmWithDrawl}>회원 탈퇴가 완료되었습니다.</Modal>}
        <Title><h1>나의 계정 보기</h1></Title>
+       <ContentBox >
        <Content>
          <PhotoBox>
            <UserPhotoBox>
@@ -347,7 +349,8 @@ const Handlewithdraw = async() => {
                     <div>{user.name}</div>
                     { user.key 
                     ?  
-                    <input type={user.type} onChange={handleInputValue(user.key)} 
+                    <input type={user.type} placeholder={user.key}
+                    onChange={handleInputValue(user.key)} 
                     value={currentInput[user.key]} onBlur={validationCheck(user.key)}/> 
                     : 
                     <div>{user.val}</div> }
@@ -360,7 +363,8 @@ const Handlewithdraw = async() => {
             <SubmitBtn onClick={onSubmitHandler}>수정</SubmitBtn>
           </InfoBox>
           <WithDrawl onClick={handleWdOpen}>회원 탈퇴</WithDrawl>
-       </Content>  
+       </Content>
+       </ContentBox>  
      </Container>
   );
 }
@@ -368,9 +372,9 @@ const Handlewithdraw = async() => {
 export default MyAccount;
 
 const Container = styled.div`            
-  width: 100%;
-  ${props=> props.theme.flexColumn};
-  justify-content: flex-start;
+ height: 100%;
+ ${props => props.theme.flexColumn};
+ justify-content: flex-start;
 `;
 
 const Title = styled.div`
@@ -381,6 +385,23 @@ const Title = styled.div`
   h1{
     font-size: ${props=>props.theme.fontL};
   }
+  ${props=>props.theme.midTablet}{
+    padding-top: 1rem;
+    padding-left: 0;
+    text-align: center;
+  }
+  ${props=> props.theme.mobile}{
+    padding-top: 0.6rem;
+    height: 5.5rem;
+  }
+`;
+
+const ContentBox = styled.div`
+   ${props => props.theme.flexColumn};
+   height: 78%;
+   ${props=>props.theme.mobileS}{
+    height: auto;
+  }
 `;
 
 const Content = styled.div`
@@ -389,10 +410,19 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.125rem;
+  @media only screen and (max-width: 550px){
+    max-width: 29rem;
+    max-height: 37.563rem;
+    width: 80vw;
+    height: auto;
+  } 
+  ${props=>props.theme.mobile}{
+    gap: 1.5rem;
+  }
 `;
 
 const PhotoBox = styled.div`
- position: relative; 
+  position: relative; 
   width: 100%;
   height: 7.467rem;
   display: flex;
@@ -452,6 +482,11 @@ const InfoBox = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  @media only screen and (max-width: 550px){
+    max-height: 22.813rem;
+    height: auto;
+    gap: 1rem;
+  }
 `;
 
 const InfoUl = styled.ul`
@@ -459,6 +494,10 @@ const InfoUl = styled.ul`
   height: 18.1rem;
   display: flex;
   flex-direction: column;
+  @media only screen and (max-width: 550px){
+    max-height: 18.1rem;
+    height: auto;
+  }
 `;
 
 const InputWrapper = styled.li`
@@ -478,7 +517,9 @@ const InfoList = styled.div`
   text-indent: 0.5rem;
   > div{
     width: 4.875rem;
-    color:  ${props=> props.theme.transp};
+    color: ${props=> props.theme === darkTheme ?
+   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
+      
   }
   > div:nth-child(2){
     width: 21.813rem;
@@ -493,9 +534,34 @@ const InfoList = styled.div`
     background-color: transparent; 
     font-size: 22px;
       ::placeholder{
-        color: ${props=> props.theme.transp};
+        color: transparent; 
       }
   }
+  @media only screen and (max-width: 550px){
+    > div:nth-child(1) {
+     display: none;
+    }
+    > div:nth-child(2) {
+      font-size: 18px;
+      width: 100%;
+      text-indent: 1rem;
+      text-align: start;
+    }
+    >input {
+      width: 100%;
+      text-indent: 1rem;
+      ::placeholder{
+        color: ${props=> props.theme === darkTheme ?
+   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
+      }
+      font-size: 16px;
+    }  
+  }
+  ${props=>props.theme.mobileS}{
+    min-height: 2.8rem;
+    height: auto;
+  }
+  
 `;
 
 const Error = styled.div`
@@ -512,6 +578,7 @@ const SubmitBtn = styled.button`
   height: 2.5rem;
   border-radius: 5px;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
   transition: all 0.3s ease-in-out;
@@ -524,6 +591,9 @@ const SubmitBtn = styled.button`
     transition: all 0.3s ease-in-out;
     color: ${props=> props.theme.text};
   }
+  /* @media only screen and (max-width: 550px){
+    ;
+  } */
 `;
 const WithDrawl = styled.div`
   height: 2.875rem;
@@ -539,5 +609,8 @@ const WithDrawl = styled.div`
   :hover{
     font-weight: bold;
     color: ${props=> props.theme.transp};
+  }
+  @media only screen and (max-width: 550px){
+    height: 2rem;
   }
 `;

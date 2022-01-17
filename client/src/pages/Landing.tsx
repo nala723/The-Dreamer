@@ -5,7 +5,7 @@ import {  useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../actions';
 import Modal from '../components/reusable/Modal';
 import Footer from '../components/Footer';
-import SecondSection from '../components/landing/Second';
+import SecondSection from '../components/landing/SecondSection';
 import { keyframes } from 'styled-components';
 import SearchBar from '../components/reusable/SearchBar';
 
@@ -57,10 +57,10 @@ function Landing() {
     const watch = () => {
       window.addEventListener("scroll", handleScrollBtn);
     };
-    watch(); // addEventListener 함수를 실행
+    watch();
     return () => {
       window.removeEventListener("scroll", handleScrollBtn);
-    }; // addEventListener 함수를 삭제! 꼭 필요하다!
+    }; 
   });
 
   const handleSearch = (search: string) => {
@@ -119,10 +119,7 @@ const ScrollAni = (start: string, end: string) => keyframes`
 
 `;
 
-const Container = styled.div`
-${props=> props.theme.laptop}{
-  min-height: 1100vh; /*아이패드는 더 많이 필요..? */
-}              
+const Container = styled.div`            
   position: relative;
   overflow: hidden;
   display: flex;
@@ -130,6 +127,12 @@ ${props=> props.theme.laptop}{
   width: 100%;
   height: 728.24rem;
   background: ${props=> props.theme.landing};
+  ${props=> props.theme.laptop}{
+    min-height: 1100vh; 
+  }
+  ${props=> props.theme.mobile}{
+    height: 660rem;
+  }  
 `;
 const MainSection = styled.section`
   position: absolute; 
@@ -150,7 +153,6 @@ const ContentsBox = styled.div`
       letter-spacing: 0.4rem;
       ${props=> props.theme.mobile}{ // 가운데 보고 수정...정규식이나..
         letter-spacing: 0.2rem;
-        max-width: 50%;
         text-align: center;
         line-height: 2rem; 
       }
@@ -175,6 +177,9 @@ const SearchBox = styled.div`
   ${props=> props.theme.tablet}{
       min-width: 80vw;
       width: 80vw;
+    }
+  ${props=> props.theme.mobile}{
+     min-width: 90vw;
     }
            
 `;  

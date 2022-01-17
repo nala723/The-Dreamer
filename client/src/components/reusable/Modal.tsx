@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
+import gsap from 'gsap';
 
 function Modal(props: { 
   handleClick: (e?: React.MouseEvent )=>void; children: any; handleSignOut?: (arg0 :boolean)=>void; header?: string;}) {
   // 모달 좀더 제목이랑 내용 구분?
+  const backRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const timeLineRef = useRef<gsap.core.Timeline>();
+
+  useEffect(()=>{
+     timeLineRef.current = gsap.timeline()
+      .to(backRef.current, {
+        opacity: 1, 
+        duration: 0.5
+      })
+      .fromTo(modalRef.current,{ opacity: 0, y: -90,}, {
+        opacity: 1,
+        duration: 1.2,
+        y: 0,
+        ease: "power3.inOut",
+      }, '-=0.4')
+
+    return (()=>{
+      timeLineRef.current && timeLineRef.current.kill();
+    })
+  },[])
+
   
     const {  handleClick, children, handleSignOut, header } = props;
     return (
-        <Background className={`${children ? "active" : ""}`}>
+        <Background ref={backRef}> 
           <ModalSection
-            className={`${children? "active" : ""}`}
             onClick={handleClick}
             size={header? '21.25rem' : ''}
+            ref={modalRef} 
           >
             <ModalTitle>
               <Img src='theme' alt='logo'/>
@@ -55,14 +78,9 @@ const Background = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  visibility: hidden;
   opacity: 0;
-  &.active {
-    background-color: rgba(247,241,255,0.8);
-    visibility: visible;
-    opacity: 1;
-    z-index:500;
-  }
+  background-color: rgba(247,241,255,0.8);
+  z-index:500;
 `;
 
 const ModalSection = styled.div<{size: string;}>`
@@ -70,23 +88,30 @@ const ModalSection = styled.div<{size: string;}>`
   background: ${props=>props.theme.default};
   width: 27.563rem;
   height: ${props=> props.size ? props.size : '19.625rem'};
-  /* gap: ${props=> props.size && '1rem'}; */
   display: flex;
   flex-direction: column;
   align-items: center;
   border-radius: 10px;
   box-shadow: 0 0 2.5rem rgba(58, 53, 54, 0.3);
-  &.active {
-    z-index:999;
+  z-index:999;
+  ${props=> props.theme.mobile}{
+    width: 90vw;
+    height: calc(${props=> props.size ? props.size : '19.625rem'} / 1.15 );
   }
 `;
 const ModalTitle = styled.div`
   width:100%;
   padding: 1rem 0 0 1rem;
+  ${props=> props.theme.mobile}{
+    padding-left: 0;
+  }
 `;
 const Img = styled.img.attrs<{src: string;}>(props=>({
   src: props.theme.imgsrc
 }))`
+  ${props=> props.theme.mobile}{
+    transform: scale(0.7);
+  }
 `;
 const Content = styled.div<{size: string;}>`
   ${props=> props.theme.flexColumn};
@@ -113,6 +138,17 @@ const Content = styled.div<{size: string;}>`
     height: 2rem;
     text-align: center;
   }
+  ${props=> props.theme.mobile}{
+    padding-top: 0;
+    justify-content: center;
+    height:  ${props=> props.size ? '54%' : '47%'};
+    >p{
+      width: 90%;
+      margin-top: 0.7rem;
+      display: ${props=> props.size ? 'block' : 'none'};
+    }
+  }
+  
 `;
 const OkBtn = styled.div<{signout : string;}>`
   ${props=> props.signout ? props.theme.flexRow : props.theme.flexColumn}
@@ -129,7 +165,7 @@ const OkBtn = styled.div<{signout : string;}>`
     transition: all 0.3s ease-in-out;
     background: ${props=> props.theme.dream};  
     border: transparent; 
-    color: ${props=> props.theme.reverse};
+    color: #494161;
     :hover{
       background: transparent; 
       border: 1px solid ${props=> props.theme.transp}; 

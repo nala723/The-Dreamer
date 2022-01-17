@@ -8,6 +8,7 @@ import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import dotenv from "dotenv";
+import { darkTheme } from '../styles/theme';
 dotenv.config();
 
 //window객체에서 뽑아서야 하는 naver 파라미터는 아래와 같이 global로 선언해주지 않으면 사용이 불가능하다. 
@@ -39,7 +40,7 @@ function Login(){
   }
 
   const handleSubmit = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     axios
       .post(process.env.REACT_APP_URL + `/sign/signin`,{
         email: loginInfo.Email,
@@ -54,10 +55,10 @@ function Login(){
         }
       })
       .catch((err)=>{
+        setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
         console.log(err)
       })  
   }
-
 
 /* 네이버 로그인, 커스텀 버튼, 누르면 컴ㅍ넌트 상태 true로 렌더링 */
   const naverLogin = async() => {
@@ -92,7 +93,6 @@ function Login(){
     const email = res.profileObj.email;
     const username = res.profileObj.name;
     const profile = res.profileObj.imageUrl;
-
     socialLoginRq(email, username, profile )
   };  
 
@@ -138,25 +138,25 @@ function Login(){
             <InputBox>
                 <SingleInput>
                   <div>Email</div>
-                  <input  type='email' onChange={handleInput('Email')}/>
+                  <input  type='email' placeholder='Email' onChange={handleInput('Email')}/>
                 </SingleInput>
                 <SingleInput>
                   <div>Password</div>
-                  <input  type='password' onChange={handleInput('Password')}/>
+                  <input  type='password' placeholder='Password' onChange={handleInput('Password')}/>
                 </SingleInput>
-                <Error>{errorMessage}</Error>
+                <Error err={errorMessage? 'err' : ''}>{errorMessage}</Error>
                 <Button onClick={handleSubmit}>
                 Log In
                </Button>
             </InputBox>   
-            <div>or</div>
+            < OrBox>or</OrBox>
             <SocialBox>
               <GoogleBtn clientId={`${process.env.REACT_APP_GOOGLE_ID}`} buttonText='구글 아이디로 로그인' 
                onSuccess={responseGoogle}/>
               <HideBtn ref={naverRef} id="naverIdLogin" />
               <NaverBtn onClick={handleNaverBtn} id="naverIdLogin">
                 <img src='/images/naverbtn.png' alt='naver' />
-                네이버 아이디로 로그인
+                <div>네이버 아이디로 로그인</div>
               </NaverBtn>
             </SocialBox>
           </Content>
@@ -176,6 +176,9 @@ const Container = styled.div`
   display: flex;
   ${props => props.theme.flexRow};
   height: calc(100vh - 4.375rem);
+  ${props=> props.theme.mobile}{
+   min-height: calc(100vh - 3.6rem);
+  }
 `;
 
 const LogInBox = styled.div`
@@ -185,7 +188,18 @@ const LogInBox = styled.div`
   height: 42.125rem;
   padding: 2.75rem 0 ;
   gap: 2.7rem;
-  color:  ${props=> props.theme.transp};
+  color:  ${props=> props.theme === darkTheme ?
+   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168)'};
+  @media only screen and (max-width: 550px){
+    max-width: 33.438rem;
+    max-height: 42.125rem;
+    width: 80vw;
+    height: 70vh;
+  }
+  ${props=>props.theme.mobile}{
+    height: auto;
+  }
+
 `;
 
 const Title = styled.div`
@@ -194,6 +208,9 @@ const Title = styled.div`
   text-align: center;
   > h1 {
     font-size: 3.438rem;
+    @media only screen and (max-width: 550px){
+      font-size: 3rem;
+    }
   }
 `;
 
@@ -202,12 +219,27 @@ const Content = styled.div`
   width: 28.063rem;
   height: 23.875rem;
   gap: 1.7rem;
+  @media only screen and (max-width: 550px){
+    max-width: 28.063rem;
+    max-height: 23.875rem;
+    width: 95%;
+    height: 80%;
+  }
+  ${props=>props.theme.mobile}{
+    height: auto;
+    gap: 1rem;
+    width: 100%;
+  }
+  
 `;
 
 const InputBox = styled.div`
   width: 100%;
   height: 15.813rem;
-  /* height: 9.375rem; */
+  @media only screen and (max-width: 550px){
+    height: 70%;
+  }
+  
 `;
 
 const SingleInput = styled.div`
@@ -227,25 +259,42 @@ const SingleInput = styled.div`
     text-indent: 3rem;
     color: ${props=> props.theme.text}; 
     background-color: transparent; 
-    font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
     font-size: 20px;
       ::placeholder{
-        color: ${props=> props.theme.transp};
+        color: transparent;
       }
   }
+  @media only screen and (max-width: 550px){
+    >div {
+     display: none;
+    }
+    >input {
+      width: 100%;
+      text-indent: 1rem;
+      ::placeholder{
+        color: ${props=> props.theme === darkTheme ?
+   'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
+      }
+      font-size: 16px;
+    }  
+  }
+  ${props=>props.theme.mobile}{
+    height: 3.5rem;
+  }
 `;
-
-const Error = styled.div`
+const Error = styled.div<{err: string;}>`
   ${props => props.theme.flexRow};
   font-size: ${props => props.theme.fontS};
   align-items: flex-end;
   height: 1.2rem;
   color: ${props=> props.theme.point};
+  ${props=>props.theme.mobile}{
+    display: ${props=>props.err ? 'flex' : 'none'};
+  }
 `;
 const Button = styled.div`
   ${props => props.theme.flexRow};
   height: 3.75rem;
-  /* border: 1px solid ${props=> props.theme.transp};   */
   border-radius: 5px;
   font-size: ${props => props.theme.fontL};
   font-weight: 600;
@@ -253,7 +302,6 @@ const Button = styled.div`
   color: ${props=> props.theme.reverse};
   transition: all 0.3s ease-in-out;
   background: ${props=> props.theme.dream};  
-  /* border: transparent;  */
   margin-top: 1.5rem;
   :hover{
     background: transparent; 
@@ -261,12 +309,33 @@ const Button = styled.div`
     color: ${props=> props.theme.text};
     transition: all 0.3s ease-in-out;
   }
+  ${props=>props.theme.mobile}{
+    height: 3rem;
+    font-weight: 500;
+  }
+`;
+
+const OrBox = styled.div`
+  width: 100%;
+  height: auto;
+  text-align: center;
+  @media only screen and (max-width: 550px){
+    /* height: 2rem; */
+  }
+  ${props=>props.theme.mobile}{
+    height: 3rem;
+  }
 `;
 
 const SocialBox = styled.div`
   height: 3.75rem;
   ${props => props.theme.flexRow};
   justify-content: space-between;
+  ${props=>props.theme.mobile}{
+    ${props => props.theme.flexColumn};
+    height: 3rem;
+    gap: 1rem;
+  }
 `;
 const GoogleBtn = styled(GoogleLogin)`
   height: 100%;
@@ -285,6 +354,25 @@ const GoogleBtn = styled(GoogleLogin)`
   }
   >span {
     margin-left: -2px;
+  }
+  ${props=>props.theme.mobile}{
+    width: 100%;
+    justify-content: flex-start;
+    >div{
+      height: 3rem;
+      margin-left: 0.5rem;
+      justify-content: center;
+      >svg{
+      transform: scale(1.4);
+       }
+    }
+    >span{
+      width: 75%;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 `;
 
@@ -305,6 +393,16 @@ const NaverBtn = styled.button`
   >img {
     height: 3.3rem;
   }
+  ${props=>props.theme.mobile}{
+    width: 100%;
+    >img {
+    height: 2.8rem;
+    }  
+    >div {
+      width: 75%;
+      text-align: center;
+    }
+  }
 `;
 
 const HaveAccount = styled.div`
@@ -312,6 +410,9 @@ const HaveAccount = styled.div`
   height: 1rem;
   font-size: ${props => props.theme.fontS};
   gap: 1rem;
+  ${props=>props.theme.mobile}{
+   margin-top: 0.7rem;
+  }
 `;
 
 const LinkedP = styled(Link)`

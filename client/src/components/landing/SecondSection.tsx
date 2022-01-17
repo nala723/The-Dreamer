@@ -382,7 +382,6 @@ const Introdct = styled.div`
   ${props=> props.theme.mobile}{
       max-width: 80vw;
       font-size: 15px;
-      /* max-height: 20vh; */
   }              
 `;
 const FinalBox = styled(GifBox)`
@@ -423,6 +422,9 @@ const SearchBox = styled.div`
   ${props=> props.theme.tablet}{
       min-width: 80vw;
       width: 80vw;
-    }  
+    }
+  ${props=> props.theme.mobile}{
+     min-width: 90vw;
+    }    
     
 `;  

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { SearchDreamAct } from '../../actions';
 import { dummyDatas } from '../../config/dummyDatas';
 import { gsap } from 'gsap';
+import {ReactComponent as Arrow} from '../../assets/arrow.svg';
 
 function CateGory(): JSX.Element {
     const openRef = useRef(null);
@@ -14,7 +15,6 @@ function CateGory(): JSX.Element {
     const SclineRef = useRef<HTMLDivElement>(null);
     const cateHeadRef = useRef<HTMLDivElement[]>([]);
     cateGoryRef.current = [];
-    // DeepAnim.current = [];
     cateHeadRef.current = [];
     const dispatch = useDispatch();
   
@@ -115,9 +115,7 @@ function CateGory(): JSX.Element {
       <CategoryBox>
         <CareHeader onClick={handleOpen}>
         <h5>카테고리</h5>
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
+        <Arrow />
         </CareHeader>
         <CateTitle ref={openRef}>
           <CateLine ref={lineRef}/>
@@ -148,7 +146,7 @@ function CateGory(): JSX.Element {
   );
 }
 
-export default CateGory;
+export default React.memo(CateGory);
 
 const CategoryBox = styled.div`
   position: absolute;
@@ -227,6 +225,8 @@ const Category = styled.div`
   opacity: 0;
   ${props=> props.theme.mobile}{
     background-color: ${props=>props.theme.reverse};
+    border-radius: 5px;
+    height: 1.3rem;
   }
 `;
 const DeepTitle = styled(CateTitle)`
@@ -246,14 +246,14 @@ const DeepLine = styled(CateLine)`
   height: 1px;
 `;
 const DeepGory = styled(Category)`
-  /* padding-left: 5rem;  */ // ******둘, 임시로 지움
-  /* align-items: flex-start; */ 
   height: 100%;
   opacity: 1;
   align-items: center;
   padding-left: 0;
   ${props=> props.theme.mobile}{
-    background-color: yellow;
+    background-color: #8370bb;
+    height: 1.3rem;
+    color: white;
   }
 `;
 const CtEndLine = styled(CateLine)`

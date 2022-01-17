@@ -14,9 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Dream.init({
-    user_id: DataTypes.INTEGER,
     url: DataTypes.STRING,
-    keyword: DataTypes.STRING,
     title: DataTypes.STRING,
     content: DataTypes.STRING
   }, {

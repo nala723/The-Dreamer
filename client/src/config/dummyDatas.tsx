@@ -1,3 +1,10 @@
+import React from 'react';
+import { ReactComponent as Soso } from '../assets/face-soso.svg';
+import { ReactComponent as Wink } from '../assets/face-wink.svg';
+import { ReactComponent as Happy } from '../assets/face-happy.svg';
+import { ReactComponent as Bad } from '../assets/face-bad.svg';
+import { ReactComponent as What } from '../assets/face-what.svg';
+
 type ObjType = [
     {
         [index: string] : string[]
@@ -83,29 +90,76 @@ export const cursors = [
     'url(/images/brush.cur), pointer', 'url(/images/eraser.cur), pointer', 'url(/images/bucket.cur), pointer'
 ];
 
-export const emotionList = [
+export const emotionList: EmoInter[] = [
     {
         name : 'soso',
-        img: '../assets/face-soso.svg', 
+        img: <Soso/>, 
       },
     {
         name : 'wink',
-        img: '../assets/face-wink.svg',  
+        img: <Wink/>,  
       },
     {
       name : 'happy',
-      img: '../assets/face-happy.svg', 
+      img: <Happy />, 
     },
     {
       name : 'bad',
-      img: '../assets/face-bad.svg'
+      img: <Bad />,
     },
     {
      name : 'what',
-     img: '../assets/face-what.svg'
+     img:  <What /> 
     }
 ]
 
+interface EmoInter 
+    {
+        [index: string] : JSX.Element | string
+        name : string
+        img: JSX.Element 
+    }
+
+
 export const hashTagList = [
     '고백받는', '로또 당첨되는', '돼지', '시험 합격하는', '돈', '취업하는', '가족'
+]
+
+export const dummyPics = [
+    {
+        id: 1,
+        title: 'catcatcat',
+        picture: '/images/haha.png',
+        createdAt: '22.01.04',
+        emotion: 'happy'
+    },
+    {
+        id: 2,
+        title: '하히후헤호',
+        picture: '/images/haha.png',
+        createdAt: '22.01.05',
+        emotion: 'what'
+    },
+    {
+        id: 3,
+        title: 'catcatcat',
+        picture:  '/images/haha.png',
+        createdAt: '22.01.05',
+        emotion: 'bad'
+    },
+    {
+        id: 4,
+        title: 'catcatcat',
+        picture:  '/images/haha.png',
+        createdAt: '22.01.05',
+        emotion: 'wink'
+    },
+    {
+        id: 5,
+        title: 'catcatcat',
+        picture: '/images/haha.png',
+        createdAt: '22.01.08',
+        emotion: 'wink'
+    }
+
 ]

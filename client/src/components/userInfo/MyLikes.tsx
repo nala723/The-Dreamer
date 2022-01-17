@@ -1,36 +1,56 @@
-import React, { useEffect, useState, useRef }  from 'react';
+ import React, { useEffect, useState, useRef }  from 'react';
 import styled from 'styled-components';
 import SearchBar from '../reusable/SearchBar';
 import Modal from '../reusable/Modal';
 import { useSelector, useDispatch } from 'react-redux';
-import { DisLikeDrmAct } from '../../actions';
 import { RootState } from '../../reducers';
+import { GetTokenAct } from '../../actions';
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import gsap from 'gsap';
+import Calender from '../reusable/Calender';
+import { Data } from '../../actions'; 
+import axios from 'axios';
 
-function MyLikes() {
+ function MyLikes() {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const { dream } = useSelector((state: RootState)=> state.dreamReducer);
-  const [ likes, setLikes ] = useState(dream);
+  const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
+  const [ dream, setDream ] = useState<Data[]>([]);
   const [ options, setOptions ] = useState<string[]>([]);
   const [ input, setInput ] = useState('');
   const [selected, setSelected] = useState(-1);
   const [hasText, sethasText] = useState(false);
+  const [width, setWidth] = useState('');
+  const [ sortLike, setSorLike ] = useState<{
+    latestLike: boolean, selectLike: string[]
+  }>({ 
+    latestLike: false, selectLike: []
+  });
   const clickRef = useRef<any | null>(null);
   const DreamRef = useRef<HTMLDivElement[]>([]);
 
   DreamRef.current = [];
   let Position = [];
+  let quotient: number;
   let Xposition: number;
   let Yposition: number;
 
   useEffect(() => {
+    getLikes();
+    window.addEventListener('resize', getWidth);
+    getWidth();
     document.addEventListener('click',handleClickOutside);
     return () => {
+      window.removeEventListener('resize', getWidth);
       document.removeEventListener('click',handleClickOutside);
     }
   },[])
+
+  useEffect(()=>{
+    if(sortLike.latestLike || sortLike.selectLike.length > 0){
+      return handleSortLike(dream);
+    }
+  },[sortLike])
 
   useEffect(()=>{
     let tl: gsap.core.Timeline;
@@ -57,7 +77,7 @@ function MyLikes() {
       ).to(
         dream,
         {
-          x: random(-size,size), // 원래 위치를 변수에 담아놨다 다시 오게하던지
+          x: random(-size,size), 
           y: random(size,size),
           duration: random(5, 10)
         }
@@ -73,18 +93,65 @@ function MyLikes() {
 
   },[dream])
 
+
+  const getLikes = () => {
+          axios
+            .get(process.env.REACT_APP_URL + '/mypage/like',{
+              headers: {
+                  authorization: `Bearer ` + accessToken
+                  }
+            })
+            .then(res=>{    
+              console.log(res.data);
+              if(res.headers.accessToken){
+                dispatch(GetTokenAct(res.headers.accessToken));
+              }
+              setDream(res.data.dream);
+            })
+            .catch(err=>{
+              console.log(err);
+            })
+  }
+
+  function getWidth(){
+    if(window.innerWidth <= 960 && window.innerWidth > 425){
+      setWidth('midTablet');
+    }
+    if(window.innerWidth <= 425){
+      setWidth('mobile');
+    }
+    else if(window.innerWidth > 960){
+      setWidth('');
+    }
+  }
+
   const handleLink = (e: React.MouseEvent ,link : string) => {
     e.preventDefault();
     return window.open(link);
   }
   const handlePosition = (index: number) => {
-    const quotient = (Math.floor(index / 3)) * 60;
-    if(index % 3 === 0){  
-      Xposition = 15;
-    }else if(index % 3 === 1){
-      Xposition = 45;
-    }else if(index % 3 === 2){
-      Xposition = 75;
+    if(width === 'midTablet'){
+      quotient = (Math.floor(index / 2)) * 60;
+      if(index % 2 === 0){  
+        Xposition = 15;
+      
+      }else if(index % 2 === 1){
+        Xposition = 60;
+      }
+    }
+    else if(width === 'mobile'){
+      quotient = index * 60;
+      Xposition = 20;
+    }
+    else if(width === ''){
+      quotient = (Math.floor(index / 3)) * 60;
+      if(index % 3 === 0){  
+        Xposition = 15;
+      }else if(index % 3 === 1){
+        Xposition = 45;
+      }else if(index % 3 === 2){
+        Xposition = 75;
+      }
     }
     Yposition = quotient + (Math.floor(Math.random() * 10)) + 5
     Position = [Xposition + '%', Yposition + '%'];
@@ -115,9 +182,9 @@ function MyLikes() {
    search = search.replace(/[[(){}]/gi,'') 
    const regex =  new RegExp(search,'gi');
    const searched = dream.filter((el)=>{ 
-   return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
+   return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.content.replace(/[[(){}]/gi,'').match(regex)
    }) 
-   setLikes(searched);
+   setDream(searched);
    sethasText(false);
   }
 
@@ -133,7 +200,7 @@ function MyLikes() {
     search = search.replace(/[[(){}]/gi,'') 
     const regex =  new RegExp(search,'gi');
     const searched = dream.filter((el)=>{
-      return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
+      return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.content.replace(/[[(){}]/gi,'').match(regex)
     }).map((el)=> {
       return el.title.slice(0,30)
     })
@@ -178,84 +245,137 @@ function MyLikes() {
 
   // 전체 목록 조회
   const handleAllsearch = () => {
-    setLikes(dream);
+    getLikes();
   }
 
+  const updateMenu = (arg: number | string[] ) => {
+    if(typeof arg === 'string'){
+      if (arg === 'latest'){
+        // getPictures();
+       getLikes();
+       setSorLike({latestLike: false, selectLike: []});
+      }
+      else if (arg === 'oldest'){
+        // if(dream[0].likedate >= dream[dream.length-1].likedate){
+        //   return;
+        // }
+        setSorLike({latestLike: true, selectLike: []});
+      }
+    }
+    else if (typeof arg === 'object'){
+      setSorLike({latestLike: false, selectLike: arg});
+    }
+
+  }
+
+  let newState : Data[]
+
+  const handleSortLike = (data: Data[]) => {
+ 
+    if(sortLike.latestLike && sortLike.selectLike.length <= 0){
+      newState = [...data]
+      newState = newState.reverse()
+    }
+    if(sortLike.selectLike.length > 0 && !sortLike.latestLike){
+      newState = data.filter((el: any)=>{
+        return (sortLike.selectLike.includes(el.createdAt))
+      })
+    }
+    setDream(newState)
+  }
 
   // 꿈 모달 닫기
   const handleClick = () => {
     setIsOpen(false);
   }
  // 꿈 삭제
-  const handleDislike = (e: React.MouseEvent, idx: number) => {
+  const handleDislike = (e: React.MouseEvent, id?: number) => {
     e.preventDefault();
-    let splitarr: string[] | string = likes[idx]['link'].split('=');
-    splitarr = splitarr[splitarr.length-1]
-    dispatch(DisLikeDrmAct(splitarr));
-    setLikes(dream);
+    const dreamId = id
+    axios
+      .delete(process.env.REACT_APP_URL + `/search/dislike/${dreamId}`,{
+        headers: {
+          authorization : 'Bearer ' + accessToken
+        }
+      })
+      .then(res=>{
+        console.log(res.data);
+        if(res.headers.accessToken){
+          dispatch(GetTokenAct(res.headers.accessToken));
+        }
+        const deleted = dream.filter(el=>{
+          return el.dream_id !== id
+        })
+        setDream(deleted);
+      })
+      .catch(err=>{
+        console.log(err);
+      })
   }
 
 
-  return (
+   return (
     <>
-      <Container>
+     <Container>
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
         <Title><h1>좋아하는 꿈</h1></Title>
         <UpperSection >
-          <CareHeader>
-          <h5>날짜로 보기</h5>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-          </CareHeader>         
+          <ResponsiveLeft>
+            <Calender title={width? '날짜별' : '날짜별 보기'} updateMenu={updateMenu}/> 
+            <RspAllsearch onClick={handleAllsearch} >
+              <h5>전체보기</h5>
+            </RspAllsearch > 
+          </ ResponsiveLeft>
+          <ResponsiveRight >      
           <SearchSection onKeyUp={handleKeyUp} ref={clickRef}>
             <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch} handleInput={handleInput} input={input}/>
             {hasText ? (
             <DropDownContainer>
-              {options.map((option, idx) => (
-                <li
-                  key={idx}
-                  onClick={() => handleDropDownClick(option)}
-                  className={selected === idx ? "selected" : ""}
-                  role="presentation" 
-                >
-                  {option}
-                </li>
-              ))}
-            </DropDownContainer>
-          ) : null}
-          </SearchSection>
-          <Allsearch onClick={handleAllsearch}>
-           <h5>전체보기</h5>
-          </Allsearch>
+                {options.map((option, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => handleDropDownClick(option)}
+                    className={selected === idx ? "selected" : ""}
+                    role="presentation" 
+                  >
+                    {option}
+                  </li>
+                ))}
+              </DropDownContainer>
+            ) : null}
+            </SearchSection>
+            <Allsearch onClick={handleAllsearch}>
+            <h5>전체보기</h5>
+            </Allsearch>
+          </ ResponsiveRight >
         </ UpperSection>
         <DreamSection>
-        {likes && likes.map((res, idx) => {
+        {dream && dream.map((res, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
-            <Dream ref={addToRefs} key={idx} top={y} left={x}>
-              <Delete onClick={(e)=> handleDislike(e,idx)}/>
-              <DrContent onClick={(e)=> handleLink(e,res.link)}>
+            <Dream ref={addToRefs} key={res.id} top={y} left={x}>
+              <Delete onClick={(e)=> handleDislike(e,res.dream_id)}/>
+              <DrContent onClick={(e)=> handleLink(e,res.url)}>
                 <DrTitle>{res.title}</DrTitle>
-                <Text>{res.description.slice(0,66)+ '...'}</Text>
+                <Text>{res.content}</Text>
               </DrContent>
-              <Date>{res.likedate}</Date>
+              <Date>{res.createdAt.split('T')[0].slice(2)}</Date>
             </Dream>
           )
         })}
         </DreamSection>
       </Container>
     </>
-  );
-}
+   );
+ }
 
-export default MyLikes;
+ export default MyLikes;
 
 const Container = styled.div`            
-  width: 100%;
   ${props=> props.theme.flexColumn};
-  justify-content: flex-start;
+  height: 100%;
+  justify-content: relative;
   overflow: auto;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
@@ -272,51 +392,85 @@ const Title = styled.div`
   h1{
     font-size: ${props=>props.theme.fontL};
   }
+  ${props=> props.theme.midTablet}{
+    text-align: center;
+    padding: 0;
+    padding-top: 1.5rem;
+  }
+  ${props=> props.theme.tablet}{
+    padding-top: 1rem;
+    height: 3.5rem;
+  }
+  ${props=> props.theme.mobile}{
+    padding-top: 0.6rem;
+    height: 2.2rem;
+  }
 `;
+
 const UpperSection = styled.div`
   width: 100%;
   height: 5.688rem;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 5rem; 
-  padding-left: 5rem;
+  gap: 2rem; 
+  padding: 0 2rem 0 5rem;
   color: ${props=> props.theme.text};
+  ${props=> props.theme.laptop}{
+    padding:0 3.5rem;
+    font-size: 15px;
+  } 
+  ${props=> props.theme.midTablet}{
+    flex-direction: column-reverse;
+    padding-left: 3rem;
+  } 
+  ${props=> props.theme.midTablet}{
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding:0 4.9rem;
+    gap: 1rem;
+  } 
+  ${props=> props.theme.mobile}{
+    padding: 0 1rem;
+    justify-content: center;
+    gap: 0;
+    height: auto;
+  }
+`;
+
+const ResponsiveRight = styled.div`
+    ${props=> props.theme.flexRow};
+    height: 5.688rem;
+    justify-content: flex-start;
+    gap: 3rem;
+  ${props=> props.theme.laptop}{
+    gap: 2rem;
+  }   
+  ${props=> props.theme.tablet}{
+    gap: 1rem;
+  }
+  ${props=> props.theme.mobile}{
+    justify-content: center;
+    max-width: 91vw;
+    height: 4.5rem;
+  }
 `;
 
 const SearchSection = styled.div`
+  max-width: 100%;
   width: auto;
-  height: 5.688rem;
+  height: 100%;
   display: flex;
   position: relative;
-`;
-
-// const CategoryBox = styled.div`
-//   position: absolute;
-//   display: flex;
-//   flex-direction: column;
-//   width: 9.375rem;
-//   top: 3.875rem;
-//   left: 4.4%;
-//   cursor: pointer;
-// `;
-
-const CareHeader = styled.div`
-  width: 9.5rem;
-  height: 1.7rem;
-  color: ${props=> props.theme.text};
-  display: flex;
-  justify-content: space-between;
-  padding: 0 1rem; // 임시 ***
-  cursor: pointer;
-  /* justify-content: space-evenly; //일단. 주석- */
-  >svg {
-    fill: ${props=> props.theme.transp};
-    width: 1.125rem;
-    height: 1rem;
-    transform: scale(1.5);
+  ${props=> props.theme.tablet}{
+    max-width: 85%;
+  }
+  ${props=> props.theme.mobile}{
+    max-width: 91vw;
+    height: 4.5rem;
   }
 `;
+
 const DropDownContainer = styled.ul`
   background-color: ${props=> props.theme.transp};
   display: block;
@@ -349,10 +503,59 @@ const DropDownContainer = styled.ul`
 `;
 
 const Allsearch = styled.div`
-  width: 3.8rem;
-  margin-left: -0.7rem;
-  cursor: pointer;
+  min-width: 3.521rem;
   text-align: center;
+  cursor: pointer;
+  ${props=> props.theme.laptop}{
+    min-width: 3.521rem;
+    width: auto;
+    /* margin-left:1rem; */
+  } 
+  ${props=> props.theme.tablet}{
+    min-width: 15%;
+    margin: 0;
+  }
+  ${props=> props.theme.mobile}{
+    display: none;
+  }
+`;
+
+const ResponsiveLeft = styled.div`
+  display: flex;
+  position: relative;
+  width: 9rem;
+  min-width: 7rem;
+  gap: 3rem;
+  height: 100%;
+  ${props=> props.theme.laptop}{
+    gap: 2rem;
+  }
+  ${props=> props.theme.midTablet}{
+    /* width: 16rem; */
+  }
+  ${props=> props.theme.mobile}{
+    width: 100%;
+    height: 1.5rem;
+    align-items: center;
+  }
+`;
+
+{/* const RspCareHeader = styled(CareHeader)`
+  ${props=> props.theme.midTablet}{
+    width: 6.5rem;
+    display: flex;
+    padding: 0;
+  }
+`; */}
+const RspAllsearch = styled(Allsearch)`
+  display: none;
+  ${props=> props.theme.mobile}{
+    color: ${props=> props.theme.text};
+    display: flex;
+    align-items: center;
+    width:100%;
+    justify-content: flex-end;
+  }
 `;
 
 const DreamSection = styled.div`
@@ -383,6 +586,13 @@ const Dream = styled.div<{top: string; left: string;}>`
    fill: #DF899D;
    /* margin-bottom: -1rem; //위치 나중 수정 */
     }
+  }
+  @media only screen and (max-width: 1024px) and (min-width: 769px){ 
+    top: ${props=> `calc(${props.top} / 2 )`}; 
+    left: ${props=> `calc(${props.left} - 3rem )`}; 
+  }
+  @media only screen and (max-width: 768px) and (min-width: 600px){ 
+    top: ${props=> `calc(${props.top} / 1.3 )`}; 
   }
 `;
 const DrContent = styled.div`

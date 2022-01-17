@@ -6,7 +6,6 @@ module.exports = async (req, res) => {
   try {
     const userInfo = await User.findOne({attributes: ['id', 'username', 'email',  'password', 'profile'], where : {email: req.body.email}});
     const userProfile = userInfo.dataValues.profile;
-    
     if(!userInfo){
       return res.status(401).json({message : "Invalid user or wrong password"});
     }else{

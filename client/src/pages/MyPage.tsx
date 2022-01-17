@@ -22,4 +22,7 @@ const Container = styled.div`
   display: flex;
   width: 100%;
   height: calc(100vh - 4.375rem);
+  ${props=> props.theme.mobile}{
+   min-height: calc(100vh - 3.6rem);
+  }
 `;
