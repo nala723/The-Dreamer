@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef }  from 'react';
 import { useHistory } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { SearchDreamAct,  GetTokenAct, LikeDrmAct, DisLikeDrmAct} from '../actions';
+import { SearchDreamAct,  GetTokenAct, LikeDrmAct, DisLikeDrmAct, RemoveDrmAct } from '../actions';
 import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
@@ -11,29 +11,39 @@ import Modal from '../components/reusable/Modal';
 import { ReactComponent as Heart } from '../assets/heart.svg';
 import gsap from 'gsap';
 import axios from 'axios';
+import { Data } from '../actions/index';
+import { useCallback } from 'react';
 
 function SearchDream(): JSX.Element { 
   const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
   const { username, accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
   const history = useHistory();
+  // const [ dreams, setDreams] = useState(data?.slice(0,9)); // 추후
   const [isOpen, setIsOpen] = useState(false);
-  const [like, setLike] = useState(false);
   const [banGuest, setBanGuest] = useState(false);
   const [width, setWidth] = useState('');
+  // const loadRef = useRef<HTMLHeadingElement | null>(null);
   const DreamRef = useRef<HTMLDivElement[]>([]);
   DreamRef.current = [];
   // useEffect 속에 타임라인 만들어두고,? 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
-  // 만들고 저 랜덤함수 인용?(해보고 안되면 add)
+
   console.log('렌더링')
-  // 해결할것 : 카테고리 문제와 드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
+  // 해결할것 :  드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
   let Position = [];
   let quotient: number;
   let Xposition: number;
   let Yposition: number;
- //펜딩이 왜 될까ㅠㅠ
+
   useEffect(()=>{
     console.log('useEffect 렌더링')
+ 
+    // if(data.length > 0 && dreams.length < 9) { 
+    //   setDreams(data.slice(0,9));
+    // }
+    // 처음에 렌더링 + 첫렌더링 이후에 데이터가 없으므로 데이터 받아온 이후에 채워줘야 한다.
+    // 데이터를 받아온 이후엔 당연히 기존 스테이트 업데이트하고, 
+    // 함수 불러볼까.. ->  
     let tl: gsap.core.Timeline;
     // const tl = gsap.timeline({repeat: -1,  ease: 'Power1.easeInOut'});
     function random(min: number, max: number){
@@ -81,9 +91,26 @@ function SearchDream(): JSX.Element {
     getWidth();
     return (()=>{
       window.removeEventListener('resize', getWidth);
+      dispatch(RemoveDrmAct())
     })
-  },[])
+  },[])  
   
+  // const handleObserver = useCallback((entries)=>{ // 인피니트 스크롤하려햇는데
+  //   if(data.length <= 9) return;
+  //   if(data.length === dreams.length) return;
+  //   const target = entries[0];
+  //   if(target.isIntersecting) {
+  //     // 애초에 결과물, data의 길이가 9이하라면 그냥 리턴
+  //     // data의 길이 === 현 dreams 길이 라면 리턴
+  //      // dreams의 마지막 index + 1에서 마지막 index + 10한 것까지
+  //      setDreams([...dreams, ...data.slice(dreams.length, dreams.length + 9)]) 
+  //   }
+  // },[])
+  
+  //  useEffect(()=>{
+  //   const observer = new IntersectionObserver(handleObserver);
+  //   if (loadRef.current) observer.observe(loadRef.current);
+  // },[ handleObserver])
 
   function getWidth(){
     if(window.innerWidth <= 960 && window.innerWidth > 425){
@@ -158,7 +185,7 @@ function SearchDream(): JSX.Element {
       await axios
       .post(process.env.REACT_APP_URL + '/search/like',{
         url: data[idx].link,
-        content: (data[idx].description).slice(0,66)+ '...',
+        content: data[idx].description,
         title: data[idx].title
       },{
         headers: {
@@ -175,7 +202,7 @@ function SearchDream(): JSX.Element {
               const likeData = [{
                  ...data[idx],
                  id: res.data.likeId
-               }]
+               }] //수정해봐?
                dispatch(LikeDrmAct(likeData))
             }
          }
@@ -188,8 +215,8 @@ function SearchDream(): JSX.Element {
       )
     }
 
- console.log(like,'likelist??', data)
-  const handleDislike = async(e: React.MouseEvent, id: number, idx: number) => {
+ console.log('data??', data)
+  const handleDislike = async(e: React.MouseEvent, id: number) => {
     e.preventDefault();
     const dreamId = id
     await axios
@@ -232,15 +259,16 @@ function SearchDream(): JSX.Element {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
+          
             <Dream ref={addToRefs} key={idx} top={y} left={x}>
               <DrContent onClick={(e)=> handleLink(e,res.link)}>
                 <Title>{res.title}</Title>
-                <Text>{res.description.slice(0,66)+ '...'}</Text>
+                <Text>{res.description}</Text>{/*ref={data.length - 1 === idx ? loadRef : null} */}
               </DrContent>
               { (!data[idx]['id']) ? 
                 <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
                 :
-              <StyledHeart onClick={(e)=> handleDislike(e,res.id,idx)} fill='likes' />} 
+              <StyledHeart onClick={(e)=> handleDislike(e,res.id)} fill='likes' />} 
             </Dream>
           )
         })}

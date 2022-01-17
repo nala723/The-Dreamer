@@ -25,14 +25,11 @@ module.exports = async (req, res) => {
             content: content
           }) // 정보가 있다면 - 이미 같은 유저가 추가했는지 //-> async 쪽 다시 공부.. ->여기가 문제 만들고 밑으로 내려갈수있도록 이어야
           if(createDream){
-            console.log('createDream : ',createDream,createDream.id, 'dreamInfo :');
             const userLikeDream = await User_like_dream.create({ // dream 레코드 추가했다면 userlikedrea 조인레코드 추가
                 user_id: userId,
                 dream_id: createDream.id,
               })
-              console.log('userLikeDream ',userLikeDream );  
             if(userLikeDream){
-              console.log('userLikeDream?');
               return res.status(200).json({ message : 'like this dream', likeId: createDream.id })
             }      
           }

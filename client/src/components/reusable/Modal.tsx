@@ -1,18 +1,41 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
+import gsap from 'gsap';
 
 function Modal(props: { 
   handleClick: (e?: React.MouseEvent )=>void; children: any; handleSignOut?: (arg0 :boolean)=>void; header?: string;}) {
   // 모달 좀더 제목이랑 내용 구분?
+  const backRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const timeLineRef = useRef<gsap.core.Timeline>();
+
+  useEffect(()=>{
+     timeLineRef.current = gsap.timeline()
+      .to(backRef.current, {
+        opacity: 1, 
+        duration: 0.5
+      })
+      .fromTo(modalRef.current,{ opacity: 0, y: -90,}, {
+        opacity: 1,
+        duration: 1.2,
+        y: 0,
+        ease: "power3.inOut",
+      }, '-=0.4')
+
+    return (()=>{
+      timeLineRef.current && timeLineRef.current.kill();
+    })
+  },[])
+
   
     const {  handleClick, children, handleSignOut, header } = props;
     return (
-        <Background className={`${children ? "active" : ""}`}>
+        <Background ref={backRef}> {/* className={`${children ? "active" : ""}`}*/}
           <ModalSection
-            className={`${children? "active" : ""}`}
             onClick={handleClick}
             size={header? '21.25rem' : ''}
-          >
+            ref={modalRef} 
+          >{/* className={`${children ? "active" : ""}`}*/}
             <ModalTitle>
               <Img src='theme' alt='logo'/>
             </ModalTitle>
@@ -55,14 +78,14 @@ const Background = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  visibility: hidden;
+  /* visibility: hidden; */
   opacity: 0;
-  &.active {
+  /* &.active { */
     background-color: rgba(247,241,255,0.8);
-    visibility: visible;
-    opacity: 1;
+    /* visibility: visible; */
+    /* opacity: 1; */
     z-index:500;
-  }
+  /* } */
 `;
 
 const ModalSection = styled.div<{size: string;}>`
@@ -75,9 +98,10 @@ const ModalSection = styled.div<{size: string;}>`
   align-items: center;
   border-radius: 10px;
   box-shadow: 0 0 2.5rem rgba(58, 53, 54, 0.3);
-  &.active {
+  /* opacity: 0; */
+  /* &.active { */
     z-index:999;
-  }
+  /* } */
   ${props=> props.theme.mobile}{
     width: 90vw;
     height: calc(${props=> props.size ? props.size : '19.625rem'} / 1.15 );

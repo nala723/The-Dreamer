@@ -146,7 +146,7 @@ function CateGory(): JSX.Element {
   );
 }
 
-export default CateGory;
+export default React.memo(CateGory);
 
 const CategoryBox = styled.div`
   position: absolute;

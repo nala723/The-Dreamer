@@ -15,6 +15,8 @@ const GET_NEW_TOKEN = "GET_NEW_TOKEN" as const;
 const LIKE_DREAM = 'LIKE_DREAM' as const;
 const DISLIKE_DREAM = 'DISLIKE_DREAM' as const;
 
+const REMOVE_DREAM = 'REMOVE_DREAM' as const;
+
 // 액션 생성함수 선언
 
 export const SearchDreamAct = (data: string) =>  { 
@@ -32,7 +34,7 @@ export const SearchDreamAct = (data: string) =>  {
                 if(response.data.items){
                      const dataArray = (response.data.items).map((el: Data) => {
                         el['title'] = el.title.replace(/[<][^>]*[>]/gi,' ')
-                        el['description'] = el.description.replace(/[<][^>]*[>]/gi,' ')
+                        el['description'] = el.description.replace(/[<][^>]*[>]/gi,' ').slice(0,66)+ '...'
                        return  el = {
                             title: el['title'],
                             description:  el['description'],
@@ -103,6 +105,12 @@ export const DisLikeDrmAct = (data: number)=> {
     }
 }
 
+export const RemoveDrmAct = () => {
+    return {
+        type: REMOVE_DREAM
+    }
+}
+
 export interface Data { // 나중에 필요할지도! 일단 kipppp
     [index: string] : any
     description: string;
@@ -145,6 +153,7 @@ type Action =
     | ReturnType<typeof WithDrawlAct>
     | ReturnType<typeof LikeDrmAct>
     | ReturnType<typeof DisLikeDrmAct>
+    | ReturnType<typeof RemoveDrmAct>
 
 // 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
 
@@ -221,7 +230,11 @@ export function searchReducer (state: ActionState = initialState, action: Action
                             delete el.id
                         }
                        return el }), error: null}
-            })              
+            })
+        case REMOVE_DREAM:
+            return Object.assign({}, state, {
+                search: { loading: false, data: [], error: null }
+            })                  
         default:
             return state;
     }

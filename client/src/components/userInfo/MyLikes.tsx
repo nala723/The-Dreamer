@@ -182,7 +182,7 @@ import axios from 'axios';
    search = search.replace(/[[(){}]/gi,'') 
    const regex =  new RegExp(search,'gi');
    const searched = dream.filter((el)=>{ 
-   return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
+   return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.content.replace(/[[(){}]/gi,'').match(regex)
    }) 
    setDream(searched);
    sethasText(false);
@@ -200,7 +200,7 @@ import axios from 'axios';
     search = search.replace(/[[(){}]/gi,'') 
     const regex =  new RegExp(search,'gi');
     const searched = dream.filter((el)=>{
-      return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.description.replace(/[[(){}]/gi,'').match(regex)
+      return  el.title.replace(/[[(){}]/gi,'').match(regex) || el.content.replace(/[[(){}]/gi,'').match(regex)
     }).map((el)=> {
       return el.title.slice(0,30)
     })
@@ -278,7 +278,7 @@ import axios from 'axios';
     }
     if(sortLike.selectLike.length > 0 && !sortLike.latestLike){
       newState = data.filter((el: any)=>{
-        return (sortLike.selectLike.includes(el.likedate))
+        return (sortLike.selectLike.includes(el.createdAt))
       })
     }
     setDream(newState)

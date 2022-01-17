@@ -5,17 +5,15 @@ module.exports = async (req, res) => {
   const authorization = req.headers['authorization'];
   let sendArr = [];
   let obj = {};
-
   try {
     if(!authorization){
-      res.status(401).json({message : 'invalid token'})
+      return res.status(401).json({message : 'invalid token'})
     }else{
         const accessToken = authorization.split(' ')[1];
 
         if(isAuthorized(accessToken) === 'jwt expired'){
           res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
         }
-
         const userData = isAuthorized(accessToken);
 
         const userId = userData.id;
