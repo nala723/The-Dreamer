@@ -164,6 +164,7 @@ const DateBox = styled.div<{emo?: string | boolean}>`
     width: 7rem;
   }
   ${props=> props.theme.mobile}{
+  width: 4.5rem;
   left: ${props=> props.emo ? '25%' : '0'};
   top: 0%;
   }
@@ -222,6 +223,10 @@ const MenuList = styled.li<{selected?: boolean}>`
     :hover{
     fill: #FFFA81;
     }
+    ${props=> props.theme.mobile}{
+      width: 2rem;
+      height: 2rem;
+  }
   }
 `;
 
@@ -240,6 +245,9 @@ const CustomBtn = styled.button`
         font-family: "EB Garamond","Gowun Batang",'Noto Serif KR', Georgia, serif;
         margin: 0;
     }
+    ${props=> props.theme.mobile}{
+      font-size: 15px;
+  }
 `;
 
 const StartLine = styled.div`

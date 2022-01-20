@@ -1,7 +1,7 @@
 import React, { useEffect, useRef }  from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { SearchDreamAct } from '../../actions';
+import { searchDreamAct } from '../../actions';
 import { dummyDatas } from '../../config/dummyDatas';
 import { gsap } from 'gsap';
 import {ReactComponent as Arrow} from '../../assets/arrow.svg';
@@ -105,7 +105,7 @@ function CateGory(): JSX.Element {
 
     const handleSearch = (e : React.MouseEvent<HTMLDivElement, MouseEvent>, el : string): void => {
       e.preventDefault();
-      dispatch(SearchDreamAct(el))
+      dispatch(searchDreamAct(el))
     }
 
 

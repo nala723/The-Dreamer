@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import Toggle from './Toogle';
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
 
-function Option (props: {handleClick : ()=> void; resize ?: boolean; user ?: string;}){
-  const { handleClick, resize, user} = props;
+interface DropboxProp {
+  handleClick ?: ()=> void;
+  resize ?: boolean;
+  user ?: string;
+  handleDropbox : ()=>void;
+}
+
+function Option (props: DropboxProp){
+  
+  const { handleClick, resize, user, handleDropbox} = props;
   
   return (
-    <Container resize={resize && 'resize'}>
-      <PageList>
+    <Container>
+      <PageList onClick={() => handleDropbox}>
         {resize &&
           <>
            <Page to='/SearchDream'>꿈 알아보기</Page>
@@ -17,7 +24,7 @@ function Option (props: {handleClick : ()=> void; resize ?: boolean; user ?: str
           </>
         } 
       {!user ? 
-        <Login to='/login'>로그인</Login >
+        <Login to='/login' >로그인</Login >
       :
         <>
         <Page to='/mypage/mylikes'>좋아하는 꿈</Page>
@@ -34,26 +41,24 @@ function Option (props: {handleClick : ()=> void; resize ?: boolean; user ?: str
 
 export default Option;
 
-const Container = styled.div<{resize ?: string | boolean;}>`
+const Container = styled.div`
     position: absolute;
-    ${props=> props.resize ? 
-    css`
-      width: 17.25rem;
-      height: auto;
-      right: 2rem;
-      top: 4.4rem; 
-    `:
-    css`
-      width: 9.25rem;
-      height: auto;
-      right: 5rem;
-      top: 4.0rem;
-    `};
+    width: 9.25rem;
+    height: auto;
+    right: 5rem;
+    top: 4.0rem;
     border-radius: 0.3rem;
     background: ${props=> props.theme.default};
     padding: 1rem 0;
     z-index: 100;
     box-shadow: 0 0rem 2.5rem -1rem rgba(39, 0, 51, 0.8);
+    ${props=> props.theme.midTablet}{
+      width: 16rem;
+      right: 1rem;
+    }
+    ${props=> props.theme.mobile}{
+      top: 3.0rem;
+    }
 `;
 
 const PageList = styled.ul`

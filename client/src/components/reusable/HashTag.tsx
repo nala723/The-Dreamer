@@ -48,7 +48,7 @@ const addStagerRef = (el: HTMLLIElement | HTMLDivElement | null) => {
   );
 }
 
-export default HashTag;
+export default React.memo(HashTag);
 
 
 const HashSection = styled.div`

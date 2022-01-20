@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { useHistory } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import {  useDispatch } from 'react-redux';
-import { SearchDreamAct } from '../actions';
+import { searchDreamAct } from '../actions';
 import Modal from '../components/reusable/Modal';
 import Footer from '../components/Footer';
 import SecondSection from '../components/landing/SecondSection';
@@ -20,8 +20,6 @@ function Landing() {
   const [scrollY, setScrollY] = useState(0)
   const [isOpen, setIsOpen] = useState(false);
 
-//부드러운 스크롤 구현할것 + 페이지 넘어갈때 부드러운 화면 전환
-
   //타이핑 효과 function
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,7 +33,7 @@ function Landing() {
       clearInterval(interval);
     } 
     return () => clearInterval(interval); 
-  },); 
+  }); 
 
   const handleScrollBtn = () => {
     setScrollY(window.pageYOffset); // window 스크롤 값을 ScrollY에 저장
@@ -45,6 +43,7 @@ function Landing() {
       setScrollTop(false);
     }
   }
+
   const handleScroll = () => {
     window.scrollTo({
       top: 0,
@@ -53,6 +52,7 @@ function Landing() {
     setScrollY(0);
     setScrollTop(false);
   }
+
   useEffect(() => {
     const watch = () => {
       window.addEventListener("scroll", handleScrollBtn);
@@ -68,9 +68,10 @@ function Landing() {
       setIsOpen(true); 
       return;
     } 
-    dispatch(SearchDreamAct(search))
+    dispatch(searchDreamAct(search))
     history.push('/searchdream');
   }
+
   const handleClick = () => {
     setIsOpen(false)
   }
@@ -116,7 +117,6 @@ const ScrollAni = (start: string, end: string) => keyframes`
     transform: rotate(-45deg) translate(${end});
     opacity: 0;
   }
-
 `;
 
 const Container = styled.div`            
@@ -134,6 +134,7 @@ const Container = styled.div`
     height: 660rem;
   }  
 `;
+
 const MainSection = styled.section`
   position: absolute; 
   ${props=>props.theme.flexRow};
@@ -158,6 +159,7 @@ const ContentsBox = styled.div`
       }
     }
 `;
+
 const SearchBox = styled.div`
   position: relative;
   width:40%;
@@ -180,8 +182,7 @@ const SearchBox = styled.div`
     }
   ${props=> props.theme.mobile}{
      min-width: 90vw;
-    }
-           
+    }    
 `;  
 
 const ScrollDown = styled.span`
@@ -233,6 +234,7 @@ const ScrollDown = styled.span`
       }      
     }
 `;
+
 const ScrollTop = styled(ScrollDown)<{active: boolean}>`
   position: fixed;
   right: 40px;

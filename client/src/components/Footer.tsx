@@ -78,7 +78,7 @@ const LogoBox = styled.div`
  ${props=> props.theme.flexColumn};
   gap:1rem;
   width:30%;
-  align-items: flex-end;
+  align-items: flex-end; // safari 지원안함
     >p {
       color: ${props=> props.theme.text};
       text-align: start;

@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import SearchBar from '../reusable/SearchBar';
-import { GetTokenAct } from '../../actions';
+import { getTokenAct } from '../../actions';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../reducers';
 import { Buffer } from "buffer";
 import axios from "axios";
-import gsap from "gsap";
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import PicModal from '../reusable/PicModal';
 import Modal from '../reusable/Modal';
@@ -33,18 +32,17 @@ function MyDream() {
   const [ hasText, sethasText ] = useState(false);
   // const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
   const [ myPic, setMyPic ] = useState<PicInter[]>([]); // ([]) 임시 더미
-  const [ sortPic, setSorPic ] = useState<{
-    latestPic: boolean, selectPic: string[], sortEmotion : string
+  const [ sortPic, setSortPic ] = useState<{
+    latest: boolean, selectDate: string[], sortEmotion : string
   }>({ 
-    latestPic: false, selectPic: [], sortEmotion : ''
+    latest: false, selectDate: [], sortEmotion : ''
   });
-  const [width, setWidth] = useState('');
+  const [ width, setWidth ] = useState('');
   const history = useHistory();
   const dispatch = useDispatch();
   const clickRef = useRef<any | null>(null);
 
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
-  console.log('렌더링',sortPic, myPic )
   useEffect(() => {
     // getPictures(); // 임시 주석
     document.addEventListener('click',handleClickOutside);
@@ -81,7 +79,8 @@ function MyDream() {
         })
         .then((res)=>{
           if(res.headers.accessToken){
-            dispatch(GetTokenAct(res.headers.accessToken));
+            dispatch(getTokenAct(res.headers.accessToken));
+            console.log('?', res.headers.accessToken)
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
@@ -91,7 +90,7 @@ function MyDream() {
                 // 밑에 렌더링할때 날짜 문자열 자름 처리한것 수정 (위에서 이미 처리햇으므로)
                 return re;
               })
-              if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
+              if(sortPic.latest || sortPic.selectDate.length > 0 || sortPic.sortEmotion){
                 return handleSortPic(data);
               }
               setMyPic(data);
@@ -182,7 +181,7 @@ function MyDream() {
   };
   // 전체 목록 조회
   const handleAllsearch = () => {
-    setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: ''});
+    setSortPic({...sortPic, latest: false, selectDate: [], sortEmotion: ''});
   }
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
@@ -195,7 +194,7 @@ function MyDream() {
       })
       .then((res)=>{
         if(res.headers.accessToken){
-          dispatch(GetTokenAct(res.headers.accessToken));
+          dispatch(getTokenAct(res.headers.accessToken));
           }
         if(res.status === 200){
           getPictures();
@@ -215,17 +214,17 @@ function MyDream() {
       if (arg === 'oldest'){
           // getPictures();
         // setMyPic(dummyPics);
-        setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: ''});
+        setSortPic({...sortPic, latest: false, selectDate: [], sortEmotion: ''});
       }
       else if (arg === 'latest'){
-        setSorPic({...sortPic, latestPic: true, selectPic: [], sortEmotion: ''});
+        setSortPic({...sortPic, latest: true, selectDate: [], sortEmotion: ''});
       }
       else{
-        setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: arg});
+        setSortPic({...sortPic, latest: false, selectDate: [], sortEmotion: arg});
       }
     }
     else if (typeof arg === 'object'){
-      setSorPic({...sortPic, latestPic: false, selectPic: arg, sortEmotion: ''});
+      setSortPic({...sortPic, latest: false, selectDate: arg, sortEmotion: ''});
     }
     // getPictures();
   }
@@ -233,14 +232,14 @@ function MyDream() {
   let newState :PicInter[];
   
   const handleSortPic = (data: PicInter[]) => {
-    if(sortPic.latestPic && sortPic.selectPic.length <= 0 && !sortPic.sortEmotion){
+    if(sortPic.latest && sortPic.selectDate.length <= 0 && !sortPic.sortEmotion){
       newState = [...data]
       newState = newState.reverse()
-    }else if(sortPic.selectPic.length > 0 && !sortPic.latestPic && !sortPic.sortEmotion){
+    }else if(sortPic.selectDate.length > 0 && !sortPic.latest && !sortPic.sortEmotion){
       newState = data.filter((el: any)=>{
-        return (sortPic.selectPic.includes(el.createdAt))
+        return (sortPic.selectDate.includes(el.createdAt))
       })
-    }else if(sortPic.sortEmotion && !sortPic.latestPic && sortPic.selectPic.length <= 0){
+    }else if(sortPic.sortEmotion && !sortPic.latest && sortPic.selectDate.length <= 0){
       newState = data.filter((el: any)=>{
         return (sortPic.sortEmotion === el.emotion)
       })

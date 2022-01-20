@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { SignInAct } from '../actions';
+import { signInAct } from '../actions';
 import { RootState } from '../reducers';
 import { GoogleLogin } from 'react-google-login';
 import {useHistory} from 'react-router-dom';
@@ -50,7 +50,9 @@ function Login(){
         if(res.status === 401){
           setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
         }else if(res.status === 200){
-          dispatch(SignInAct(res.data))
+          res.data.profile = (typeof res.data.profile !== 'object' && typeof res.data.profile === 'string') ?
+          res.data.profile : "data:image/png;base64, " + Buffer.from(res.data.profile, 'binary').toString('base64');   
+          dispatch(signInAct(res.data))
           history.push('./searchdream')
         }
       })
@@ -64,7 +66,7 @@ function Login(){
   const naverLogin = async() => {
     const loginId = await new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_ID,
-      callbackUrl: 'http://localhost:3000/login',
+      callbackUrl: 'http://localhost:3000/login', // 나중 수정
       isPopup: false,
       loginButton: { color: 'green', type: 3, height: 40},
       callbackHandle: true
@@ -105,7 +107,7 @@ function Login(){
         })
         .then((res)=>{
           if(res.status === 200){
-            dispatch(SignInAct({isSocial: true, profile: profile,...res.data}))
+            dispatch(signInAct({isSocial: true, profile: profile,...res.data}))
             history.push('./searchdream')
           }else{
             history.push('./notfound')

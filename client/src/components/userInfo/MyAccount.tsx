@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect }  from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { GetTokenAct, EditUserAct, WithDrawlAct } from '../../actions';
+import { getTokenAct, editUserAct, withDrawlAct } from '../../actions';
 import { RootState } from '../../reducers';
 import { Buffer } from 'buffer';
 import Modal from '../reusable/Modal';
@@ -10,21 +10,17 @@ import { pwIsValid } from '../../components/reusable/Validator';
 import axios from 'axios';
 import { darkTheme } from '../../styles/theme';
 
-
-
 function MyAccount() {
   const { accessToken, email, username, profile, isSocial } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [ isOpen, setIsOpen] = useState(false);
-  const [ wdOpen, setWdOpen ] = useState(false);
+  const [ updateOpen, setUpdateOpen ] = useState(false);
+  const [ withdrawalOpen, setWithdrawalOpen ] = useState(false);
   const [ valid, setValid] = useState(false);
-  const [isChanged, setIsChanged] = useState(false);
+  const [ isChanged, setIsChanged ] = useState(false);
   const [ isWithDraw, setWithDraw ] = useState(false);
-  const [ okWdModal, setOkWdModal ] = useState(false);
+  const [ confirmWdOpen, setConfirmWdOpen ] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
-  // const refPassword = useRef(null);
-  // const refPasswordCheck = useRef(null);
   const [currentInput, setCurrentInput] = useState<{
     [index: string]: any
     imgFile: string | File | null,
@@ -52,7 +48,6 @@ function MyAccount() {
   const profileImg = 
     (typeof profile !== 'object' && typeof profile === 'string')  ?
      profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
-    // '/images/search-icon.svg'
 
     // 최초 렌더링시 유저정보 받아오기
   useEffect(()=>{
@@ -63,49 +58,51 @@ function MyAccount() {
 
   useEffect(()=> {
     if(isWithDraw){
-      setOkWdModal(true)// 모달부터 부르고
+      setConfirmWdOpen(true)// 모달부터 부르고
     }
   },[isWithDraw])
 
    // 유저 정보 요청 함수 - 통과
   const getUserInfo = () => {
     axios
-      .get(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,{
+      .get(process.env.REACT_APP_URL + `/mypage/user-info`, {
         headers: {
           "Content-Type": "multipart/form-data",
-            authorization: `Bearer ` + accessToken
+          authorization: `Bearer ` + accessToken
+        }
+      })
+      .then((res)=> {
+          if(res.headers.accessToken){
+                  dispatch(getTokenAct(res.headers.accessToken));
             }
-    })
-    .then((res)=> {
-        if(res.headers.accessToken){
-                dispatch(GetTokenAct(res.headers.accessToken));
+          if(res.status === 200){
+            (typeof profile !== 'object' && typeof profile === 'string')  ?
+              res.data.profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');   
+              dispatch(editUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))
           }
-         if(res.status === 200){
-          (typeof profile !== 'object' && typeof profile === 'string')  ?
-            res.data.profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');   
-            dispatch(EditUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))
-         }
-         else{
+          else{
+                history.push('/notfound');
+          }
+      })
+      .catch(err => {
+              console.log(err)
               history.push('/notfound');
-         }
-     })
-     .catch(err => {
-            console.log(err)
-            history.push('/notfound');
-    })
-}    
+      })
+  }    
 
   // 카메라아이콘 커스텀
   const handlePhotoClick = (e: React.MouseEvent) => {
       e.preventDefault();
       photoInput.current && photoInput.current.click();
   }
-
     // 이미지 업로드
   const imageFileHandler = (key: string) => (e : React.ChangeEvent<HTMLInputElement> ) => {
     e.preventDefault();
     const reader = new FileReader();
-    const file = (e.target.files as FileList)[0];  
+    const file = (e.target.files as FileList)[0];
+    if(!file){
+      return;
+    }
         reader.onloadend = () => {
             setCurrentInput({
                 ...currentInput,
@@ -117,9 +114,9 @@ function MyAccount() {
   }
 
   // 인풋창
-  const handleInputValue = useCallback((key) => (e : React.ChangeEvent<HTMLInputElement> ) => {
+  const handleInputValue = (key: string) => (e : React.ChangeEvent<HTMLInputElement> ) => {
       setCurrentInput({ ...currentInput, [key]:e.target.value})
-  },[currentInput])
+  }
 
   const canclePhoto = (e : React.MouseEvent) => {
     e.preventDefault();
@@ -161,14 +158,9 @@ function MyAccount() {
     e.preventDefault();
 
     if(!valid){
-        return
+      return
     }
      
-    //  if((!currentInput.inputPassword || !currentInput.imgFile || !currentInput.inputVegtype || inValidEditMSG)){
-    //     setInvalidEditMSG('입력을 모두 완료해주세요') 
-    //     return
-    //  } 
-    // setLoading(true)
     const MAX_WIDTH = 320;
     const MAX_HEIGHT = 180;
     const MIME_TYPE = "image/*";
@@ -198,9 +190,9 @@ function MyAccount() {
             imgforaxios && formData.append("profile",imgforaxios);
             formData.append("password",currentInput.Password);
             // 잘 가는지 확인
-          //   for(const pair of formData.entries()) {
-          //     console.log(pair[0]+ ', '+ pair[1]);
-          //  }
+            for(const pair of formData.entries()) {
+              console.log(pair[0]+ ', '+ pair[1]);
+           }
                 axios
                 .patch(`${process.env.REACT_APP_URL}` + `/mypage/user-info`,formData,{
                        headers: {
@@ -211,13 +203,11 @@ function MyAccount() {
                    })  
                    .then((res)=> {
                         if(res.headers.accessToken){
-                            dispatch(GetTokenAct(res.headers.accessToken));
+                            dispatch(getTokenAct(res.headers.accessToken));
                             }
                         if(res.status === 200){
-                            // dispatch(EditUserAct(profile: currentInput.imgFile)) // 그냥 get 받아서 변경해봐?
                              setIsChanged(true);
-                            console.log('잘받아졌나')
-                             handleClick();
+                             confirmUpdate();
                          }
                          else{
                              history.push('/notfound');
@@ -226,8 +216,7 @@ function MyAccount() {
                     .catch(error=>
                         console.log(error)
                         
-                    )
-            
+                    ) 
         },
         MIME_TYPE,
         QUALITY
@@ -252,20 +241,9 @@ function MyAccount() {
         return [width, height];
         }
 
-};
-//  // 인풋창 포커스 핸들
-//   const handleMoveTopPW = (e)=>{
-//       if(e.key === 'Enter') {
-//           refPassword.current?.focus();
-//       }
-//     }
-//   const handleMoveTopPWCheck = (e)=>{
-//       if(e.key === 'Enter') {
-//           refPasswordCheck.current?.focus();
-//       }
-//   };
+}
 
-const Handlewithdraw = async() => {
+const withdrawalRequest = async() => {
   await axios
     .delete(`${process.env.REACT_APP_URL}` + `/sign/withdrawal`,{
       headers: {
@@ -274,13 +252,12 @@ const Handlewithdraw = async() => {
     })
   .then((res)=> {
        if(res.status === 200){
-            dispatch(WithDrawlAct({ accessToken: '', email: '', username: '', profile: '', isSocial: false }));
+            dispatch(withDrawlAct({ accessToken: '', email: '', username: '', profile: '', isSocial: false }));
             history.push('/');
        }
        else{
             history.push('/notfound');
        }
-
    })
    .catch(err => {
           console.log(err,'에러러러러')
@@ -288,8 +265,9 @@ const Handlewithdraw = async() => {
   })
 }      
 
-  const handleClick = ()=> {
-    setIsOpen(!isOpen);
+ // 유저 정보 업데이트 후 확인 모달
+  const confirmUpdate = useCallback(()=> {
+    setUpdateOpen(!updateOpen);
     if(isChanged){
       setCurrentInput({
         imgFile:'',
@@ -301,32 +279,33 @@ const Handlewithdraw = async() => {
       setIsChanged(false);
       getUserInfo();
     }
-  } 
+  },[updateOpen])
 
-  const handleWdOpen = (arg?: any) => {
+  // 회원 탈퇴 누를 시 모달 
+  const handleWithdrawal = (arg?: any) => {
     if(arg === true){
       setWithDraw(true);
     }
-    setWdOpen(!wdOpen); 
+    setWithdrawalOpen(!withdrawalOpen); 
   }
 
+  // 탈퇴 모달에서 예를 누를 시
   const confirmWithDrawl = () => {
-    if(okWdModal){
-      setOkWdModal(false);
-      Handlewithdraw();
+    if(confirmWdOpen){
+      setConfirmWdOpen(false);
+      withdrawalRequest();
     }
   } 
 
   return (
      <Container>
-      {isOpen && <Modal handleClick={handleClick}>회원 정보 수정이 완료되었습니다.</Modal>}
-      {wdOpen 
-      && 
-        <Modal handleClick={handleWdOpen} handleSignOut={handleWdOpen} header='회원님의 개인 정보 및 모든 이용 기록은 삭제되며, 복구가 불가능합니다.'>
+      {updateOpen && <Modal handleClick={confirmUpdate}>회원 정보 수정이 완료되었습니다.</Modal>}
+      {withdrawalOpen && 
+        <Modal handleClick={handleWithdrawal} handleSignOut={handleWithdrawal} header='회원님의 개인 정보 및 모든 이용 기록은 삭제되며, 복구가 불가능합니다.'>
           정말 탈퇴하시겠어요?
         </Modal>
       }
-      {okWdModal && <Modal handleClick={confirmWithDrawl}>회원 탈퇴가 완료되었습니다.</Modal>}
+      {confirmWdOpen && <Modal handleClick={confirmWithDrawl}>회원 탈퇴가 완료되었습니다.</Modal>}
        <Title><h1>나의 계정 보기</h1></Title>
        <ContentBox >
        <Content>
@@ -335,7 +314,7 @@ const Handlewithdraw = async() => {
            <Camera src='/images/camera.svg' onClick={handlePhotoClick}/>
              <Photo>
                 <input type='file' accept='image/*' name="profile" ref={photoInput} onChange={imageFileHandler("profile")} />
-                <PhotoCircle src={currentInput.imgFile?currentInput.previewUrl : profileImg} alt='img'/>
+                <PhotoCircle src={currentInput.imgFile? currentInput.previewUrl : profileImg} alt='img'/>
               </Photo>
             </UserPhotoBox>
             {currentInput.imgFile && <CanclePhoto onClick={canclePhoto}>사진 삭제</CanclePhoto>}
@@ -362,7 +341,7 @@ const Handlewithdraw = async() => {
             </InfoUl>
             <SubmitBtn onClick={onSubmitHandler}>수정</SubmitBtn>
           </InfoBox>
-          <WithDrawl onClick={handleWdOpen}>회원 탈퇴</WithDrawl>
+          <WithDrawl onClick={handleWithdrawal}>회원 탈퇴</WithDrawl>
        </Content>
        </ContentBox>  
      </Container>
@@ -392,15 +371,15 @@ const Title = styled.div`
   }
   ${props=> props.theme.mobile}{
     padding-top: 0.6rem;
-    height: 5.5rem;
+    height: auto;
   }
 `;
 
 const ContentBox = styled.div`
    ${props => props.theme.flexColumn};
    height: 78%;
-   ${props=>props.theme.mobileS}{
-    height: auto;
+   ${props=>props.theme.mobile}{
+    height: calc(100% - 2.099rem);
   }
 `;
 
@@ -416,7 +395,7 @@ const Content = styled.div`
     width: 80vw;
     height: auto;
   } 
-  ${props=>props.theme.mobile}{
+  ${props=>props.theme.mobile}{ //여기?
     gap: 1.5rem;
   }
 `;
@@ -446,6 +425,7 @@ const UserPhotoBox = styled.div`
   height: 100%;
   width: 8.313rem;
   position: relative; 
+  left: 0.9rem;
 `; 
 const Photo = styled.div`
   height: 7.467rem;
@@ -519,7 +499,6 @@ const InfoList = styled.div`
     width: 4.875rem;
     color: ${props=> props.theme === darkTheme ?
    'rgba(255, 255, 255, 0.6)' : 'rgba(147, 133, 168, 0.6)'};
-      
   }
   > div:nth-child(2){
     width: 21.813rem;
@@ -557,11 +536,10 @@ const InfoList = styled.div`
       font-size: 16px;
     }  
   }
-  ${props=>props.theme.mobileS}{
-    min-height: 2.8rem;
+  ${props=>props.theme.mobile}{
+    min-height: 3rem;
     height: auto;
   }
-  
 `;
 
 const Error = styled.div`
@@ -591,10 +569,8 @@ const SubmitBtn = styled.button`
     transition: all 0.3s ease-in-out;
     color: ${props=> props.theme.text};
   }
-  /* @media only screen and (max-width: 550px){
-    ;
-  } */
 `;
+
 const WithDrawl = styled.div`
   height: 2.875rem;
   border-bottom: 1px solid ${props=> props.theme.transp};

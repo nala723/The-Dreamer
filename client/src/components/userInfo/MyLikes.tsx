@@ -4,7 +4,7 @@ import SearchBar from '../reusable/SearchBar';
 import Modal from '../reusable/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../reducers';
-import { GetTokenAct } from '../../actions';
+import { getTokenAct } from '../../actions';
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import gsap from 'gsap';
 import Calender from '../reusable/Calender';
@@ -104,7 +104,7 @@ import axios from 'axios';
             .then(res=>{    
               console.log(res.data);
               if(res.headers.accessToken){
-                dispatch(GetTokenAct(res.headers.accessToken));
+                dispatch(getTokenAct(res.headers.accessToken));
               }
               setDream(res.data.dream);
             })
@@ -301,7 +301,7 @@ import axios from 'axios';
       .then(res=>{
         console.log(res.data);
         if(res.headers.accessToken){
-          dispatch(GetTokenAct(res.headers.accessToken));
+          dispatch(getTokenAct(res.headers.accessToken));
         }
         const deleted = dream.filter(el=>{
           return el.dream_id !== id
@@ -350,11 +350,20 @@ import axios from 'axios';
           </ ResponsiveRight >
         </ UpperSection>
         <DreamSection>
-        {dream && dream.map((res, idx) => {
+        {dream.length === 0
+          ?
+          <Dream ref={addToRefs} top='20%' left='45%'>
+            <DrContent>
+              <DrTitle>좋아하는 꿈이 없습니다.</DrTitle>
+              <Text>꿈 알아보기 페이지에서 하트 아이콘을 눌러 꿈을 저장할 수 있습니다.</Text>
+            </DrContent>
+          </Dream>
+          :
+         dream.map((res, idx) => {
           const position = handlePosition(idx);
           const [ x, y ] = position;
           return (
-            <Dream ref={addToRefs} key={res.id} top={y} left={x}>
+            <Dream ref={addToRefs} key={res.dream_id} top={y} left={x}>
               <Delete onClick={(e)=> handleDislike(e,res.dream_id)}/>
               <DrContent onClick={(e)=> handleLink(e,res.url)}>
                 <DrTitle>{res.title}</DrTitle>
@@ -375,7 +384,7 @@ import axios from 'axios';
 const Container = styled.div`            
   ${props=> props.theme.flexColumn};
   height: 100%;
-  justify-content: relative;
+  justify-content: flex-start;
   overflow: auto;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */

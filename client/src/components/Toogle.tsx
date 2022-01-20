@@ -1,9 +1,11 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-function Toggle(props: {themeToggler: ()=>void; t: any;}) {
+function Toggle(props: {themeToggler: ()=>void; t: string;}) {
+
   const { themeToggler,t } = props;
   const toggleicon = ['🌞', '🌙'];
+
   return (
      <ToggleDiv onClick={themeToggler} t={t}>
           <Circle t={t}/>

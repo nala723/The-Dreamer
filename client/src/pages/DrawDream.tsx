@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import styled, {css} from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { GetTokenAct } from '../actions';
+import { getTokenAct } from '../actions';
 import { RootState } from '../reducers';
 import { colors, cursors } from '../config/dummyDatas';
 import { Buffer } from 'buffer';
@@ -129,7 +129,7 @@ function DrawDream({ width, height }: CanvasProps) {
       })
       .then(res=>{
         if(res.headers.accessToken){
-            dispatch(GetTokenAct(res.headers.accessToken));
+            dispatch(getTokenAct(res.headers.accessToken));
         }
         if(res.status === 200){
           handleClick()
@@ -154,6 +154,8 @@ function DrawDream({ width, height }: CanvasProps) {
   const handleClick = ()=> {
     setOpen(!open);
     clearCanvas();
+    setTitle('');
+    setEmotion(emotionList[2].name);
   } 
 
   const handleErr = ()=> {

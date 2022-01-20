@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import Modal from '../components/reusable/Modal';
 import {useHistory} from 'react-router-dom';
-import {  emailIsValid, pwIsValid } from '../components/reusable/Validator';
+import { emailIsValid, pwIsValid } from '../components/reusable/Validator';
 import { darkTheme } from '../styles/theme';
 
 type ErrorMsgType = {

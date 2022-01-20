@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef }  from 'react';
 import { useHistory } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { SearchDreamAct,  GetTokenAct, LikeDrmAct, DisLikeDrmAct, RemoveDrmAct } from '../actions';
+import { searchDreamAct,  getTokenAct, likeDrmAct, disLikeDrmAct, removeDrmAct } from '../actions';
 import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
@@ -24,11 +24,10 @@ function SearchDream(): JSX.Element {
   const [banGuest, setBanGuest] = useState(false);
   const [width, setWidth] = useState('');
   // const loadRef = useRef<HTMLHeadingElement | null>(null);
-  const DreamRef = useRef<HTMLDivElement[]>([]);
-  DreamRef.current = [];
-  // useEffect 속에 타임라인 만들어두고,? 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
+  const dreamRef = useRef<HTMLDivElement[]>([]);
+  dreamRef.current = [];
+  // useEffect 속에 타임라인 만들어두고, 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
 
-  console.log('렌더링')
   // 해결할것 :  드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
   let Position = [];
   let quotient: number;
@@ -36,23 +35,20 @@ function SearchDream(): JSX.Element {
   let Yposition: number;
 
   useEffect(()=>{
-    console.log('useEffect 렌더링')
- 
     // if(data.length > 0 && dreams.length < 9) { 
     //   setDreams(data.slice(0,9));
     // }
     // 처음에 렌더링 + 첫렌더링 이후에 데이터가 없으므로 데이터 받아온 이후에 채워줘야 한다.
     // 데이터를 받아온 이후엔 당연히 기존 스테이트 업데이트하고, 
-    // 함수 불러볼까.. ->  
-    let tl: gsap.core.Timeline;
+    let floatTimeline: gsap.core.Timeline;
     // const tl = gsap.timeline({repeat: -1,  ease: 'Power1.easeInOut'});
     function random(min: number, max: number){
       return parseFloat((Math.random() * (max - min) + min).toFixed(2))
     }
     function floatingDream(dream: HTMLDivElement, size: number) {
-      tl = gsap.timeline({repeat: -1,  ease: 'none', delay: 0.3});
+      floatTimeline = gsap.timeline({repeat: -1,  ease: 'none', delay: 0.3});
       
-       tl.to(
+      floatTimeline.to(
         dream,
         {
           x: random(-size,size),
@@ -75,12 +71,11 @@ function SearchDream(): JSX.Element {
         }
       )
     }
-    DreamRef.current.forEach((dream)=>{
+    dreamRef.current.forEach((dream)=>{
       floatingDream(dream, 60);
     })
     return ()=> {
-      console.log('리턴: 애니 없애자')
-      tl && tl.kill();
+      floatTimeline && floatTimeline.kill();
     }
 
   },[data])
@@ -91,7 +86,7 @@ function SearchDream(): JSX.Element {
     getWidth();
     return (()=>{
       window.removeEventListener('resize', getWidth);
-      dispatch(RemoveDrmAct())
+      dispatch(removeDrmAct())
     })
   },[])  
   
@@ -129,19 +124,20 @@ function SearchDream(): JSX.Element {
       setIsOpen(true);
       return;
     } 
-    dispatch(SearchDreamAct(search))
+    dispatch(searchDreamAct(search))
   }
+
   const handleLink = (e: React.MouseEvent ,link : string) => {
     e.preventDefault();
     return window.open(link);
   }
+
   const handlePosition = (index: number) => {
    
     if(width === 'midTablet'){
       quotient = (Math.floor(index / 2)) * 60;
       if(index % 2 === 0){  
         Xposition = 15;
-      
       }else if(index % 2 === 1){
         Xposition = 60;
       }
@@ -166,8 +162,8 @@ function SearchDream(): JSX.Element {
   }
 
   const addToRefs = (el: HTMLDivElement) => {
-    if (el && !DreamRef.current.includes(el)) {
-      DreamRef.current.push(el);
+    if (el && !dreamRef.current.includes(el)) {
+      dreamRef.current.push(el);
     }
   };
   // 꿈 모달 닫기
@@ -194,7 +190,7 @@ function SearchDream(): JSX.Element {
       })
       .then((res)=> {
         if(res.headers.accessToken){
-            dispatch(GetTokenAct(res.headers.accessToken));
+            dispatch(getTokenAct(res.headers.accessToken));
             }
         if(res.status === 200){
              if(res.data.likeId){
@@ -203,7 +199,7 @@ function SearchDream(): JSX.Element {
                  ...data[idx],
                  id: res.data.likeId
                }] //수정해봐?
-               dispatch(LikeDrmAct(likeData))
+               dispatch(likeDrmAct(likeData))
             }
          }
          else{
@@ -227,10 +223,10 @@ function SearchDream(): JSX.Element {
       })
       .then((res)=> {
         if(res.headers.accessToken){
-            dispatch(GetTokenAct(res.headers.accessToken));
+            dispatch(getTokenAct(res.headers.accessToken));
           }
         if(res.status === 200){
-               dispatch(DisLikeDrmAct(dreamId))
+               dispatch(disLikeDrmAct(dreamId))
           }
         else{
              history.push('/notfound');
@@ -255,23 +251,31 @@ function SearchDream(): JSX.Element {
       </SearchSection>
       <HashTag handleSearch={handleSearch} />
       <DreamSection>
-        {data && data.map((res :{title: string; description: string; link: string; id: number;}, idx) => {
-          const position = handlePosition(idx);
-          const [ x, y ] = position;
-          return (
-          
-            <Dream ref={addToRefs} key={idx} top={y} left={x}>
-              <DrContent onClick={(e)=> handleLink(e,res.link)}>
-                <Title>{res.title}</Title>
-                <Text>{res.description}</Text>{/*ref={data.length - 1 === idx ? loadRef : null} */}
-              </DrContent>
-              { (!data[idx]['id']) ? 
-                <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
-                :
-              <StyledHeart onClick={(e)=> handleDislike(e,res.id)} fill='likes' />} 
-            </Dream>
-          )
-        })}
+        {data.length === 0
+          ?
+          <Dream ref={addToRefs} top='20%' left='45%'>
+            <DrContent>
+              <Title>검색한 꿈 혹은 결과가 없습니다.</Title>
+              <Text>상단의 검색바에서 꿈을 검색해 주세요.</Text>
+            </DrContent>
+          </Dream>
+          :
+          data.map((res :{title: string; description: string; link: string; id: number;}, idx) => {
+            const position = handlePosition(idx);
+            const [ x, y ] = position;
+            return (
+              <Dream ref={addToRefs} key={idx} top={y} left={x}>
+                <DrContent onClick={(e)=> handleLink(e,res.link)}>
+                  <Title>{res.title}</Title>
+                  <Text>{res.description}</Text>{/*ref={data.length - 1 === idx ? loadRef : null} */}
+                </DrContent>
+                { (!data[idx]['id']) ? 
+                  <StyledHeart onClick={(e)=> handleLike(e,idx)} fill='' /> 
+                  :
+                <StyledHeart onClick={(e)=> handleDislike(e,res.id)} fill='likes' />} 
+              </Dream>
+            )})
+          }
       </DreamSection> 
       <CateGory/>
     </Container>
@@ -344,30 +348,6 @@ const SearchSection = styled.div`
    width: 91vw;
    padding-left: 0; 
    padding-top: 0.5rem;
-  }
-`;
-const HashSection = styled.div<{mobile: boolean;}>`
-  max-width: 100%;
-  /* min-height: 3.5rem; */
-  height: auto;
-  margin-top: 0.3rem;
-  display: flex;
-  flex-wrap: wrap;
-  padding-top: 1.2rem;
-  padding-left: 19.438rem;
-  gap: 0.6rem;
-  ${props=> props.theme.midTablet}{
-    padding-left: 13rem;
-  }
-  ${props=> props.theme.tablet}{
-    padding-left: 10.1rem;
-    margin: 0;
-  }
-  ${props=> props.theme.mobile}{
-    width: 100%;
-    justify-content: flex-end;
-    padding-right: 1.2rem;
-    padding-left: 0;
   }
 `;
 const DreamSection = styled.div`
