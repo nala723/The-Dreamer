@@ -8,21 +8,20 @@ import {ReactComponent as Arrow} from '../../assets/arrow.svg';
 
 function CateGory(): JSX.Element {
     const openRef = useRef(null);
-    const openRefTween = useRef<gsap.core.Timeline>();
-    const cateGoryRef = useRef<HTMLDivElement[]>([]);
-    const DeepAnim = useRef<gsap.core.Tween[]>([]);
-    const lineRef = useRef(null);
-    const SclineRef = useRef<HTMLDivElement>(null);
     const cateHeadRef = useRef<HTMLDivElement[]>([]);
-    cateGoryRef.current = [];
+    const cateGoryRef = useRef<HTMLDivElement[]>([]);
+    const startlineRef = useRef(null);
+    const endlineRef = useRef<HTMLDivElement>(null);
+    const openAni = useRef<gsap.core.Timeline>();
+    const secondAni = useRef<gsap.core.Tween[]>([]);
     cateHeadRef.current = [];
+    cateGoryRef.current = [];
     const dispatch = useDispatch();
   
     useEffect(()=>{
       gsap.set(openRef.current, { height: 'auto', opacity: 1})
-      const headani = gsap.timeline()
-      openRefTween.current = headani 
-        .to(lineRef.current,{ 
+      openAni.current = gsap.timeline()
+        .to(startlineRef.current,{ 
             width: '100%',
             opacity: 0.7
         })
@@ -30,7 +29,7 @@ function CateGory(): JSX.Element {
            stagger: 0.1,
            opacity: 1
         })
-        .to(SclineRef.current,{ 
+        .to(endlineRef.current, { 
             width: '100%',
             opacity: 0.7,
             delay: -0.2
@@ -45,16 +44,16 @@ function CateGory(): JSX.Element {
              opacity: 0.7, 
              ease: 'expo.inOut'
            }).reverse(); 
-        DeepAnim.current.push(arr);
+        secondAni.current.push(arr);
         el.animation = arr  
         })
   
         return () =>  { 
-            openRefTween.current && openRefTween.current.kill();
+            openAni.current && openAni.current.kill();
             cateGoryRef.current.forEach((el: HTMLDivElement | any)=>{
               el.animation.kill();
             })
-            DeepAnim.current.forEach((el: gsap.core.Tween)=>{
+            secondAni.current.forEach((el: gsap.core.Tween)=>{
               el.kill();
             })
           } 
@@ -73,33 +72,30 @@ function CateGory(): JSX.Element {
     }
   
     const handleOpen = () => {
-      handleCatg(-1); //걍없어지는게 나을지두
-      if(openRefTween.current){
-        openRefTween.current.reversed(!openRefTween.current.reversed());
+      handleCategory(-1); //걍없어지는게 나을지두
+      if(openAni.current){
+        openAni.current.reversed(!openAni.current.reversed());
       }
     }
   
-    const handleCatg = (index: number) => { // useEffect보다 순서대로 실행됨
+    const handleCategory = (index: number) => { // useEffect보다 순서대로 실행됨
       let selected : boolean;
+
       cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
         if(index === idx){
           selected = el.animation.reversed(); 
-          // console.log('selected :', selected)
           return selected;
-         
         }
       })
-      DeepAnim.current.forEach((ani: gsap.core.Tween)=>{
-        console.log('ani :',ani.reversed(),  DeepAnim.current)
+
+      secondAni.current.forEach((ani: gsap.core.Tween)=>{
         ani.reverse(); 
-        // console.log('after ani :',ani.reversed())
-   
       })
+
       cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number)=>{
         if(index === idx ){
           el.animation.reversed(!selected)
           }
-          // console.log('el :', el.animation.reversed())   
       })
     }
 
@@ -108,39 +104,39 @@ function CateGory(): JSX.Element {
       dispatch(searchDreamAct(el))
     }
 
-
-
   return (
  
       <CategoryBox>
-        <CareHeader onClick={handleOpen}>
+        <CateHeader onClick={handleOpen}>
         <h5>카테고리</h5>
         <Arrow />
-        </CareHeader>
-        <CateTitle ref={openRef}>
-          <CateLine ref={lineRef}/>
+        </CateHeader>
+        <CateBody ref={openRef}>
+          <StartLine ref={startlineRef}/>
           {dummyDatas.map((dum, idx)=>{
             for(const props in dum){
               return(
                 <CateGroup key={idx}> {/*일단 그룹만들었음 */}
-                  <Category ref={addStagerRef} onClick={()=> handleCatg(idx)} key={idx}>{props}
+                  <Category ref={addStagerRef} onClick={()=> handleCategory(idx)} key={idx}>
+                    {props}
                   </Category>
-                  <DeepTitle ref={addFinalRefs}>
-                    <DeepLine/>
+                  <DeepBody ref={addFinalRefs}>
+                    <DeepStartLine/>
                       {dum[props].map((el,idx)=>{
                         return(
-                          <DeepGory key={idx} onClick={(e) => handleSearch(e, el)}>{el}
-                          </DeepGory>
+                          <DeepCateGory key={idx} onClick={(e) => handleSearch(e, el)}>
+                            {el}
+                          </DeepCateGory>
                         )
                       })}
-                    <DpEndLine/>
-                  </DeepTitle>
+                    <DeepEndLine/>
+                  </DeepBody>
                 </CateGroup>
               )
             }
           })}
-           <CtEndLine ref={SclineRef}/>
-        </CateTitle>
+           <EndLine ref={endlineRef}/>
+        </CateBody>
       </CategoryBox>  
  
   );
@@ -171,7 +167,7 @@ const CategoryBox = styled.div`
   }
   
 `;
-const CareHeader = styled.div`
+const CateHeader = styled.div`
   width: 100%;
   height: 1.7rem;
   color: ${props=> props.theme.text};
@@ -190,7 +186,7 @@ const CareHeader = styled.div`
     padding-left: 1rem;
   }
 `;
-const CateTitle = styled.div`
+const CateBody = styled.div`
   position: relative;
   ${props=>props.theme.flexColumn}
   height: 0;
@@ -203,7 +199,7 @@ const CateTitle = styled.div`
     margin-bottom: 1rem;
   }
 `;
-const CateLine = styled.div`
+const StartLine = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -229,7 +225,7 @@ const Category = styled.div`
     height: 1.3rem;
   }
 `;
-const DeepTitle = styled(CateTitle)`
+const DeepBody = styled(CateBody)`
   gap: 1rem;
   height: 0;
   opacity: 0;
@@ -241,11 +237,11 @@ const DeepTitle = styled(CateTitle)`
     margin-bottom: 0.7rem;
   }
 `;
-const DeepLine = styled(CateLine)`
+const DeepStartLine = styled(StartLine)`
   width: 100%;
   height: 1px;
 `;
-const DeepGory = styled(Category)`
+const DeepCateGory = styled(Category)`
   height: 100%;
   opacity: 1;
   align-items: center;
@@ -256,13 +252,13 @@ const DeepGory = styled(Category)`
     color: white;
   }
 `;
-const CtEndLine = styled(CateLine)`
+const EndLine = styled(StartLine)`
   bottom: 0;
   top: 100%;
   width: 0;
   opacity: 0;
 `;
-const DpEndLine = styled(CtEndLine)`
+const DeepEndLine = styled(EndLine)`
   width: 100%;
   opacity: 1;
 `;

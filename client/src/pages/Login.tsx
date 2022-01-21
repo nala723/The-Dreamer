@@ -76,9 +76,9 @@ function Login(){
     loginId.getLoginStatus(function (status: any) {
       if (status) {
         const email = loginId.user.email // 필수로 설정할것을 받아와 아래처럼 조건문을 줍니다.
-        const username = loginId.user.name
+        const username = loginId.user.nickname
         const profile = loginId.user.profile_image
-
+        console.log('없어?', email,username, 'loginId?',loginId)
          if( !email  || !username ) {
           alert("필수 정보제공에 동의해주세요.");
           loginId.reprompt();
@@ -118,17 +118,11 @@ function Login(){
           history.push('./notfound')
         })
     }
-    // window.location.href.includes('access_token') && GetUser();
-    // function GetUser() {
-    //   const location = window.location.href.split('=')[1];
-    //   const token = location.split('&')[0];
-    // } 
+
+  // 네이버 버튼 커스텀 - 클릭시 naverRef.current의 첫번째 chileren에 click이벤트 할당
   const handleNaverBtn = () => {
     naverRef.current && (naverRef.current.children[0] as HTMLElement).click();
   } 
-  // const customStyle = {
-  //   borderRadius : "10px",
-  // }
     
   return (
     <Container>

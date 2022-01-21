@@ -20,6 +20,7 @@ function MyAccount() {
   const [ isChanged, setIsChanged ] = useState(false);
   const [ isWithDraw, setWithDraw ] = useState(false);
   const [ confirmWdOpen, setConfirmWdOpen ] = useState(false);
+  const [ socialOpen, setSocialOpen ] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
   const [currentInput, setCurrentInput] = useState<{
     [index: string]: any
@@ -73,15 +74,12 @@ function MyAccount() {
       })
       .then((res)=> {
           if(res.headers.accessToken){
-                  dispatch(getTokenAct(res.headers.accessToken));
+              dispatch(getTokenAct(res.headers.accessToken));
             }
           if(res.status === 200){
             (typeof profile !== 'object' && typeof profile === 'string')  ?
               res.data.profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');   
               dispatch(editUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))
-          }
-          else{
-                history.push('/notfound');
           }
       })
       .catch(err => {
@@ -92,12 +90,18 @@ function MyAccount() {
 
   // 카메라아이콘 커스텀
   const handlePhotoClick = (e: React.MouseEvent) => {
+    if(isSocial){
+      return handleSocial();
+    }
       e.preventDefault();
       photoInput.current && photoInput.current.click();
   }
     // 이미지 업로드
   const imageFileHandler = (key: string) => (e : React.ChangeEvent<HTMLInputElement> ) => {
     e.preventDefault();
+    if(isSocial){
+      return handleSocial();
+    }
     const reader = new FileReader();
     const file = (e.target.files as FileList)[0];
     if(!file){
@@ -115,6 +119,9 @@ function MyAccount() {
 
   // 인풋창
   const handleInputValue = (key: string) => (e : React.ChangeEvent<HTMLInputElement> ) => {
+      if(isSocial){
+        return handleSocial();
+      }
       setCurrentInput({ ...currentInput, [key]:e.target.value})
   }
 
@@ -282,23 +289,30 @@ const withdrawalRequest = async() => {
   },[updateOpen])
 
   // 회원 탈퇴 누를 시 모달 
-  const handleWithdrawal = (arg?: any) => {
+  const handleWithdrawal = useCallback((arg?: any) => {
     if(arg === true){
       setWithDraw(true);
     }
     setWithdrawalOpen(!withdrawalOpen); 
-  }
+  },[withdrawalOpen])
 
   // 탈퇴 모달에서 예를 누를 시
-  const confirmWithDrawl = () => {
+  const confirmWithDrawl = useCallback(() => {
     if(confirmWdOpen){
       setConfirmWdOpen(false);
       withdrawalRequest();
     }
-  } 
+  },[confirmWdOpen])
+
+  const handleSocial = useCallback(() => {
+    if(isSocial){
+      setSocialOpen(!socialOpen)
+    }
+  },[socialOpen])
 
   return (
      <Container>
+      {socialOpen && <Modal handleClick={handleSocial}>소셜 로그인 유저는 정보 수정을 할 수 없습니다.</Modal>}
       {updateOpen && <Modal handleClick={confirmUpdate}>회원 정보 수정이 완료되었습니다.</Modal>}
       {withdrawalOpen && 
         <Modal handleClick={handleWithdrawal} handleSignOut={handleWithdrawal} header='회원님의 개인 정보 및 모든 이용 기록은 삭제되며, 복구가 불가능합니다.'>
@@ -308,41 +322,41 @@ const withdrawalRequest = async() => {
       {confirmWdOpen && <Modal handleClick={confirmWithDrawl}>회원 탈퇴가 완료되었습니다.</Modal>}
        <Title><h1>나의 계정 보기</h1></Title>
        <ContentBox >
-       <Content>
-         <PhotoBox>
-           <UserPhotoBox>
-           <Camera src='/images/camera.svg' onClick={handlePhotoClick}/>
-             <Photo>
-                <input type='file' accept='image/*' name="profile" ref={photoInput} onChange={imageFileHandler("profile")} />
-                <PhotoCircle src={currentInput.imgFile? currentInput.previewUrl : profileImg} alt='img'/>
-              </Photo>
-            </UserPhotoBox>
-            {currentInput.imgFile && <CanclePhoto onClick={canclePhoto}>사진 삭제</CanclePhoto>}
-          </PhotoBox>
-          <InfoBox>
-            <InfoUl>
-            {userlist.map((user,idx)=>{
-              return(
-                <InputWrapper key={idx}>
-                  <InfoList>
-                    <div>{user.name}</div>
-                    { user.key 
-                    ?  
-                    <input type={user.type} placeholder={user.key}
-                    onChange={handleInputValue(user.key)} 
-                    value={currentInput[user.key]} onBlur={validationCheck(user.key)}/> 
-                    : 
-                    <div>{user.val}</div> }
-                  </InfoList>
-                  {user.key && <Error>{errorMessage[user.key]}</Error>}
-                </InputWrapper>
-              )
-            })}
-            </InfoUl>
-            <SubmitBtn onClick={onSubmitHandler}>수정</SubmitBtn>
-          </InfoBox>
-          <WithDrawl onClick={handleWithdrawal}>회원 탈퇴</WithDrawl>
-       </Content>
+        <Content>
+          <PhotoBox>
+            <UserPhotoBox>
+            <Camera src='/images/camera.svg' onClick={handlePhotoClick}/>
+              <Photo>
+                  <input type='file' accept='image/*' name="profile" ref={photoInput} onChange={imageFileHandler("profile")} />
+                  <PhotoCircle src={currentInput.imgFile? currentInput.previewUrl : profileImg} alt='img'/>
+                </Photo>
+              </UserPhotoBox>
+              {currentInput.imgFile && <CanclePhoto onClick={canclePhoto}>사진 삭제</CanclePhoto>}
+            </PhotoBox>
+            <InfoBox>
+              <InfoUl>
+              {userlist.map((user,idx)=>{
+                return(
+                  <InputWrapper key={idx}>
+                    <InfoList>
+                      <div>{user.name}</div>
+                      { user.key 
+                      ?  
+                      <input type={user.type} placeholder={user.key}
+                      onChange={handleInputValue(user.key)} 
+                      value={currentInput[user.key]} onBlur={validationCheck(user.key)}/> 
+                      : 
+                      <div>{user.val}</div> }
+                    </InfoList>
+                    {user.key && <Error>{errorMessage[user.key]}</Error>}
+                  </InputWrapper>
+                )
+              })}
+              </InfoUl>
+              <SubmitBtn onClick={onSubmitHandler}>수정</SubmitBtn>
+            </InfoBox>
+            <WithDrawl onClick={handleWithdrawal}>회원 탈퇴</WithDrawl>
+        </Content>
        </ContentBox>  
      </Container>
   );

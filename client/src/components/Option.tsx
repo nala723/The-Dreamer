@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -15,7 +15,7 @@ function Option (props: DropboxProp){
   
   return (
     <Container>
-      <PageList onClick={() => handleDropbox}>
+      <PageList onClick={handleDropbox}>
         {resize &&
           <>
            <Page to='/SearchDream'>꿈 알아보기</Page>

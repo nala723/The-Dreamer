@@ -7,11 +7,20 @@ import {ReactComponent as Arrow} from '../../assets/arrow.svg';
 import { darkTheme } from '../../styles/theme';
 import { emotionList } from '../../config/dummyDatas';
 
-type Props = { 
-    value?: React.ReactNode | string; onClick?: ()=>void; };
-type Ref = HTMLButtonElement;
+type PropsType = { 
+    value?: React.ReactNode | string; 
+    onClick?: ()=>void; 
+};
 
-function Calender(props: { title: string; updateMenu: (arg: string | string[] | number)=>void; emo?: string;}) {
+type RefType = HTMLButtonElement;
+
+interface CalenderProps {
+  title: string; 
+  updateMenu: (arg: string | string[] | number)=>void; 
+  emotion?: string;
+}
+
+function Calender(props: CalenderProps) {
   /* 달력 위한 useState */
     const [dateRange, setDateRange] = useState<any>([null, null]);
     const [startDate, endDate] = dateRange;
@@ -19,18 +28,18 @@ function Calender(props: { title: string; updateMenu: (arg: string | string[] | 
     const [selectIdx, setSelectIdx] = useState(-1);    
   /* 애니메이션 위한 useRef */  
     const openRef = useRef(null);
-    const openRefTl = useRef<gsap.core.Timeline>();
+    const openRefTimeline = useRef<gsap.core.Timeline>();
     const startlineRef = useRef(null);
     const endlineRef = useRef(null);
     const menuRef = useRef<(HTMLLIElement | HTMLDivElement)[]>([]);
     menuRef.current = [];
 
-    const {title,updateMenu,emo} = props;
+    const {title,updateMenu,emotion} = props;
 
     useEffect(()=>{
         gsap.set(openRef.current, { height: 'auto', opacity: 1}) // 메뉴박스 세팅
         
-        openRefTl.current = gsap.timeline() //  타임라인 객체를 open~에 저장
+        openRefTimeline.current = gsap.timeline() //  타임라인 객체를 open~에 저장
           .to(startlineRef.current,{ 
               width: '100%',
               opacity: 0.7,
@@ -51,7 +60,7 @@ function Calender(props: { title: string; updateMenu: (arg: string | string[] | 
           .reverse();
 
           return () =>  { 
-              openRefTl.current && openRefTl.current.kill();
+              openRefTimeline.current && openRefTimeline.current.kill();
             } 
       },[]);
 
@@ -62,8 +71,8 @@ function Calender(props: { title: string; updateMenu: (arg: string | string[] | 
     },[startDate, endDate])
 
     const handleOpen = () => {
-        if(openRefTl.current){
-            openRefTl.current.reversed(!openRefTl.current.reversed());
+        if(openRefTimeline.current){
+            openRefTimeline.current.reversed(!openRefTimeline.current.reversed());
           }
     }    
 
@@ -74,7 +83,7 @@ function Calender(props: { title: string; updateMenu: (arg: string | string[] | 
     }
 
     // forward.Ref 로 달력버튼을 커스텀 
-    const CustomInput = forwardRef<Ref, Props>(({value, onClick}, ref) => {
+    const CustomInput = forwardRef<RefType, PropsType>(({value, onClick}, ref) => {
       return (
         <CustomBtn  onClick={onClick} ref={ref} >
           <p>{startDate? value : '직접 선택'}</p>
@@ -104,14 +113,14 @@ function Calender(props: { title: string; updateMenu: (arg: string | string[] | 
 
 
     return (
-        <DateBox emo={emo}>
+        <DateBox emotion={emotion}>
             <DateHeader onClick={handleOpen} >
             <h5>{title}</h5>
             <Arrow />
             </ DateHeader>
             <DateMenu ref={openRef}>
                 <StartLine ref={startlineRef}/>
-                {emo ?
+                {emotion ?
                   emotionList.map((el,idx)=>{
                     return (
                     <MenuList key={idx} ref={addStagerRef}  role='presentation' 
@@ -151,11 +160,11 @@ function Calender(props: { title: string; updateMenu: (arg: string | string[] | 
 
 export default Calender;
 
-const DateBox = styled.div<{emo?: string | boolean}>`
+const DateBox = styled.div<{emotion?: string | boolean}>`
   position: absolute;
   width: 7.5rem;
   top: 35%;
-  left: ${props=> props.emo ? '53%' : '0'};
+  left: ${props=> props.emotion ? '53%' : '0'};
   z-index: 90;
   display: flex;
   flex-direction: column;
@@ -165,7 +174,7 @@ const DateBox = styled.div<{emo?: string | boolean}>`
   }
   ${props=> props.theme.mobile}{
   width: 4.5rem;
-  left: ${props=> props.emo ? '25%' : '0'};
+  left: ${props=> props.emotion ? '25%' : '0'};
   top: 0%;
   }
 `;

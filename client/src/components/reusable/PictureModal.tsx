@@ -1,36 +1,27 @@
-import { prependListener } from 'process';
 import React from 'react';
 import styled from 'styled-components';
 
-interface PicInter {
-    id : number;
-    title: string;
-    picture: string;
-    createdAt: string;
-    emotion: string;
-  }
+function PictureModal(props:{ handleClick : ()=> void; picture : string;}) {
+  const { handleClick, picture } = props;  
 
-function PicModal(props:{ handleClick : ()=> void; pic : PicInter;}) {
-  const { handleClick, pic } = props;  
-  const { picture, title, emotion, createdAt} = props.pic
   return (
-    <Background className={`${pic ? "active" : ""}`}>
-    <ModalSection
-      className={`${pic ? "active" : ""}`}
-      onClick={handleClick}
-    >
-      <ModalTitle>
-        <Img src='theme' alt='logo'/>
-      </ModalTitle>
-      <Content>
-          <img src={picture} alt='title'/>
-      </Content>    
-    </ModalSection>
-  </Background>
+    <Background className={`${picture ? "active" : ""}`}>
+      <ModalSection
+        className={`${picture ? "active" : ""}`}
+        onClick={handleClick}
+      >
+        <ModalTitle>
+          <Img src='theme' alt='logo'/>
+        </ModalTitle>
+        <Content>
+            <img src={picture} alt='title'/>
+        </Content>    
+      </ModalSection>
+    </Background>
   );
 }
 
-export default PicModal;
+export default PictureModal;
 
 /* 모달 */
 const Background = styled.div`

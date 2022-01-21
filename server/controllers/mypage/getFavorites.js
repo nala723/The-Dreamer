@@ -13,9 +13,10 @@ module.exports = async (req, res) => {
 
         if(isAuthorized(accessToken) === 'jwt expired'){
           res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
+          console.log('요기?');
         }
         const userData = isAuthorized(accessToken);
-
+        console.log('여기왔나 유저데이터', userData);
         const userId = userData.id;
 
         const likeList = await User_like_dream.findAll({

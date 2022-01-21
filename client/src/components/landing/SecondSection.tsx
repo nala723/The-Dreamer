@@ -127,8 +127,8 @@ function SecondSection() {
   
   return (
     <>
-       <Section top='calc(100vh - 4.375rem)'>
-         <SectionInner>
+       <Container>
+         <ContainerInner>
            <ScrollBox ref={mainRef}>
               <Pin>
                   <Content ref={addToRefs}>
@@ -152,13 +152,13 @@ function SecondSection() {
                   </Content>
               </Pin>
             </ScrollBox> 
-            <CircScrollBox ref={secondRef}> 
+            <CircleScrollBox ref={secondRef}> 
               <Pin>
               <CircleBox >
                 <Circle ref={circleRef}/>
               </CircleBox>
               </Pin>
-            </CircScrollBox> 
+            </CircleScrollBox> 
             <GifBox>{/*ref={GifBoxRef}*/}
                 {/* <Pin> */}
                 <GifContent>
@@ -193,22 +193,22 @@ function SecondSection() {
                 </SearchBox>
               </ContentsBox >
             </FinalBox> 
-         </SectionInner>
-       </Section>  
+         </ContainerInner>
+       </Container >  
     </>
   );
 }
 
 export default SecondSection;
 
-const Section = styled.section<{ top: string }>`
+const Container = styled.section`
   position: absolute;
-  top: ${props=> props.top};
+  top: calc(100vh - 4.375rem);
   height: 350rem; 
   width: 100%;
   padding: 0 1rem;
 `;
-const SectionInner = styled.div`
+const ContainerInner = styled.div`
   width: 100%;
   height: 100%;
   overflow: visible;
@@ -266,7 +266,7 @@ const Blank = styled.p`
    }
 `;
 
-const CircScrollBox = styled(ScrollBox)`
+const CircleScrollBox = styled(ScrollBox)`
   top: 210rem;
 `;
 const CircleBox = styled.div`

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
@@ -64,7 +64,7 @@ function Header (props: { themeToggler: () => void; t: string; }){
     setIsOpen(!isOpen);
   }
   const closeDropbox = () => {
-    setDropdown(false);
+      setDropdown(false);
   }
 
   const handleSignOut = async(choice: boolean) => {

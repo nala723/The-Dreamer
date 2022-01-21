@@ -27,9 +27,9 @@ import axios from 'axios';
     latestLike: false, selectLike: []
   });
   const clickRef = useRef<any | null>(null);
-  const DreamRef = useRef<HTMLDivElement[]>([]);
+  const dreamRef = useRef<HTMLDivElement[]>([]);
 
-  DreamRef.current = [];
+  dreamRef.current = [];
   let Position = [];
   let quotient: number;
   let Xposition: number;
@@ -53,14 +53,14 @@ import axios from 'axios';
   },[sortLike])
 
   useEffect(()=>{
-    let tl: gsap.core.Timeline;
+    let timeline: gsap.core.Timeline;
     function random(min: number, max: number){
       return parseFloat((Math.random() * (max - min) + min).toFixed(2))
     }
     function floatingDream(dream: HTMLDivElement, size: number) {
-      tl = gsap.timeline({repeat: -1,  ease: 'none', delay: 0.3});
+      timeline = gsap.timeline({repeat: -1,  ease: 'none', delay: 0.3});
       
-       tl.to(
+      timeline.to(
         dream,
         {
           x: random(-size,size),
@@ -83,11 +83,11 @@ import axios from 'axios';
         }
       )
     }
-    DreamRef.current.forEach((dream)=>{
+    dreamRef.current.forEach((dream)=>{
       floatingDream(dream, 60);
     })
     return ()=> {
-      tl && tl.kill();
+      timeline && timeline.kill();
       // DreamGsap.current &&  DreamGsap.current.kill();
     }
 
@@ -129,6 +129,7 @@ import axios from 'axios';
     e.preventDefault();
     return window.open(link);
   }
+  
   const handlePosition = (index: number) => {
     if(width === 'midTablet'){
       quotient = (Math.floor(index / 2)) * 60;
@@ -159,8 +160,8 @@ import axios from 'axios';
   }
 
   const addToRefs = (el: HTMLDivElement) => {
-    if (el && !DreamRef.current.includes(el)) {
-      DreamRef.current.push(el);
+    if (el && !dreamRef.current.includes(el)) {
+      dreamRef.current.push(el);
     }
   };
 
@@ -353,10 +354,10 @@ import axios from 'axios';
         {dream.length === 0
           ?
           <Dream ref={addToRefs} top='20%' left='45%'>
-            <DrContent>
-              <DrTitle>좋아하는 꿈이 없습니다.</DrTitle>
+            <DreamContent>
+              <DreamTitle>좋아하는 꿈이 없습니다.</DreamTitle>
               <Text>꿈 알아보기 페이지에서 하트 아이콘을 눌러 꿈을 저장할 수 있습니다.</Text>
-            </DrContent>
+            </DreamContent>
           </Dream>
           :
          dream.map((res, idx) => {
@@ -365,10 +366,10 @@ import axios from 'axios';
           return (
             <Dream ref={addToRefs} key={res.dream_id} top={y} left={x}>
               <Delete onClick={(e)=> handleDislike(e,res.dream_id)}/>
-              <DrContent onClick={(e)=> handleLink(e,res.url)}>
-                <DrTitle>{res.title}</DrTitle>
+              <DreamContent onClick={(e)=> handleLink(e,res.url)}>
+                <DreamTitle>{res.title}</DreamTitle>
                 <Text>{res.content}</Text>
-              </DrContent>
+              </DreamContent>
               <Date>{res.createdAt.split('T')[0].slice(2)}</Date>
             </Dream>
           )
@@ -604,7 +605,7 @@ const Dream = styled.div<{top: string; left: string;}>`
     top: ${props=> `calc(${props.top} / 1.3 )`}; 
   }
 `;
-const DrContent = styled.div`
+const DreamContent = styled.div`
  ${props=> props.theme.flexColumn};
   width: calc(100% - 2rem);
   height: calc(100% - 6rem);
@@ -613,7 +614,7 @@ const DrContent = styled.div`
   text-align: center;
   cursor: pointer;
 `;
-const DrTitle = styled.h5`
+const DreamTitle = styled.h5`
   color: #494161;
   padding-top: 1rem;
   line-height: 1.1rem;

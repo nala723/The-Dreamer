@@ -2,9 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import gsap from 'gsap';
 
-function Modal(props: { 
-  handleClick: (e?: React.MouseEvent )=>void; children: any; handleSignOut?: (arg0 :boolean)=>void; header?: string;}) {
-  // 모달 좀더 제목이랑 내용 구분?
+interface ModalProps {
+  handleClick: (e?: React.MouseEvent)=>void; 
+  children: any; 
+  handleSignOut?: (arg0 :boolean)=>void; 
+  header?: string;
+}
+
+function Modal(props: ModalProps) {
+ 
   const backRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const timeLineRef = useRef<gsap.core.Timeline>();
@@ -27,8 +33,8 @@ function Modal(props: {
     })
   },[])
 
-  
-    const {  handleClick, children, handleSignOut, header } = props;
+  const {  handleClick, children, handleSignOut, header } = props;
+
     return (
         <Background ref={backRef}> 
           <ModalSection
@@ -174,7 +180,6 @@ const OkBtn = styled.div<{signout : string;}>`
       color: ${props=> props.theme.text}; 
       transition: all 0.3s ease-in-out;
     }
- 
   }
   ${props=> props.theme.mobile}{
     padding-bottom: 2rem;

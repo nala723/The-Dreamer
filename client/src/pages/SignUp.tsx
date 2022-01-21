@@ -19,7 +19,6 @@ function SignUp(){
   const history = useHistory();
   const [signupInfo, setSignupInfo] = useState<ErrorMsgType>({
     Email:'',
-    //emailCode:'',
     Username:'',
     Password:'',
     PasswordCheck:''
@@ -29,7 +28,6 @@ function SignUp(){
     Username: '',
     Password: '',
     PasswordCheck: '',
-    // somethingMissed:false
   })
   const [valid, setValid] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +37,7 @@ function SignUp(){
     { name: 'Password', type: 'password', key: 'Password'},
     { name: 'Password', type: 'password', key: 'PasswordCheck'},
   ]
+
   const handleInput = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignupInfo({ ...signupInfo, [key]: e.target.value})
   }
@@ -111,7 +110,7 @@ function SignUp(){
     setIsOpen(false)
     history.push('./login')
   }
-  console.log(errorMessage);
+
   return (
      <Container>
        {isOpen && <Modal handleClick={handleClick}>회원 가입이 완료되었습니다.</Modal>}
