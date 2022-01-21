@@ -122,7 +122,7 @@ interface EmoInter
 
 
 export const hashTagList = [
-    '고백받는', '로또 당첨되는', '돼지', '시험 합격하는', '돈', '취업하는', '가족'
+    '죽음', '돈', '돼지', '집', '자동차', '뱀', '물고기'
 ]
 
 export const dummyPics = [
