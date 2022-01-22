@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
         if(process.env.NODE_ENV === "production") {
             const PictureInfo = await Picture.findOne({attributes : ['picture'], where : {  id : picture_id }})
             if(PictureInfo){
-              let url = result.dataValues.picture.split('/');
+              let url = PictureInfo.dataValues.picture.split('/');
               url = url[url.length-1]
 
               s3.deleteObject({

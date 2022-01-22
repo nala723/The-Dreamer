@@ -31,12 +31,14 @@ module.exports = async(req, res) => {
             }
             saveImage = ifProduction();
             if(saveImage){
+                console.log('여????', saveImage);
                 const newPicture = await Picture.create({
                     title : req.body.title,
                     picture : saveImage,
                     emotion: req.body.emotion,
                     user_id : userData.id
                 })
+                console.log('dd', newPicture)
                 if(newPicture){
                     res.status(200).json({message : '업로드 성공'})
                 }
