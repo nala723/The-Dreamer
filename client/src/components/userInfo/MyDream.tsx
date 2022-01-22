@@ -11,7 +11,8 @@ import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
 import PictureModal from '../reusable/PictureModal';
 import Modal from '../reusable/Modal';
 import Calender from "../reusable/Calender";
-import { dummyDatas, dummyPics,emotionList } from '../../config/dummyDatas'; // 임시 더미
+import { emotionList } from '../../config/dummyDatas';
+import Dream from '../reusable/Dream';
 
 export interface PicInterface {
   id : number;
@@ -30,8 +31,7 @@ function MyDream() {
   const [ input, setInput ] = useState('');
   const [ selected, setSelected ] = useState(-1);
   const [ hasText, sethasText ] = useState(false);
-  // const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
-  const [ myPic, setMyPic ] = useState<PicInterface[]>([]); // ([]) 임시 더미
+  const [ myPic, setMyPic ] = useState<PicInterface[]>([]); 
   const [ sortPic, setSortPic ] = useState<{
     latest: boolean, selectDate: string[], sortEmotion : string
   }>({ 
@@ -64,10 +64,8 @@ function MyDream() {
   }
 
   useEffect(()=>{
-    // if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
       getPictures();
-    // }
-  },[sortPic])  // 더미용
+  },[sortPic]) 
 
   const getPictures = () => {
       axios
@@ -299,8 +297,13 @@ function MyDream() {
         </ResponsiveRight>   
        </ UpperSection>   
        <DreamSection>
+       {!myPic.length ? 
+        <Dream header='그린 꿈이 없습니다.'>
+          꿈 그리기 페이지에서 꿈을 그려주세요.
+        </Dream>
+        :
          <CardBox>
-           {myPic.map((pic)=>{
+           { myPic.map((pic)=>{
              return(
                <Card key={pic.id}>
                  <Picture onClick={()=> handlePicOpen(pic)}>
@@ -323,6 +326,7 @@ function MyDream() {
              )
            })}
         </CardBox>
+        }
        </DreamSection>   
     </Container>
   );

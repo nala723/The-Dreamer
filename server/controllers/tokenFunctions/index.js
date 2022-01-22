@@ -34,7 +34,7 @@ module.exports = {
         });
         
         const access_token = sign(data, process.env.ACCESS_SECRET, {expiresIn: 6000});
-        console.log('액세스토큰', access_token, 'data', data);
+        // console.log('액세스토큰', access_token, 'data', data);
         return access_token;
     }
 }

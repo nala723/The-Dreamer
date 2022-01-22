@@ -47,18 +47,17 @@ function Login(){
         password: loginInfo.Password
         })
       .then((res)=>{
-        if(res.status === 401){
-          setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
-        }else if(res.status === 200){
           res.data.profile = (typeof res.data.profile !== 'object' && typeof res.data.profile === 'string') ?
           res.data.profile : "data:image/png;base64, " + Buffer.from(res.data.profile, 'binary').toString('base64');   
           dispatch(signInAct(res.data))
           history.push('./searchdream')
-        }
       })
       .catch((err)=>{
-        setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
-        console.log(err)
+        if(err.response.status === 401){
+          setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
+        }else {
+          history.push('/notfound');
+        }
       })  
   }
 
@@ -78,7 +77,6 @@ function Login(){
         const email = loginId.user.email // 필수로 설정할것을 받아와 아래처럼 조건문을 줍니다.
         const username = loginId.user.nickname
         const profile = loginId.user.profile_image
-        console.log('없어?', email,username, 'loginId?',loginId)
          if( !email  || !username ) {
           alert("필수 정보제공에 동의해주세요.");
           loginId.reprompt();
@@ -109,8 +107,6 @@ function Login(){
           if(res.status === 200){
             dispatch(signInAct({isSocial: true, profile: profile,...res.data}))
             history.push('./searchdream')
-          }else{
-            history.push('./notfound')
           }
         })
         .catch(err=>{
