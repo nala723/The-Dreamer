@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Picture } = require('../../models');
 const fs = require('fs');
 const { isAuthorized, remakeToken } = require('../tokenFunctions')
@@ -18,20 +19,25 @@ module.exports = async(req, res) => {
             }
 
             const userData = isAuthorized(accessToken);
-            const saveImage = fs.readFileSync(req.file.path); // 지금은 안됨, s3를 위해 image 데이터 타입을 text로 했기 때문
-            // const saveImage = req.file.location
-            await Picture.create({
+            let saveImage
+            function ifProduction() {
+                if(process.env.NODE_ENV === "production") {
+                    saveImage = req.file.location;
+                }else{
+                    saveImage = fs.readFileSync(req.file.path);
+                }
+                return saveImage
+            }
+            saveImage = ifProduction();
+            const newPicture = await Picture.create({
                 title : req.body.title,
                 picture : saveImage,
                 emotion: req.body.emotion,
                 user_id : userData.id
             })
-            .then(response=>{
+            if(newPicture){
                 res.status(200).json({message : '업로드 성공'})
-            })
-            .catch(err=>{
-                res.status(500).send(err);
-            })
+            }
           }
         }
     } catch (error) {

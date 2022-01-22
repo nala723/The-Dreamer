@@ -4,9 +4,6 @@ const multer = require("multer");
 // aws.config.loadFromPath(__dirname + '/../s3.json'); 
 // const s3 = new aws.S3();
 
-
-
-
 const imageFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
