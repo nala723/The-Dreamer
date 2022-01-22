@@ -22,6 +22,7 @@ function MyAccount() {
   const [ confirmWdOpen, setConfirmWdOpen ] = useState(false);
   const [ socialOpen, setSocialOpen ] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
   const [currentInput, setCurrentInput] = useState<{
     [index: string]: any
     imgFile: string | File | null,
@@ -76,11 +77,9 @@ function MyAccount() {
           if(res.headers.accessToken){
               dispatch(getTokenAct(res.headers.accessToken));
             }
-          if(res.status === 200){
             (typeof profile !== 'object' && typeof profile === 'string')  ?
               res.data.profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');   
-              dispatch(editUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))
-          }
+              dispatch(editUserAct({username: res.data.username, profile: res.data.profile, email: res.data.email}))  
       })
       .catch(err => {
               console.log(err)
@@ -212,17 +211,11 @@ function MyAccount() {
                         if(res.headers.accessToken){
                             dispatch(getTokenAct(res.headers.accessToken));
                             }
-                        if(res.status === 200){
-                             setIsChanged(true);
-                             confirmUpdate();
-                         }
-                         else{
-                             history.push('/notfound');
-                         }
+                        setIsChanged(true);
+                        confirmUpdate();
                     })
                     .catch(error=>
                         console.log(error)
-                        
                     ) 
         },
         MIME_TYPE,

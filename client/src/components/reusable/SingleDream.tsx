@@ -12,6 +12,7 @@ interface DreamProps {
   handleLike?: (e : React.MouseEvent, idx: number) => void;
   handleDislike?: (e: React.MouseEvent, id?: number) => void;
   handleWidth?: (arg: string) => void;
+  gallery?: string;
 }
 
 function SingleDream(props: DreamProps) {
@@ -19,7 +20,7 @@ function SingleDream(props: DreamProps) {
   // const loadRef = useRef<HTMLHeadingElement | null>(null);
   const dreamRef = useRef<HTMLDivElement[]>([]);
   dreamRef.current = [];
-  const { header, children, data, handleLike, handleDislike, handleWidth } = props;
+  const { header, children, data, handleLike, handleDislike, handleWidth, gallery} = props;
   // useEffect 속에 타임라인 만들어두고, 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 - 
 
   // 해결할것 :  드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
@@ -160,7 +161,7 @@ function SingleDream(props: DreamProps) {
     <>
     {header
       ?
-      <EmptyData ref={addToRefs}>
+      <EmptyData ref={addToRefs} gallery={gallery && gallery}>
         <Content>
           <Title>{header}</Title>
           <Text>{children}</Text>
@@ -258,19 +259,21 @@ const Dream = styled.div<{top?: string; left?: string; delete?: string;}>`
     top: ${props=> `calc(${props.top} / 1.3 )`}; 
   }
 `;
-const EmptyData = styled(Dream)`
-  top: 20%;
+const EmptyData = styled(Dream)<{gallery?: string;}>`
+  top: ${props=> props.gallery ? '40%' : '20%' };
   left: 45%;
   ${props=> props.theme.laptop} {
     left: 40%;
   }
   ${props=> props.theme.tablet} {
-    top: 15%;
+    top: ${props=> !props.gallery && '15%' };
     left: 35%;
   }
   ${props=> props.theme.mobile} {
+    top: ${props=> props.gallery && '32%' };
     left: 20%;
   }
+
 `;
 const Content = styled.div`
  ${props=> props.theme.flexColumn};

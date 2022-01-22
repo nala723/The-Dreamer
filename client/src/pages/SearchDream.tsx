@@ -8,11 +8,13 @@ import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
 import CateGory from '../components/searchdream/Category';
 import Modal from '../components/reusable/Modal';
-import SingleDream from '../components/reusable/Dream';
+import SingleDream from '../components/reusable/SingleDream';
 import axios from 'axios';
+import Loading from '../config/Loading';
+import NotFound from './NotFound';
 
 function SearchDream(): JSX.Element { 
-  const { data } = useSelector((state: RootState) => state.searchReducer.search);
+  const { loading, data, error } = useSelector((state: RootState) => state.searchReducer.search);
   const { username, accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -110,28 +112,34 @@ function SearchDream(): JSX.Element {
     setBanGuest(!banGuest);
   } 
 
+  if(error){
+    return <NotFound/>
+  }
 
-  return (
-    <Container>
-      {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
-      {banGuest && <Modal handleClick={banGuestLike}>로그인 후 이용가능한 서비스입니다.</Modal>}
-      <SearchSection>
-          <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
-      </SearchSection>
-      <HashTag handleSearch={handleSearch} />
-      <DreamSection>
-        {data.length === 0 
-          ?
-          <SingleDream header='검색한 꿈 혹은 결과가 없습니다.'>
-            상단의 검색바에서 꿈을 검색해 주세요.
-          </SingleDream>
-          :
-          <SingleDream data={data} handleLike={handleLike} handleDislike={handleDislike}/>
-        }
-      </DreamSection> 
-      <CateGory/>
-    </Container>
-  );
+  else{
+    return (
+        <Container>
+          {loading && <Loading/>}
+          {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
+          {banGuest && <Modal handleClick={banGuestLike}>로그인 후 이용가능한 서비스입니다.</Modal>}
+          <SearchSection>
+              <SearchBar height='3.125rem' width='34.438rem' scale='(0.7)' font='1.125rem' handleSearch={handleSearch}/>
+          </SearchSection>
+          <HashTag handleSearch={handleSearch} />
+          <DreamSection>
+            {data.length === 0 
+              ?
+              <SingleDream header='검색한 꿈 혹은 결과가 없습니다.'>
+                상단의 검색바에서 꿈을 검색해 주세요.
+              </SingleDream>
+              :
+              <SingleDream data={data} handleLike={handleLike} handleDislike={handleDislike}/>
+            }
+          </DreamSection> 
+          <CateGory/>
+        </Container>
+      )
+  }
 }
 
 export default SearchDream;

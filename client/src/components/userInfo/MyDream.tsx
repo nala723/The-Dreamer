@@ -12,7 +12,7 @@ import PictureModal from '../reusable/PictureModal';
 import Modal from '../reusable/Modal';
 import Calender from "../reusable/Calender";
 import { emotionList } from '../../config/dummyDatas';
-import Dream from '../reusable/Dream';
+import Dream from '../reusable/SingleDream';
 
 export interface PicInterface {
   id : number;
@@ -298,7 +298,7 @@ function MyDream() {
        </ UpperSection>   
        <DreamSection>
        {!myPic.length ? 
-        <Dream header='그린 꿈이 없습니다.'>
+        <Dream header='그린 꿈이 없습니다.' gallery='gallery'>
           꿈 그리기 페이지에서 꿈을 그려주세요.
         </Dream>
         :

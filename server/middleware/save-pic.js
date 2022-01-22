@@ -1,12 +1,12 @@
 require('dotenv').config();
 const multer = require("multer");
+const multerS3 = require('multer-s3'); 
+const aws = require('aws-sdk');
+aws.config.loadFromPath(__dirname + '/../s3.json'); 
+const s3 = new aws.S3();
 
 if(process.env.NODE_ENV === "production") {
-  const multerS3 = require('multer-s3'); 
-  const aws = require('aws-sdk');
-  aws.config.loadFromPath(__dirname + '/../s3.json'); 
-  const s3 = new aws.S3();  
-
+  
   const imageFilter = (req, file, cb) => {
     if (file.mimetype.startsWith("image")) {
       cb(null, true);

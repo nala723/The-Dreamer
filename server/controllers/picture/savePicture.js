@@ -23,20 +23,23 @@ module.exports = async(req, res) => {
             function ifProduction() {
                 if(process.env.NODE_ENV === "production") {
                     saveImage = req.file.location;
+                    console.log('여끼왓나', saveImage);
                 }else{
                     saveImage = fs.readFileSync(req.file.path);
                 }
                 return saveImage
             }
             saveImage = ifProduction();
-            const newPicture = await Picture.create({
-                title : req.body.title,
-                picture : saveImage,
-                emotion: req.body.emotion,
-                user_id : userData.id
-            })
-            if(newPicture){
-                res.status(200).json({message : '업로드 성공'})
+            if(saveImage){
+                const newPicture = await Picture.create({
+                    title : req.body.title,
+                    picture : saveImage,
+                    emotion: req.body.emotion,
+                    user_id : userData.id
+                })
+                if(newPicture){
+                    res.status(200).json({message : '업로드 성공'})
+                }
             }
           }
         }

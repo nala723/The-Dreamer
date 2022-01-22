@@ -8,7 +8,7 @@ import { getTokenAct } from '../../actions';
 import Calender from '../reusable/Calender';
 import { Data } from '../../actions'; 
 import axios from 'axios';
-import SingleDream from '../reusable/Dream';
+import SingleDream from '../reusable/SingleDream';
 
  function MyLikes() {
   const [isOpen, setIsOpen] = useState(false);

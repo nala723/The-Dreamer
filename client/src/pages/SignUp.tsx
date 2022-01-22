@@ -91,7 +91,6 @@ function SignUp(){
         password: signupInfo.Password
         })
       .then((res)=>{
-        if(res.status === 200){
           setSignupInfo({
             Email:'',
             Username:'',
@@ -99,10 +98,14 @@ function SignUp(){
             PasswordCheck:''
           })
           setIsOpen(true);
-        }
       })
       .catch((err)=>{
-        console.log(err)
+        if(err.response.status === 409){
+          setErrorMessage({...errorMessage, Email : err.response.data.message})
+        }
+        else{
+          history.push('./notfound')
+        }
       })  
   }
 

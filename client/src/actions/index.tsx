@@ -57,7 +57,6 @@ export const searchDreamAct = (data: string) =>  {
                 console.log('errr');
                 console.dir(err);
             }
-
         }
     }
 }
