@@ -4,12 +4,11 @@ import SearchBar from '../reusable/SearchBar';
 import Modal from '../reusable/Modal';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../reducers';
-import { GetTokenAct } from '../../actions';
-import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
-import gsap from 'gsap';
+import { getTokenAct } from '../../actions';
 import Calender from '../reusable/Calender';
 import { Data } from '../../actions'; 
 import axios from 'axios';
+import SingleDream from '../reusable/SingleDream';
 
  function MyLikes() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,21 +26,11 @@ import axios from 'axios';
     latestLike: false, selectLike: []
   });
   const clickRef = useRef<any | null>(null);
-  const DreamRef = useRef<HTMLDivElement[]>([]);
-
-  DreamRef.current = [];
-  let Position = [];
-  let quotient: number;
-  let Xposition: number;
-  let Yposition: number;
 
   useEffect(() => {
     getLikes();
-    window.addEventListener('resize', getWidth);
-    getWidth();
     document.addEventListener('click',handleClickOutside);
     return () => {
-      window.removeEventListener('resize', getWidth);
       document.removeEventListener('click',handleClickOutside);
     }
   },[])
@@ -51,48 +40,6 @@ import axios from 'axios';
       return handleSortLike(dream);
     }
   },[sortLike])
-
-  useEffect(()=>{
-    let tl: gsap.core.Timeline;
-    function random(min: number, max: number){
-      return parseFloat((Math.random() * (max - min) + min).toFixed(2))
-    }
-    function floatingDream(dream: HTMLDivElement, size: number) {
-      tl = gsap.timeline({repeat: -1,  ease: 'none', delay: 0.3});
-      
-       tl.to(
-        dream,
-        {
-          x: random(-size,size),
-          y: random(-size/2,size),
-          duration: random(5, 10)
-        }
-      ).to(
-        dream,
-        {
-          x: random(-size*2,size),
-          y: random(size/2,size),
-          duration: random(5, 10)
-        }
-      ).to(
-        dream,
-        {
-          x: random(-size,size), 
-          y: random(size,size),
-          duration: random(5, 10)
-        }
-      )
-    }
-    DreamRef.current.forEach((dream)=>{
-      floatingDream(dream, 60);
-    })
-    return ()=> {
-      tl && tl.kill();
-      // DreamGsap.current &&  DreamGsap.current.kill();
-    }
-
-  },[dream])
-
 
   const getLikes = () => {
           axios
@@ -104,7 +51,7 @@ import axios from 'axios';
             .then(res=>{    
               console.log(res.data);
               if(res.headers.accessToken){
-                dispatch(GetTokenAct(res.headers.accessToken));
+                dispatch(getTokenAct(res.headers.accessToken));
               }
               setDream(res.data.dream);
             })
@@ -112,57 +59,6 @@ import axios from 'axios';
               console.log(err);
             })
   }
-
-  function getWidth(){
-    if(window.innerWidth <= 960 && window.innerWidth > 425){
-      setWidth('midTablet');
-    }
-    if(window.innerWidth <= 425){
-      setWidth('mobile');
-    }
-    else if(window.innerWidth > 960){
-      setWidth('');
-    }
-  }
-
-  const handleLink = (e: React.MouseEvent ,link : string) => {
-    e.preventDefault();
-    return window.open(link);
-  }
-  const handlePosition = (index: number) => {
-    if(width === 'midTablet'){
-      quotient = (Math.floor(index / 2)) * 60;
-      if(index % 2 === 0){  
-        Xposition = 15;
-      
-      }else if(index % 2 === 1){
-        Xposition = 60;
-      }
-    }
-    else if(width === 'mobile'){
-      quotient = index * 60;
-      Xposition = 20;
-    }
-    else if(width === ''){
-      quotient = (Math.floor(index / 3)) * 60;
-      if(index % 3 === 0){  
-        Xposition = 15;
-      }else if(index % 3 === 1){
-        Xposition = 45;
-      }else if(index % 3 === 2){
-        Xposition = 75;
-      }
-    }
-    Yposition = quotient + (Math.floor(Math.random() * 10)) + 5
-    Position = [Xposition + '%', Yposition + '%'];
-    return Position;
-  }
-
-  const addToRefs = (el: HTMLDivElement) => {
-    if (el && !DreamRef.current.includes(el)) {
-      DreamRef.current.push(el);
-    }
-  };
 
   // 바깥 클릭시 드롭박스 없어지게
   const handleClickOutside = (e: MouseEvent) => {
@@ -301,7 +197,7 @@ import axios from 'axios';
       .then(res=>{
         console.log(res.data);
         if(res.headers.accessToken){
-          dispatch(GetTokenAct(res.headers.accessToken));
+          dispatch(getTokenAct(res.headers.accessToken));
         }
         const deleted = dream.filter(el=>{
           return el.dream_id !== id
@@ -313,6 +209,11 @@ import axios from 'axios';
       })
   }
 
+  const handleWidth = (arg: string) => {
+    if(arg){
+      setWidth(arg);
+    }
+  }
 
    return (
     <>
@@ -350,20 +251,14 @@ import axios from 'axios';
           </ ResponsiveRight >
         </ UpperSection>
         <DreamSection>
-        {dream && dream.map((res, idx) => {
-          const position = handlePosition(idx);
-          const [ x, y ] = position;
-          return (
-            <Dream ref={addToRefs} key={res.id} top={y} left={x}>
-              <Delete onClick={(e)=> handleDislike(e,res.dream_id)}/>
-              <DrContent onClick={(e)=> handleLink(e,res.url)}>
-                <DrTitle>{res.title}</DrTitle>
-                <Text>{res.content}</Text>
-              </DrContent>
-              <Date>{res.createdAt.split('T')[0].slice(2)}</Date>
-            </Dream>
-          )
-        })}
+          {dream.length === 0 
+            ?
+            <SingleDream header='좋아하는 꿈이 없습니다.'>
+              꿈 알아보기 페이지에서 하트 아이콘을 눌러 꿈을 저장할 수 있습니다.
+            </SingleDream>
+            :
+            <SingleDream data={dream} handleDislike={handleDislike} handleWidth={handleWidth}/>
+          }
         </DreamSection>
       </Container>
     </>
@@ -375,7 +270,7 @@ import axios from 'axios';
 const Container = styled.div`            
   ${props=> props.theme.flexColumn};
   height: 100%;
-  justify-content: relative;
+  justify-content: flex-start;
   overflow: auto;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
@@ -540,13 +435,6 @@ const ResponsiveLeft = styled.div`
   }
 `;
 
-{/* const RspCareHeader = styled(CareHeader)`
-  ${props=> props.theme.midTablet}{
-    width: 6.5rem;
-    display: flex;
-    padding: 0;
-  }
-`; */}
 const RspAllsearch = styled(Allsearch)`
   display: none;
   ${props=> props.theme.mobile}{
@@ -562,60 +450,4 @@ const DreamSection = styled.div`
     width: 100%;
     height: calc(100vh - 4.375rem - 5.5rem - 5.688rem);
     position: relative;
-`;
-const Dream = styled.div<{top: string; left: string;}>`
-  position: absolute;
-  ${props=> props.theme.flexColumn};
-  width: 17.063rem;
-  height: 17.063rem;
-  border-radius: 100%;
-  background: ${props=> props.theme.dream};
-  opacity: 0.9;
-  box-shadow: 0px 0px 30px 4px rgba(255, 207, 242, 0.5);
-  top: ${props=>props.top};
-  left: ${props=>props.left};
-  z-index: 50;
-  >svg {
-   display: none;
-   margin: 0;
-  }
-  :hover{
-    >svg {
-   display: block;
-   cursor: pointer;
-   fill: #DF899D;
-   /* margin-bottom: -1rem; //위치 나중 수정 */
-    }
-  }
-  @media only screen and (max-width: 1024px) and (min-width: 769px){ 
-    top: ${props=> `calc(${props.top} / 2 )`}; 
-    left: ${props=> `calc(${props.left} - 3rem )`}; 
-  }
-  @media only screen and (max-width: 768px) and (min-width: 600px){ 
-    top: ${props=> `calc(${props.top} / 1.3 )`}; 
-  }
-`;
-const DrContent = styled.div`
- ${props=> props.theme.flexColumn};
-  width: calc(100% - 2rem);
-  height: calc(100% - 6rem);
-  border-radius: 100%;
-  gap: 1.5rem;
-  text-align: center;
-  cursor: pointer;
-`;
-const DrTitle = styled.h5`
-  color: #494161;
-  padding-top: 1rem;
-  line-height: 1.1rem;
-  width: 90%;
-  font-weight: bold;
-`;
-const Text = styled.p`
-  color: #494161;
-  width: 100%;
-`;
-const Date = styled.p`
-  color: #a38a8a;
-  font-size: ${props=> props.theme.fontS};
 `;

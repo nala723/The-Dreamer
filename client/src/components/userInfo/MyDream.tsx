@@ -1,20 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import {useHistory} from 'react-router-dom';
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import SearchBar from '../reusable/SearchBar';
-import { GetTokenAct } from '../../actions';
+import { getTokenAct } from '../../actions';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../reducers';
 import { Buffer } from "buffer";
 import axios from "axios";
-import gsap from "gsap";
 import { ReactComponent as Delete } from '../../assets/delete-icon.svg';
-import PicModal from '../reusable/PicModal';
+import PictureModal from '../reusable/PictureModal';
 import Modal from '../reusable/Modal';
 import Calender from "../reusable/Calender";
-import { dummyDatas, dummyPics,emotionList } from '../../config/dummyDatas'; // 임시 더미
+import { emotionList } from '../../config/dummyDatas';
+import Dream from '../reusable/SingleDream';
 
-export interface PicInter {
+export interface PicInterface {
   id : number;
   title: string;
   picture: string;
@@ -26,25 +26,23 @@ function MyDream() {
   const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const [ isOpen, setIsOpen ] = useState(false);
   const [ picOpenModal, setPicOpenModal ] = useState(false);
-  const [ openedPic, setOpenedPic ] = useState<PicInter | null>(null);
+  const [ openedPic, setOpenedPic ] = useState<PicInterface | null>(null);
   const [ options, setOptions ] = useState<string[]>([]);
   const [ input, setInput ] = useState('');
   const [ selected, setSelected ] = useState(-1);
   const [ hasText, sethasText ] = useState(false);
-  // const [ myPic, setMyPic ] = useState<PicInter[]>(dummyPics); // ([]) 임시 더미
-  const [ myPic, setMyPic ] = useState<PicInter[]>([]); // ([]) 임시 더미
-  const [ sortPic, setSorPic ] = useState<{
-    latestPic: boolean, selectPic: string[], sortEmotion : string
+  const [ myPic, setMyPic ] = useState<PicInterface[]>([]); 
+  const [ sortPic, setSortPic ] = useState<{
+    latest: boolean, selectDate: string[], sortEmotion : string
   }>({ 
-    latestPic: false, selectPic: [], sortEmotion : ''
+    latest: false, selectDate: [], sortEmotion : ''
   });
-  const [width, setWidth] = useState('');
+  const [ width, setWidth ] = useState('');
   const history = useHistory();
   const dispatch = useDispatch();
   const clickRef = useRef<any | null>(null);
 
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
-  console.log('렌더링',sortPic, myPic )
   useEffect(() => {
     // getPictures(); // 임시 주석
     document.addEventListener('click',handleClickOutside);
@@ -65,12 +63,9 @@ function MyDream() {
     }
   }
 
-
   useEffect(()=>{
-    // if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
       getPictures();
-    // }
-  },[sortPic])  // 더미용
+  },[sortPic]) 
 
   const getPictures = () => {
       axios
@@ -81,7 +76,8 @@ function MyDream() {
         })
         .then((res)=>{
           if(res.headers.accessToken){
-            dispatch(GetTokenAct(res.headers.accessToken));
+            dispatch(getTokenAct(res.headers.accessToken));
+            console.log('?', res.headers.accessToken)
             }
           if(res.status === 200){
               const data = (res.data.arr).map((re: any)=>{
@@ -91,7 +87,7 @@ function MyDream() {
                 // 밑에 렌더링할때 날짜 문자열 자름 처리한것 수정 (위에서 이미 처리햇으므로)
                 return re;
               })
-              if(sortPic.latestPic || sortPic.selectPic.length > 0 || sortPic.sortEmotion){
+              if(sortPic.latest || sortPic.selectDate.length > 0 || sortPic.sortEmotion){
                 return handleSortPic(data);
               }
               setMyPic(data);
@@ -115,7 +111,7 @@ function MyDream() {
     if(search === ''){
       setIsOpen(true);
       return;
-    } 
+    }
   // 정규식으로 괄호 제거
    search = search.replace(/[[(){}]/gi,'') 
    const regex =  new RegExp(search,'gi');
@@ -150,7 +146,8 @@ function MyDream() {
     setInput(clickedOption);   
     handleSearch(clickedOption);
   };
-  const handleKeyUp = (event : React.KeyboardEvent) => {
+
+  const handleKeyUp = useCallback((event : React.KeyboardEvent) => {
     event.preventDefault();
     if (
       event.getModifierState("Fn") ||
@@ -179,10 +176,11 @@ function MyDream() {
         setSelected(-1);
       }
     }
-  };
+    console.log('hh', selected)
+  },[selected, options]);
   // 전체 목록 조회
   const handleAllsearch = () => {
-    setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: ''});
+    setSortPic({...sortPic, latest: false, selectDate: [], sortEmotion: ''});
   }
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
@@ -195,7 +193,7 @@ function MyDream() {
       })
       .then((res)=>{
         if(res.headers.accessToken){
-          dispatch(GetTokenAct(res.headers.accessToken));
+          dispatch(getTokenAct(res.headers.accessToken));
           }
         if(res.status === 200){
           getPictures();
@@ -215,32 +213,32 @@ function MyDream() {
       if (arg === 'oldest'){
           // getPictures();
         // setMyPic(dummyPics);
-        setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: ''});
+        setSortPic({...sortPic, latest: false, selectDate: [], sortEmotion: ''});
       }
       else if (arg === 'latest'){
-        setSorPic({...sortPic, latestPic: true, selectPic: [], sortEmotion: ''});
+        setSortPic({...sortPic, latest: true, selectDate: [], sortEmotion: ''});
       }
       else{
-        setSorPic({...sortPic, latestPic: false, selectPic: [], sortEmotion: arg});
+        setSortPic({...sortPic, latest: false, selectDate: [], sortEmotion: arg});
       }
     }
     else if (typeof arg === 'object'){
-      setSorPic({...sortPic, latestPic: false, selectPic: arg, sortEmotion: ''});
+      setSortPic({...sortPic, latest: false, selectDate: arg, sortEmotion: ''});
     }
     // getPictures();
   }
 
-  let newState :PicInter[];
+  let newState: PicInterface[];
   
-  const handleSortPic = (data: PicInter[]) => {
-    if(sortPic.latestPic && sortPic.selectPic.length <= 0 && !sortPic.sortEmotion){
+  const handleSortPic = (data: PicInterface[]) => {
+    if(sortPic.latest && sortPic.selectDate.length <= 0 && !sortPic.sortEmotion){
       newState = [...data]
       newState = newState.reverse()
-    }else if(sortPic.selectPic.length > 0 && !sortPic.latestPic && !sortPic.sortEmotion){
+    }else if(sortPic.selectDate.length > 0 && !sortPic.latest && !sortPic.sortEmotion){
       newState = data.filter((el: any)=>{
-        return (sortPic.selectPic.includes(el.createdAt))
+        return (sortPic.selectDate.includes(el.createdAt))
       })
-    }else if(sortPic.sortEmotion && !sortPic.latestPic && sortPic.selectPic.length <= 0){
+    }else if(sortPic.sortEmotion && !sortPic.latest && sortPic.selectDate.length <= 0){
       newState = data.filter((el: any)=>{
         return (sortPic.sortEmotion === el.emotion)
       })
@@ -253,7 +251,7 @@ function MyDream() {
     setIsOpen(false)
   }
 
-  const handlePicOpen = (pic:  PicInter) => {
+  const handlePicOpen = (pic: PicInterface) => {
     setOpenedPic(pic);
     setPicOpenModal(true);
   }
@@ -265,12 +263,12 @@ function MyDream() {
   return (
     <Container>
       {isOpen && <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>}
-      {openedPic && picOpenModal && <PicModal handleClick={handlePicClose} pic={openedPic}/>}
+      {openedPic && picOpenModal && <PictureModal handleClick={handlePicClose} picture={openedPic.picture}/>}
        <Title><h1>내가 그린 꿈</h1></Title>
        <UpperSection>
          <ResponsiveLeft>
             <Calender title={width? '날짜별' : '날짜별 보기'} updateMenu={updateMenu}/>
-            <Calender title={width? '종류별' : '종류별 보기'} emo='emotion' updateMenu={updateMenu}/>
+            <Calender title={width? '종류별' : '종류별 보기'} emotion='emotion' updateMenu={updateMenu}/>
             <RspAllsearch onClick={handleAllsearch} >
               <h5>전체보기</h5>
             </RspAllsearch > 
@@ -294,22 +292,27 @@ function MyDream() {
             ) : null}
             </SearchSection>
             <Allsearch onClick={handleAllsearch}>
-            <h5>전체보기</h5>
+              <h5>전체보기</h5>
             </Allsearch>
         </ResponsiveRight>   
        </ UpperSection>   
        <DreamSection>
+       {!myPic.length ? 
+        <Dream header='그린 꿈이 없습니다.' gallery='gallery'>
+          꿈 그리기 페이지에서 꿈을 그려주세요.
+        </Dream>
+        :
          <CardBox>
-           {myPic.map((pic)=>{
+           { myPic.map((pic)=>{
              return(
                <Card key={pic.id}>
-                 <CardDiv onClick={()=> handlePicOpen(pic)}>
+                 <Picture onClick={()=> handlePicOpen(pic)}>
                    <div>
                     <Delete onClick={(e)=> handleDislike(e,pic.id)}/>
                      <p>{pic.createdAt}</p>
                    </div>
                   <img src={pic.picture} alt='pic' />
-                 </ CardDiv>
+                 </ Picture>
                  <Content>
                    <p>{pic.title}</p>
                    {emotionList.map((el)=>{
@@ -323,6 +326,7 @@ function MyDream() {
              )
            })}
         </CardBox>
+        }
        </DreamSection>   
     </Container>
   );
@@ -423,11 +427,10 @@ const SearchSection = styled.div`
   }
 `;
 
-
 const DropDownContainer = styled.ul`
   background-color: ${props=> props.theme.transp};
   display: block;
-  width: 34.438rem;
+  width: 100%;
   position: absolute;
   margin-left: auto;
   margin-right: auto;
@@ -437,13 +440,13 @@ const DropDownContainer = styled.ul`
   margin-inline-start: 0px;
   margin-inline-end: 0px;
   padding-inline-start: 0px;
-  color: ${props=> props.theme.reverse};
+  color: #494161;
   top: 71px;
   padding: 0.5rem 0;
   border: none;
   border-radius: 0 0 1rem 1rem;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  z-index: 3;
+  z-index: 95;
   > li {
     padding: 0 1rem;
     &:hover {
@@ -453,6 +456,12 @@ const DropDownContainer = styled.ul`
       background-color: grey;
     }
   }
+  ${props=> props.theme.midTablet}{
+    top: 50px;
+  } 
+  ${props=> props.theme.mobile}{
+    top: 59px;
+  } 
 `;
 
 const Allsearch = styled.div`
@@ -550,7 +559,7 @@ const Card = styled.div`
   
 
 `;
-const CardDiv = styled.div`
+const Picture = styled.div`
     width: 100%;
     height: 80%;
     background-color: white;

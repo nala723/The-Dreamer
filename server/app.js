@@ -7,7 +7,7 @@ const signRouter = require("./routers/sign");
 const mypageRouter = require('./routers/mypage');
 const pictureRouter = require('./routers/picture');
 const socialRouter = require('./routers/social');
-const port = 80;
+const port = process.env.NODE_ENV === "production" ? 8080 : 80;
 
 global.__basedir = __dirname;
 

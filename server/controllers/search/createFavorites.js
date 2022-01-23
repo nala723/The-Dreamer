@@ -8,10 +8,17 @@ module.exports = async (req, res) => {
     if (!authorization) {
       res.status(401).json("invalid token");
     } else {
-      const accessToken = authorization.split(" ")[1];
-      if(isAuthorized(accessToken) === 'jwt expired'){
-        res.set('accessToken', remakeToken(req));
+      let accessToken = authorization.split(' ')[1];
+    
+      function checkAuthorizaed() {
+          if(isAuthorized(accessToken) === 'jwt expired'){
+          accessToken = remakeToken(req)
+          res.set('accessToken', accessToken); 
+        return accessToken
+        }
       }
+      accessToken = checkAuthorizaed();
+
       const userData = isAuthorized(accessToken);
       const userId = userData.id;
       if (!userId) {
@@ -23,7 +30,7 @@ module.exports = async (req, res) => {
             url: url,
             title: title,
             content: content
-          }) // 정보가 있다면 - 이미 같은 유저가 추가했는지 //-> async 쪽 다시 공부.. ->여기가 문제 만들고 밑으로 내려갈수있도록 이어야
+          }) // 정보가 있다면 - 이미 같은 유저가 추가했는지 
           if(createDream){
             const userLikeDream = await User_like_dream.create({ // dream 레코드 추가했다면 userlikedrea 조인레코드 추가
                 user_id: userId,

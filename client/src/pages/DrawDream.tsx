@@ -2,13 +2,14 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import styled, {css} from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { GetTokenAct } from '../actions';
+import { getTokenAct } from '../actions';
 import { RootState } from '../reducers';
 import { colors, cursors } from '../config/dummyDatas';
 import { Buffer } from 'buffer';
 import axios from 'axios';
 import Modal from '../components/reusable/Modal';
 import { emotionList } from '../config/dummyDatas';
+import { ReactComponent as Arrow} from '../assets/arrow.svg';
 import { ReactComponent as Soso } from '../assets/face-soso.svg';
 import { ReactComponent as Wink } from '../assets/face-wink.svg';
 import { ReactComponent as Happy } from '../assets/face-happy.svg';
@@ -51,7 +52,8 @@ function DrawDream({ width, height }: CanvasProps) {
     clearCanvas();
   },[])
   
-  const handleColor = (e : React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+  // 색 선택
+  const handleColor = (e : React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     const newColor = (e.target as HTMLDivElement).style.backgroundColor;
     setSelectColor(newColor);
@@ -60,12 +62,14 @@ function DrawDream({ width, height }: CanvasProps) {
       setBrush(true);
     }
   }
+
   // 굵기 조절
-  const handleBrushW = (e: any)  => {
-    setLineWeight(e.target.value);
+  const handleLineWeight = (e: React.ChangeEvent<HTMLInputElement>)  => {
+    setLineWeight(e.target.valueAsNumber); // 새롭게 알았다?
   }
 
-  const handleBrush = (e: React.MouseEvent<HTMLInputElement, MouseEvent>): void => {
+  // 브러쉬 선택
+  const handleBrush = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     e.preventDefault();
     setEraser(false);
     setFill(false);
@@ -74,7 +78,7 @@ function DrawDream({ width, height }: CanvasProps) {
   }
 
   // 지우기
-  const handleErase = (e: React.MouseEvent<HTMLInputElement, MouseEvent>): void => {
+  const handleErase = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     e.preventDefault();
     setEraser(true);
     setBrush(false);
@@ -90,7 +94,7 @@ function DrawDream({ width, height }: CanvasProps) {
     setCursor(cursors[2]);
   }
  
-  // 그림 서버 저장
+  // 그림 서버에 저장 (post 요청)
   const handleSave = async(e: React.MouseEvent<HTMLInputElement>) => {
     if(!canvasRef.current){
       return;
@@ -129,10 +133,10 @@ function DrawDream({ width, height }: CanvasProps) {
       })
       .then(res=>{
         if(res.headers.accessToken){
-            dispatch(GetTokenAct(res.headers.accessToken));
+            dispatch(getTokenAct(res.headers.accessToken));
         }
         if(res.status === 200){
-          handleClick()
+          confirmModal()
         }else{
           console.log(res.data.message)
         }
@@ -151,16 +155,21 @@ function DrawDream({ width, height }: CanvasProps) {
     link.click();
   }
 
-  const handleClick = ()=> {
+  // 파일 요청 후 확인 모달
+  const confirmModal = ()=> {
     setOpen(!open);
     clearCanvas();
+    setTitle('');
+    setEmotion(emotionList[2].name);
   } 
-
+ 
+  // 에러 발생 시 모달
   const handleErr = ()=> {
     setErrOpen(!errOpen);
   } 
-
- const handleOkDown = (arg: any) => {
+ 
+  // 가입 유저일 때, 파일 다운받기 선택 시
+ const handleOkDown = (arg: boolean) => {
     if(arg === true){
       if(!canvasRef.current){
         return;
@@ -181,11 +190,10 @@ function DrawDream({ width, height }: CanvasProps) {
     return {
       x: e.offsetX, 
       y: e.offsetY  
-      // x: e.pageX - canvas.offsetLeft, //pageX,~Y : 전체문서를 기준으로 한 마우스 클릭 좌표
-      // y: e.pageY - canvas.offsetTop  // offsetX,Y : 좌표React.MouseEvent<HTMLDivElement, MouseEvent>를 출력하도록 하는 이벤트가 걸려있는 DOM node 기준으로 좌표표시
     }
   }
 
+  // 좌표 얻어서 그리기 시작
   const startPaint = useCallback((e:MouseEvent) => {
     const coordinates = getCoordinates(e);
     if (coordinates) {
@@ -193,7 +201,6 @@ function DrawDream({ width, height }: CanvasProps) {
       setMousePosition(coordinates); 
     }
   },[]);
-
 
   // canvas에 선을 긋는 함수
   const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate) => { 
@@ -208,7 +215,6 @@ function DrawDream({ width, height }: CanvasProps) {
       context.current.lineWidth = lineWeight;
         if(eraser){
           canvas.style.cursor = cursors[1];
-          // context.clearRect(newMousePosition.x-context.lineWidth/2, newMousePosition.y-context.lineWidth/2, context.lineWidth, context.lineWidth)
           context.current.strokeStyle = 'white'; 
         }
         else if(brush){
@@ -237,10 +243,12 @@ function DrawDream({ width, height }: CanvasProps) {
     }
   },[isPainting, mousePosition]);
 
+  // 그리기 종료
   const exitPaint = useCallback(() => {
     setIsPainting(false);
   },[]);
 
+  // 캔버스 색 채우기
   const fillCanvas =(()=>{
     if(!canvasRef.current){
       return;
@@ -256,6 +264,7 @@ function DrawDream({ width, height }: CanvasProps) {
     }
   })
 
+  // 캔버스 지우기
   const clearCanvas = useCallback(() => {
     if (!canvasRef.current) {
       return;
@@ -370,12 +379,12 @@ function DrawDream({ width, height }: CanvasProps) {
   return (
     <Container>
       {errOpen && <Modal handleClick={handleErr}>그림, 제목, 오늘의 꿈 타입 선택을 모두 완료해주세요.</Modal>}
-      {open && <Modal handleClick={handleClick} handleSignOut={handleOkDown}>그림이 저장되었습니다. <br></br>파일을 다운로드하시겠어요? </Modal>}
+      {open && <Modal handleClick={confirmModal} handleSignOut={handleOkDown}>그림이 저장되었습니다. <br></br>파일을 다운로드하시겠어요? </Modal>}
       <Title>
         <h1>당신의 꿈을 그림으로 남겨보세요.</h1>
       </Title>
       <Dream>
-        <DrInner>
+        <DreamInner>
           <UpperBox slider={textSlider}>
               <InputBox>
                 <h5>제목 : </h5>
@@ -391,9 +400,7 @@ function DrawDream({ width, height }: CanvasProps) {
               </Emotions>
               <h5>{getDaytoYear()}</h5>
             </TextBox>
-            <svg onClick={()=> setTextSlider(!textSlider)} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            <Arrow onClick={()=> setTextSlider(!textSlider)}/>
           </UpperBox>
           <Canvas ref={canvasRef} height={height} width={width} style={{cursor : `${cursor}`}}/> 
           <ToolBox onClick={()=> setPaletteSlider(!paletteSlider)} slider={paletteSlider}>
@@ -406,7 +413,7 @@ function DrawDream({ width, height }: CanvasProps) {
             </Palette>
             <ButtonBox>
               <UpperBtn>
-                <LineWeight type='range' min='1.0' max='40.0' value={lineWeight} step='1.0' onChange={(e) => handleBrushW(e)}/>
+                <LineWeight type='range' min='1.0' max='40.0' value={lineWeight} step='1.0' onChange={(e) => handleLineWeight(e)}/>
                 <Icon type='image' src='/images/new-icon.svg' alt='new' onClick={clearCanvas}/>
                 <Icon type='image' src='/images/save-icon.svg' alt='save' onClick={handleSave}/>
               </UpperBtn>
@@ -416,11 +423,9 @@ function DrawDream({ width, height }: CanvasProps) {
                 <Icon type='image' src='/images/brush-icon.svg' alt='brush' onClick={(e) => handleBrush(e)}/>
               </LowerBtn>
             </ButtonBox>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>  
+            <Arrow />
           </ToolBox>
-        </DrInner>
+        </DreamInner>
       </Dream>
     </Container>  
   );
@@ -490,7 +495,7 @@ const Dream = styled.div`
   overflow: hidden;
   z-index: 50;
 `;
-const DrInner = styled.div`
+const DreamInner = styled.div`
 ${props=> props.theme.midTablet}{
   width: 100%;
   height: 95%;

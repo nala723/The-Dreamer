@@ -16,7 +16,6 @@ const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const Landing = lazy(() => import('./pages/Landing'));
 const DrawDream = lazy(() => import('./pages/DrawDream'));
-const Horoscope = lazy(() => import('./pages/Horoscope'));
 const SearchDream = lazy(() => import('./pages/SearchDream'));
 const MyPage = lazy(() => import('./pages/MyPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -38,7 +37,6 @@ function App() {
               <Route exact path="/" component={Landing} />
               <Route path="/searchdream" component={SearchDream} />
               <Route path="/drawdream" component={DrawDream} />
-              <Route path="/horoscope" component={Horoscope} />
               <Route path="/login" component={Login} />
               <Route path="/signup" component={SignUp} />
               <Route path="/mypage" component={MyPage} />

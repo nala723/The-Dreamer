@@ -14,12 +14,11 @@ const GET_NEW_TOKEN = "GET_NEW_TOKEN" as const;
 
 const LIKE_DREAM = 'LIKE_DREAM' as const;
 const DISLIKE_DREAM = 'DISLIKE_DREAM' as const;
-
 const REMOVE_DREAM = 'REMOVE_DREAM' as const;
 
 // 액션 생성함수 선언
 
-export const SearchDreamAct = (data: string) =>  { 
+export const searchDreamAct = (data: string) =>  { 
     return async (dispatch: Dispatch<Action>) => {
         dispatch({
             type: SEARCH_DREAM,
@@ -58,60 +57,59 @@ export const SearchDreamAct = (data: string) =>  {
                 console.log('errr');
                 console.dir(err);
             }
-
         }
     }
 }
 
-export const SignInAct = (data: UserInfo) => {
+export const signInAct = (data: UserInfo) => {
     return {
         type: USER_INFO,
         payload: data
     }
 }
 
-export const GetTokenAct = (data: string) => {
+export const getTokenAct = (data: string) => {
     return {
         type: GET_NEW_TOKEN,
         payload: data
     }
 }
 
-export const EditUserAct = (data : {username: string, profile: string, email: string})=> {
+export const editUserAct = (data : {username: string; profile: string; email: string;})=> {
     return {
         type: USER_EDIT_INFO,
         payload: data
     }
 }
 
-export const WithDrawlAct = (data: UserInfo)=> {
+export const withDrawlAct = (data: UserInfo)=> {
     return {
         type: WITHDRAWL,
         payload: data
     }
 }
 
-export const LikeDrmAct = (data: Data[]) => {
+export const likeDrmAct = (data: Data[]) => {
     return {
         type: LIKE_DREAM,
         payload: data
     }
 }
 
-export const DisLikeDrmAct = (data: number)=> {
+export const disLikeDrmAct = (data: number)=> {
     return {
         type: DISLIKE_DREAM,
         payload: data
     }
 }
 
-export const RemoveDrmAct = () => {
+export const removeDrmAct = () => {
     return {
         type: REMOVE_DREAM
     }
 }
 
-export interface Data { // 나중에 필요할지도! 일단 kipppp
+export interface Data {
     [index: string] : any
     description: string;
     link: string;
@@ -119,7 +117,7 @@ export interface Data { // 나중에 필요할지도! 일단 kipppp
     id?: number;
 }
 
-interface UserInfo { // 나중에 필요할지도! 일단 kipppp
+interface UserInfo { 
     accessToken: string;
     email: string;
     username: string;
@@ -129,15 +127,16 @@ interface UserInfo { // 나중에 필요할지도! 일단 kipppp
 
 // 모든 액션 겍체들에 대한 타입을 준비해줍니다.
 // ReturnType<typeof _____> 는 특정 함수의 반환값을 추론해줍니다
-// 상단부에서 액션타입을 선언 할 떄 as const 를 하지 않으면 이 부분이 제대로 작동하지 않습니다.
 
 interface SearchDrm_Action {
     type: typeof SEARCH_DREAM,
 }
+
 interface SearchDrmSuccess_Action {
     type: typeof SEARCH_DREAM_SUCCESS,
     payload: Data[],
 }
+
 interface SearchDrmErr_Action {
     type: typeof SEARCH_DREAM_ERROR,
     payload: string,
@@ -147,16 +146,15 @@ type Action =
     | SearchDrm_Action
     | SearchDrmSuccess_Action
     | SearchDrmErr_Action
-    | ReturnType<typeof SignInAct>
-    | ReturnType<typeof GetTokenAct>
-    | ReturnType<typeof EditUserAct>
-    | ReturnType<typeof WithDrawlAct>
-    | ReturnType<typeof LikeDrmAct>
-    | ReturnType<typeof DisLikeDrmAct>
-    | ReturnType<typeof RemoveDrmAct>
+    | ReturnType<typeof signInAct>
+    | ReturnType<typeof getTokenAct>
+    | ReturnType<typeof editUserAct>
+    | ReturnType<typeof withDrawlAct>
+    | ReturnType<typeof likeDrmAct>
+    | ReturnType<typeof disLikeDrmAct>
+    | ReturnType<typeof removeDrmAct>
 
 // 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
-
 type ActionState = {
     search: {
         loading: boolean,
@@ -172,8 +170,6 @@ type ActionState = {
     },
     dream: Data[];
 }
-//임시로 리덕스로.. 나중에 서버랑 연결해주자..이렇게 하면 다른 아이디로 해도 남아있을듯
-//혹은 로그인 로그아웃시 없어지거나
 
 // 초기상태를 선언합니다.
 const initialState: ActionState = {
@@ -192,9 +188,7 @@ const initialState: ActionState = {
     dream: [],
 };
 
-// 리듀서를 작성합니다.
-// 리듀서에서는 state 와 함수의 반환값이 일치하도록 작성하세요.
-// 액션에서는 우리가 방금 만든 CounterAction 을 타입으로 설정합니다.
+// 리듀서
 export function searchReducer (state: ActionState = initialState, action: Action): ActionState {
     switch (action.type) {
         case SEARCH_DREAM:
@@ -220,7 +214,7 @@ export function searchReducer (state: ActionState = initialState, action: Action
                             }
                         }else{
                             return el
-                        }  
+                            }  
                         }), error: null}
             })
         case DISLIKE_DREAM:
@@ -239,6 +233,7 @@ export function searchReducer (state: ActionState = initialState, action: Action
             return state;
     }
 }
+
 export function usersReducer (state: ActionState = initialState, action: Action): ActionState {
     switch (action.type) {
         case USER_INFO:

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { SignInAct } from '../actions';
+import { signInAct } from '../actions';
 import { RootState } from '../reducers';
 import { GoogleLogin } from 'react-google-login';
 import {useHistory} from 'react-router-dom';
@@ -47,16 +47,17 @@ function Login(){
         password: loginInfo.Password
         })
       .then((res)=>{
-        if(res.status === 401){
-          setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
-        }else if(res.status === 200){
-          dispatch(SignInAct(res.data))
+          res.data.profile = (typeof res.data.profile !== 'object' && typeof res.data.profile === 'string') ?
+          res.data.profile : "data:image/png;base64, " + Buffer.from(res.data.profile, 'binary').toString('base64');   
+          dispatch(signInAct(res.data))
           history.push('./searchdream')
-        }
       })
       .catch((err)=>{
-        setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
-        console.log(err)
+        if(err.response.status === 401){
+          setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
+        }else {
+          history.push('/notfound');
+        }
       })  
   }
 
@@ -64,7 +65,7 @@ function Login(){
   const naverLogin = async() => {
     const loginId = await new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_ID,
-      callbackUrl: 'http://localhost:3000/login',
+      callbackUrl: 'http://localhost:3000/login', // 나중 수정
       isPopup: false,
       loginButton: { color: 'green', type: 3, height: 40},
       callbackHandle: true
@@ -74,9 +75,8 @@ function Login(){
     loginId.getLoginStatus(function (status: any) {
       if (status) {
         const email = loginId.user.email // 필수로 설정할것을 받아와 아래처럼 조건문을 줍니다.
-        const username = loginId.user.name
+        const username = loginId.user.nickname
         const profile = loginId.user.profile_image
-
          if( !email  || !username ) {
           alert("필수 정보제공에 동의해주세요.");
           loginId.reprompt();
@@ -105,10 +105,8 @@ function Login(){
         })
         .then((res)=>{
           if(res.status === 200){
-            dispatch(SignInAct({isSocial: true, profile: profile,...res.data}))
+            dispatch(signInAct({isSocial: true, profile: profile,...res.data}))
             history.push('./searchdream')
-          }else{
-            history.push('./notfound')
           }
         })
         .catch(err=>{
@@ -116,17 +114,11 @@ function Login(){
           history.push('./notfound')
         })
     }
-    // window.location.href.includes('access_token') && GetUser();
-    // function GetUser() {
-    //   const location = window.location.href.split('=')[1];
-    //   const token = location.split('&')[0];
-    // } 
+
+  // 네이버 버튼 커스텀 - 클릭시 naverRef.current의 첫번째 chileren에 click이벤트 할당
   const handleNaverBtn = () => {
     naverRef.current && (naverRef.current.children[0] as HTMLElement).click();
   } 
-  // const customStyle = {
-  //   borderRadius : "10px",
-  // }
     
   return (
     <Container>

@@ -2,9 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import gsap from 'gsap';
 
-function Modal(props: { 
-  handleClick: (e?: React.MouseEvent )=>void; children: any; handleSignOut?: (arg0 :boolean)=>void; header?: string;}) {
-  // 모달 좀더 제목이랑 내용 구분?
+interface ModalProps {
+  handleClick: (e?: React.MouseEvent)=>void; 
+  children: any; 
+  handleSignOut?: (arg0 :boolean)=>void; 
+  header?: string;
+}
+
+function Modal(props: ModalProps) {
+ 
   const backRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const timeLineRef = useRef<gsap.core.Timeline>();
@@ -27,8 +33,8 @@ function Modal(props: {
     })
   },[])
 
-  
-    const {  handleClick, children, handleSignOut, header } = props;
+  const {  handleClick, children, handleSignOut, header } = props;
+
     return (
         <Background ref={backRef}> 
           <ModalSection
@@ -63,7 +69,7 @@ function Modal(props: {
         </Background>
   );
 }
-export default Modal;
+export default React.memo(Modal);
 
 
 /* 모달 */
@@ -95,8 +101,8 @@ const ModalSection = styled.div<{size: string;}>`
   box-shadow: 0 0 2.5rem rgba(58, 53, 54, 0.3);
   z-index:999;
   ${props=> props.theme.mobile}{
-    width: 90vw;
-    height: calc(${props=> props.size ? props.size : '19.625rem'} / 1.15 );
+    width: 85vw;
+    height: calc(${props=> props.size ? '18.5rem' : '17rem'} / 1.15 );
   }
 `;
 const ModalTitle = styled.div`
@@ -141,7 +147,9 @@ const Content = styled.div<{size: string;}>`
   ${props=> props.theme.mobile}{
     padding-top: 0;
     justify-content: center;
-    height:  ${props=> props.size ? '54%' : '47%'};
+    height: 100%;
+    font-size: 21px;
+    padding-bottom: 0.5rem;
     >p{
       width: 90%;
       margin-top: 0.7rem;
@@ -173,5 +181,11 @@ const OkBtn = styled.div<{signout : string;}>`
       transition: all 0.3s ease-in-out;
     }
   }
-  
+  ${props=> props.theme.mobile}{
+    padding-bottom: 2rem;
+    >button{
+      width: 6.6rem;
+      height: 2.2rem;
+    }
+    }
 `;

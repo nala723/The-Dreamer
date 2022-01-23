@@ -29,17 +29,11 @@ module.exports = async (req, res) => {
           id : userid
         }
       });
+      
       res.status(200).json({message : 'ok'})
-      // .then((res)=> {
-      //   res.status(200).json({message : 'ok'})
-      // })
-      // .catch(err => {
-      //   res.status(500).send(err)
-      // })
     }
   } catch (error) {
-    console.log(error,'errrrrrrrr');
-    // res.status(500).send(error);
+    res.status(500).send(error);
  }
 };
   

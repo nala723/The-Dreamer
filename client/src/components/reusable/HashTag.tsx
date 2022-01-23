@@ -6,14 +6,14 @@ import { darkTheme } from '../../styles/theme';
 
 function HashTag({handleSearch}: { handleSearch:(search: string)=>void; }) {
   const openRef = useRef(null);
-  const openRefTl = useRef<gsap.core.Timeline>();
+  const openRefTimeline = useRef<gsap.core.Timeline>();
   const menuRef = useRef<(HTMLLIElement | HTMLDivElement)[]>([]);
   menuRef.current = [];
 
   useEffect(()=>{
     gsap.set(openRef.current, { height: 'auto', opacity: 1}) // 메뉴박스 세팅
     
-    openRefTl.current = gsap.timeline() //  타임라인 객체를 open~에 저장
+    openRefTimeline.current = gsap.timeline() //  타임라인 객체를 open~에 저장
       .to(menuRef.current, { 
          stagger: 0.1,
          opacity: 1,
@@ -22,13 +22,13 @@ function HashTag({handleSearch}: { handleSearch:(search: string)=>void; }) {
       .reverse();
 
       return () =>  { 
-          openRefTl.current && openRefTl.current.kill();
+          openRefTimeline.current && openRefTimeline.current.kill();
         } 
   },[]);  
 
 const handleOpen = () => {
-    if(openRefTl.current){
-        openRefTl.current.reversed(!openRefTl.current.reversed());
+    if(openRefTimeline.current){
+        openRefTimeline.current.reversed(!openRefTimeline.current.reversed());
       }
 }    
 
@@ -48,7 +48,7 @@ const addStagerRef = (el: HTMLLIElement | HTMLDivElement | null) => {
   );
 }
 
-export default HashTag;
+export default React.memo(HashTag);
 
 
 const HashSection = styled.div`

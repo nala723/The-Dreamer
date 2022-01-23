@@ -3,12 +3,11 @@ import styled from 'styled-components';
 import gsap from "gsap";
 import { useHistory } from 'react-router-dom';
 import {  useDispatch } from 'react-redux';
-import { SearchDreamAct } from '../../actions';
+import { searchDreamAct } from '../../actions';
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AOS from 'aos';
 import 'aos/dist/aos.css'; 
 import SearchBar from '../reusable/SearchBar';
-
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,10 +16,8 @@ function SecondSection() {
   const history = useHistory();
   const mainRef = useRef(null);
   const textBoxRef = useRef<HTMLDivElement[]>([]);
-  const SecondRef = useRef(null)
+  const secondRef = useRef(null)
   const circleRef = useRef(null);
-  // const GifBoxRef = useRef(null); 
-  // const gifRef = useRef(null);
   textBoxRef.current = [];
 
   useEffect(() => {
@@ -28,35 +25,35 @@ function SecondSection() {
       duration: 1000,
       once: false
     });
-    gsap.set(mainRef.current, {
-      height: `${(textBoxRef.current.length - 1) * 100}vh` //여기 때문에 타임라인 나누기 안됬을수도? 
-    });
-    gsap.set(SecondRef.current, {
-      height: `150rem` //여기 때문에 타임라인 나누기 안됬을수도? 
-    });
-    const tl = gsap.timeline();
-    // 시작과 끝 타임라인을 길게 하고 싶은데 duration이 잘 안된다. 길이를 길게 해봐도.. -> 알고보니 길이는 충분,
-    // 두번째 방법으로도 글자 나오게 해보기 시간날때
 
-    //타임라인으로 잇는 방법으로 다시 해보기(코드 줄이기,정리)
+    gsap.set(mainRef.current, {
+      height: `${(textBoxRef.current.length - 1) * 100}vh`
+    });
+
+    gsap.set(secondRef.current, {
+      height: `150rem`
+    });
+
+    const wordTimeline = gsap.timeline();
 
     const hide = (index: number) => {
-      if (index === 0) {
-        tl.fromTo(
+      if (index === 0) { // 인덱스 0 일때는 나타났다가 사라지게
+        wordTimeline.fromTo(
           textBoxRef.current[index],
           { opacity: 0 },
           { opacity: 1, duration: 1} 
         );
       }
-      tl.fromTo(
+      wordTimeline.fromTo(
         textBoxRef.current[index],
         { opacity: 1, y: 0 },
         { opacity: 0, y: -100, duration: 1, delay: 0.1 },
-         ">" // 그냥 이것만 했더니 시작부분 오래떠있게됨!
+         ">" //- The end of the previous animation**. Think of > as a pointer to the end of the previous animation.
       );
     };
+
     const show = (index: number) => {
-      tl.fromTo(
+      wordTimeline.fromTo(
         textBoxRef.current[index],
         { opacity: 0 },
         { opacity: 1, duration: 1, delay: 0.1 }, 
@@ -67,7 +64,7 @@ function SecondSection() {
       }
     };
 
-    textBoxRef.current.forEach((_, index) => {
+    textBoxRef.current.forEach((_, index) => { // 첫번째 섹션은 그냥 hide하고
       if (index === 0) {
         hide(index);
       } else if (index === 1) {
@@ -81,60 +78,36 @@ function SecondSection() {
     textBoxRef.current.forEach((pannel, i) => {
       ScrollTrigger.create({
         trigger: mainRef.current,
-        animation: tl,
+        animation: wordTimeline,
         start: "top top",
         end: "+=6500", 
         scrub: 1,
         pin: true,
         pinSpacing: false,
-        // markers: true
       });
     });
-    const tl2 = gsap.timeline({
+
+    const circleTimeline = gsap.timeline({
       scrollTrigger: {
-        trigger: SecondRef.current,
+        trigger: secondRef.current,
         start: "top top",
         end: "+=3300", 
         scrub: 1,
         pin: true,
         pinSpacing: false,
-        // markers: true
       }
     })
-    tl2.fromTo(circleRef.current,
+    circleTimeline.fromTo(circleRef.current,
       { scale: 0.5 , opacity: 0,},
       { scale: 20,  opacity: 1, ease: "circ.inOut"
       ,duration: 3, }
       )
-      // .fromTo(circleRef.current,{scale: 20,opacity: 1},
-      //   {scale: 20, duration: 3,opacity: 1})
       .to(circleRef.current,{scale: 0, opacity: 0, delay:6, ease: "circ.in"
-      ,duration: 3, })  
-      // .reversed(!tl2.reversed());
-
-    /*gif 부분 타임라인. 일단은 넘어가고 다시 보자  https://codepen.io/GreenSock/pen/pojzxwZ 스크롤트리거, 함수 이용 투명도 조절 혹은 클래스 갖고 놀기면 가능*/  
-    // const tl3 = gsap.timeline({
-    //   scrollTrigger: {
-    //     trigger: GifBoxRef.current,
-    //     start:"top top",
-    //     end: "+=4000", //이건 밑에 있는데..
-    //     scrub: 1,
-    //     pin: true,
-    //     pinSpacing: false,
-    //     markers: true
-    //   }
-    // })
-    //  tl3.fromTo(gifRef.current,
-    //   { x: 0, y: 1000, opacity: 0},
-    //   { x: 500, y: 500, opacity: 1,duration: 1}//몬까 됬다안됬다 함 ㅠㅠ
-    //   )
-    //   .fromTo(gifRef.current,{x: 500, y: 500},
-    //   { x: 0,  y: -500, opacity:0,duration: 1, delay: 1})
+      ,duration: 3, })
 
     return () => {
-      tl.kill();
-      tl2.kill();
-      // tl3.kill();
+      wordTimeline.kill();
+      circleTimeline.kill();
     };
   }, []);
 
@@ -148,14 +121,14 @@ function SecondSection() {
       //something.. 모달? 
       return;
     } 
-    dispatch(SearchDreamAct(search))
+    dispatch(searchDreamAct(search))
     history.push('/searchdream');
   }
   
   return (
     <>
-       <Section top='calc(100vh - 4.375rem)'>
-         <SectionInner>
+       <Container>
+         <ContainerInner>
            <ScrollBox ref={mainRef}>
               <Pin>
                   <Content ref={addToRefs}>
@@ -179,13 +152,13 @@ function SecondSection() {
                   </Content>
               </Pin>
             </ScrollBox> 
-            <CircScrollBox ref={SecondRef}> 
+            <CircleScrollBox ref={secondRef}> 
               <Pin>
               <CircleBox >
                 <Circle ref={circleRef}/>
               </CircleBox>
               </Pin>
-            </CircScrollBox> 
+            </CircleScrollBox> 
             <GifBox>{/*ref={GifBoxRef}*/}
                 {/* <Pin> */}
                 <GifContent>
@@ -220,22 +193,22 @@ function SecondSection() {
                 </SearchBox>
               </ContentsBox >
             </FinalBox> 
-         </SectionInner>
-       </Section>  
+         </ContainerInner>
+       </Container >  
     </>
   );
 }
 
 export default SecondSection;
 
-const Section = styled.section<{ top: string }>`
+const Container = styled.section`
   position: absolute;
-  top: ${props=> props.top};
+  top: calc(100vh - 4.375rem);
   height: 350rem; 
   width: 100%;
   padding: 0 1rem;
 `;
-const SectionInner = styled.div`
+const ContainerInner = styled.div`
   width: 100%;
   height: 100%;
   overflow: visible;
@@ -293,7 +266,7 @@ const Blank = styled.p`
    }
 `;
 
-const CircScrollBox = styled(ScrollBox)`
+const CircleScrollBox = styled(ScrollBox)`
   top: 210rem;
 `;
 const CircleBox = styled.div`

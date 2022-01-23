@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { SignInAct } from '../actions';
+import { signInAct } from '../actions';
 import { RootState } from '../reducers';
 import { Buffer } from 'buffer';
 import Option from './Option';
@@ -11,7 +11,7 @@ import Toggle from './Toogle';
 import axios from 'axios';
 import { ReactComponent as Hamburger } from '../assets/hamburger.svg';
 
-function Header (props: { themeToggler: () => void; t: any; }){
+function Header (props: { themeToggler: () => void; t: string; }){
   const { accessToken, email, username, profile } = useSelector((state: RootState)=> state.usersReducer.user);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -25,11 +25,12 @@ function Header (props: { themeToggler: () => void; t: any; }){
     { menu: '로그인', url: '/login'}
   ];
   
-  let profileImg: any
-
+  let profileImg : any;
+  // 액세스 토큰 만료되거나 문제가 생기면 다시 로그인 하도록
+   
   if(profile === null){
     dispatch(
-      SignInAct({
+      signInAct({
         email: '',
         username: '',
         accessToken: "",
@@ -42,8 +43,6 @@ function Header (props: { themeToggler: () => void; t: any; }){
     profile : "data:image/png;base64, " + Buffer.from(profile, 'binary').toString('base64');
   }
 
-    //  profile.match(/\.(jpg|jpeg|png|gif)$/) ?
-    // '/images/search-icon.svg'
 
   const showButton = () => {
   if (window.innerWidth <= 960) {
@@ -64,12 +63,15 @@ function Header (props: { themeToggler: () => void; t: any; }){
   const handleClick = () => {
     setIsOpen(!isOpen);
   }
+  const closeDropbox = () => {
+      setDropdown(false);
+  }
 
   const handleSignOut = async(choice: boolean) => {
     if(choice){
       setIsOpen(false);// 모달 닫고
       await axios
-        .get(`${process.env.REACT_APP_URL}` + '/sign/signout', { // 요청하기
+        .get(process.env.REACT_APP_URL + '/sign/signout', { // 요청하기
           headers: {
             "Content-Type": "application/json",
             authorization: `Bearer ` + accessToken,
@@ -78,7 +80,7 @@ function Header (props: { themeToggler: () => void; t: any; }){
         .then((res) => {    
           if (res.status === 200) {
               dispatch(
-                SignInAct({
+                signInAct({
                   email: '',
                   username: '',
                   accessToken: "",
@@ -110,12 +112,12 @@ function Header (props: { themeToggler: () => void; t: any; }){
               (username ?    
                 <UserPic onClick={()=>setDropdown(!dropdown)}>
                   <img src={profileImg} alt='img'/>
-                  {dropdown && <Option handleClick={handleClick} resize={button} user={username}/>}
+                  {dropdown && <Option handleClick={handleClick} resize={button} user={username} handleDropbox={closeDropbox}/>}
                 </UserPic>
                 :
                 <Menu>
                   <StyledHambgr onClick={()=>setDropdown(!dropdown)}/> 
-                  {dropdown && <Option handleClick={handleClick} resize={button}/>}
+                  {dropdown && <Option resize={button} handleDropbox={closeDropbox}/>}
                 </Menu>
                 )
               :
@@ -125,7 +127,7 @@ function Header (props: { themeToggler: () => void; t: any; }){
                  return (username && idx === 2) ? 
                     <UserPic key={idx} onClick={()=>setDropdown(!dropdown)}>
                       <img src={profileImg} alt='img'/>
-                      {dropdown && <Option handleClick={handleClick} user={username}/>}
+                      {dropdown && <Option handleClick={handleClick} user={username} handleDropbox={closeDropbox}/>}
                     </UserPic>
                      :
                     <LinkMenu to={menu.url} key={idx}>{menu.menu}</LinkMenu>
@@ -186,6 +188,7 @@ const Menu = styled.ul`
   width: 100%;
   height: inherit;
   justify-content: space-around;
+  -webkit-justify-content: space-around;
 `;
 const UserPic = styled.li`
   width: 1.813rem;

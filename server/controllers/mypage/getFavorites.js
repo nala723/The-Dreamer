@@ -9,15 +9,19 @@ module.exports = async (req, res) => {
     if(!authorization){
       return res.status(401).json({message : 'invalid token'})
     }else{
-        const accessToken = authorization.split(' ')[1];
-
-        if(isAuthorized(accessToken) === 'jwt expired'){
-          res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
+        let accessToken = authorization.split(' ')[1];
+    
+        function checkAuthorizaed() {
+            if(isAuthorized(accessToken) === 'jwt expired'){
+            accessToken = remakeToken(req)
+            res.set('accessToken', accessToken); 
+          return accessToken
+          }
         }
+        accessToken =  checkAuthorizaed();
+
         const userData = isAuthorized(accessToken);
-
         const userId = userData.id;
-
         const likeList = await User_like_dream.findAll({
           include : [{
             model : Dream,
