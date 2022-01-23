@@ -3,7 +3,7 @@ const { sign, verify} = require('jsonwebtoken');
 
 module.exports = {
     generateAccessToken: (data) => {
-        const access_token = sign(data, process.env.ACCESS_SECRET, {expiresIn: 6000});
+        const access_token = sign(data, process.env.ACCESS_SECRET, {expiresIn: 5});
         return access_token;
     },
 
@@ -23,7 +23,6 @@ module.exports = {
     },
     remakeToken: (req) => {
         let refresh_token = req.cookies.RefreshToken;
-        //console.log(refresh_token);
 
         let data = verify(refresh_token, process.env.REFRESH_SECRET, (err, decoded) => {
             if(err){
@@ -32,9 +31,10 @@ module.exports = {
                 return decoded;
             }
         });
+        delete data.iat;
+        delete data.exp;
         
-        const access_token = sign(data, process.env.ACCESS_SECRET, {expiresIn: 6000});
-        // console.log('액세스토큰', access_token, 'data', data);
+        const access_token = sign(data, process.env.ACCESS_SECRET, {expiresIn: 6000}); 
         return access_token;
     }
 }

@@ -9,16 +9,19 @@ module.exports = (req, res) => {
      if(!authorization){
         res.status(401).json({message : 'invalid token'})
      }else{
-        const accessToken = authorization.split(' ')[1];
-
-        if(isAuthorized(accessToken) === 'jwt expired'){
-          res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
+        let accessToken = authorization.split(' ')[1];
+    
+        function checkAuthorizaed() {
+            if(isAuthorized(accessToken) === 'jwt expired'){
+            accessToken = remakeToken(req)
+            res.set('accessToken', accessToken); 
+          return accessToken
+          }
         }
-        //전체 다 입력한 상태에서 보내도록 해야함.
+        accessToken = await checkAuthorizaed();
+
         const userData = isAuthorized(accessToken);
         const modifyImage = fs.readFileSync(req.file.path);
-        // const modifyImage = req.file.location;
-        // console.log('modifyImage :', modifyImage,'image :', image);
         const modifyPW = req.body.password;
 
         bcrypt.genSalt(10, (err, salt) => {

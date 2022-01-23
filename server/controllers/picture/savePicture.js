@@ -12,18 +12,22 @@ module.exports = async(req, res) => {
         if(req.file === undefined){
             res.status(401).json({message : '그림이 없습니다.'});
         }else{        
-            const accessToken = authorization.split(' ')[1];
-
-            if(isAuthorized(accessToken) === 'jwt expired'){
-              res.set('accessToken', remakeToken(req)); //엑세스 토큰 만기시 다시 만들어서 헤더에 담아서 보내기
+            let accessToken = authorization.split(' ')[1];
+    
+            function checkAuthorizaed() {
+                if(isAuthorized(accessToken) === 'jwt expired'){
+                accessToken = remakeToken(req)
+                res.set('accessToken', accessToken); 
+              return accessToken
+              }
             }
+            accessToken = await checkAuthorizaed();
 
             const userData = isAuthorized(accessToken);
             let saveImage
             function ifProduction() {
                 if(process.env.NODE_ENV === "production") {
                     saveImage = req.file.location;
-                    console.log('여끼왓나', saveImage);
                 }else{
                     saveImage = fs.readFileSync(req.file.path);
                 }
@@ -31,7 +35,6 @@ module.exports = async(req, res) => {
             }
             saveImage = ifProduction();
             if(saveImage){
-                console.log('여????', saveImage);
                 const newPicture = await Picture.create({
                     title : req.body.title,
                     picture : saveImage,
