@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
           res.set('accessToken', accessToken); 
         }
       }
-      await checkAuthorizaed();
+      checkAuthorizaed();
 
       const picture_id = req.params.id;
 

@@ -21,7 +21,7 @@ module.exports = async(req, res) => {
               return accessToken
               }
             }
-            accessToken = await checkAuthorizaed();
+            accessToken = checkAuthorizaed();
 
             const userData = isAuthorized(accessToken);
             let saveImage

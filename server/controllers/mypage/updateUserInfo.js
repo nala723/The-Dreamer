@@ -18,7 +18,7 @@ module.exports = (req, res) => {
           return accessToken
           }
         }
-        accessToken = await checkAuthorizaed();
+        accessToken = checkAuthorizaed();
 
         const userData = isAuthorized(accessToken);
         const modifyImage = fs.readFileSync(req.file.path);
