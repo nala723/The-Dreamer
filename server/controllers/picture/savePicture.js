@@ -18,8 +18,8 @@ module.exports = async(req, res) => {
                 if(isAuthorized(accessToken) === 'jwt expired'){
                 accessToken = remakeToken(req)
                 res.set('accessToken', accessToken); 
-              return accessToken
-              }
+                }
+               return accessToken
             }
             accessToken = checkAuthorizaed();
 

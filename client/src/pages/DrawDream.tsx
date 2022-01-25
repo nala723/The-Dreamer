@@ -181,15 +181,32 @@ function DrawDream({ width, height }: CanvasProps) {
     setOpen(false);
  }
 
+ // 모바일, 데스크탑에서의 좌표 일치시키기 위함
+ const getInteractionLocation = (e: MouseEvent) => {
+  const pos = { x: e.clientX, y: e.clientY };
+ 
+  if(!e.target)return;
+  const eventTarget = e.target as HTMLCanvasElement;
+  const rect = eventTarget.getBoundingClientRect();
+  const x_rel = pos.x - rect.left;
+  const y_rel = pos.y - rect.top;
+  const x = Math.round((x_rel * eventTarget.width) / rect.width);
+  const y = Math.round((y_rel * eventTarget.height) / rect.height);
+  return [x, y];
+};
+
   // 좌표 얻는 함수
   const getCoordinates = (e: MouseEvent): Coordinate | undefined => {
     if(!canvasRef.current){
       return;
     }
     const canvas: HTMLCanvasElement = canvasRef.current;
+
+    const recievedLocation = getInteractionLocation(e)
+    if(!recievedLocation) return;
     return {
-      x: e.offsetX, 
-      y: e.offsetY  
+      x: recievedLocation[0],
+      y: recievedLocation[1]
     }
   }
 
@@ -285,22 +302,24 @@ function DrawDream({ width, height }: CanvasProps) {
 	// };
 
   /*모바일에서 선 그릴때, https://basketdeveloper.tistory.com/79 참고 */
-  const startTouch = useCallback((event: TouchEvent) => { // MouseEvent인터페이스를 TouchEvent로
+  const startTouch = (event: TouchEvent) => { // MouseEvent인터페이스를 TouchEvent로
     event.preventDefault();
     if (!canvasRef.current) {
       return;
     }
-    if(fill){
-      return fillCanvas(); // 모바일에서 채우기 모르겠다..
-    }
     const canvas: HTMLCanvasElement = canvasRef.current;
     const touch = event.touches[0];    // event로 부터 touch 좌표를 얻어낼수 있습니다.
-    const mouseEvent = new MouseEvent("mousedown", {	
-      clientX: touch.pageX - canvas.offsetLeft,
-      clientY: touch.pageY - canvas.offsetTop
-    });
-    canvas.dispatchEvent(mouseEvent); // 앞서 만든 마우스 이벤트를 디스패치해줍니다
-  }, []); 
+    if(fill){
+      const mouseEvent = new MouseEvent("click",{});
+      return canvas.dispatchEvent(mouseEvent); 
+    }else {
+      const mouseEvent = new MouseEvent("mousedown", {	
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      return canvas.dispatchEvent(mouseEvent); // 앞서 만든 마우스 이벤트를 디스패치해줍니다
+    }
+  }
 
   const touch = useCallback((event: TouchEvent) => {
       event.preventDefault();
@@ -310,8 +329,8 @@ function DrawDream({ width, height }: CanvasProps) {
       const canvas: HTMLCanvasElement = canvasRef.current;
       const touch = event.touches[0];
       const mouseEvent = new MouseEvent("mousemove", {
-        clientX: touch.pageX - canvas.offsetLeft,
-        clientY: touch.pageY - canvas.offsetTop
+        clientX: touch.clientX,
+        clientY: touch.clientY
       });
       canvas.dispatchEvent(mouseEvent);
     },
