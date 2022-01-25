@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef }  from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { searchDreamAct,  getTokenAct, likeDrmAct, disLikeDrmAct, removeDrmAct } from '../actions';
+import { searchDreamAct,  getTokenAct, likeDreamAct, disLikeDreamAct, removeDreamAct } from '../actions';
 import { RootState } from '../reducers';
 import SearchBar from '../components/reusable/SearchBar';
 import HashTag from '../components/reusable/HashTag';
@@ -24,7 +24,7 @@ function SearchDream(): JSX.Element {
   // // 처음 한번 이벤트 걸어볼까? 그러고 이 안에서 함수만들고 그에 따라 상태값변하게
   useEffect(()=>{
     return (()=>{
-      dispatch(removeDrmAct())
+      dispatch(removeDreamAct())
     })
   },[])  
   
@@ -69,7 +69,7 @@ function SearchDream(): JSX.Element {
                  ...data[idx],
                  id: res.data.likeId
                }] 
-               dispatch(likeDrmAct(likeData))
+               dispatch(likeDreamAct(likeData))
             }
          }
       })
@@ -97,7 +97,7 @@ function SearchDream(): JSX.Element {
             dispatch(getTokenAct(res.headers.accessToken));
           }
         if(res.status === 200){
-               dispatch(disLikeDrmAct(dreamId))
+               dispatch(disLikeDreamAct(dreamId))
           }
         else{
              history.push('/notfound');

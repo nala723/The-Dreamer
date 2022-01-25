@@ -89,21 +89,21 @@ export const withDrawlAct = (data: UserInfo)=> {
     }
 }
 
-export const likeDrmAct = (data: Data[]) => {
+export const likeDreamAct = (data: Data[]) => {
     return {
         type: LIKE_DREAM,
         payload: data
     }
 }
 
-export const disLikeDrmAct = (data: number)=> {
+export const disLikeDreamAct = (data: number)=> {
     return {
         type: DISLIKE_DREAM,
         payload: data
     }
 }
 
-export const removeDrmAct = () => {
+export const removeDreamAct = () => {
     return {
         type: REMOVE_DREAM
     }
@@ -150,9 +150,9 @@ type Action =
     | ReturnType<typeof getTokenAct>
     | ReturnType<typeof editUserAct>
     | ReturnType<typeof withDrawlAct>
-    | ReturnType<typeof likeDrmAct>
-    | ReturnType<typeof disLikeDrmAct>
-    | ReturnType<typeof removeDrmAct>
+    | ReturnType<typeof likeDreamAct>
+    | ReturnType<typeof disLikeDreamAct>
+    | ReturnType<typeof removeDreamAct>
 
 // 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
 type ActionState = {

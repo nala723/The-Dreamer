@@ -26,7 +26,7 @@ interface Coordinate {
   y: number;
 }
 // 미디어 쿼리 : 타블렛 사이즈 부분 보면서 비율 조정할것
-function DrawDream({ width, height }: CanvasProps) {
+function DrawDream({ width = 601, height = 447 }: CanvasProps) {
   const { accessToken } = useSelector((state: RootState)=> state.usersReducer.user);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -448,12 +448,6 @@ function DrawDream({ width, height }: CanvasProps) {
       </Dream>
     </Container>  
   );
-}
-
-
-DrawDream.defaultProps = { // 안되다가 인라인으로 props로 받아서 스타일 해주니까 된다??
-  width: 601,
-  height: 447
 }
 
 export default DrawDream;
