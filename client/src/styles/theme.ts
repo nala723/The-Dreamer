@@ -1,6 +1,6 @@
-import { DefaultTheme } from 'styled-components';
+import { DefaultTheme } from 'styled-components'
 
-const calcRem = (size: number): string => `${size / 16}rem`;
+const calcRem = (size: number): string => `${size / 16}rem`
 
 export const darkTheme: DefaultTheme = {
   flexRow: `
@@ -46,7 +46,7 @@ export const darkTheme: DefaultTheme = {
   default: `linear-gradient(
       #000729, 45%, #40344E, 90%,rgb(209,155,161,0.95) 100%
     )`,
-  reverse: `#494161`,  
+  reverse: `#494161`,
   text: 'rgb(255,255,255,0.8)',
   transp: 'rgba(255, 255, 255, 0.6)',
   moretransp: 'rgba(255, 255, 255, 0.2)',
@@ -60,7 +60,7 @@ export const darkTheme: DefaultTheme = {
   midTablet: `@media screen and (max-width: 960px)`,
   laptop: `@media only screen and (max-width: 1024px)`,
   desktop: `@media only screen and (max-width: 1440px)`,
-};
+}
 
 export const lightTheme: DefaultTheme = {
   flexRow: `
@@ -84,7 +84,7 @@ export const lightTheme: DefaultTheme = {
   `,
   searchBlur: `
     filter: drop-shadow(4px 4px 10px rgba(73, 65, 97, 0.5))
-  `,  
+  `,
   fontS: calcRem(14),
   fontM: calcRem(18),
   fontL: calcRem(24),
@@ -113,5 +113,4 @@ export const lightTheme: DefaultTheme = {
   midTablet: `@media screen and (max-width: 960px)`,
   laptop: `@media only screen and (max-width: 1024px)`,
   desktop: `@media only screen and (max-width: 1440px)`,
-};
-
+}
