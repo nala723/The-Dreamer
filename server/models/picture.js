@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       user_id: DataTypes.INTEGER,
       title: DataTypes.STRING,
       emotion: DataTypes.STRING,
-      picture: DataTypes.TEXT,
+      picture: DataTypes.TEXT, // development일때는 BLOB, production일때는 TEXT
     },
     {
       sequelize,
