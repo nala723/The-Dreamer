@@ -1,12 +1,11 @@
-require('dotenv').config();
+require("dotenv").config();
 const multer = require("multer");
-const multerS3 = require('multer-s3'); 
-const aws = require('aws-sdk');
-aws.config.loadFromPath(__dirname + '/../s3.json'); 
+const multerS3 = require("multer-s3");
+const aws = require("aws-sdk");
+aws.config.loadFromPath(__dirname + "/../s3.json");
 const s3 = new aws.S3();
 
-if(process.env.NODE_ENV === "production") {
-  
+if (process.env.NODE_ENV === "production") {
   const imageFilter = (req, file, cb) => {
     if (file.mimetype.startsWith("image")) {
       cb(null, true);
@@ -14,27 +13,25 @@ if(process.env.NODE_ENV === "production") {
       cb("Please upload only images.", false);
     }
   };
-  
+
   const uploadFile = multer({
     storage: multerS3({
       s3: s3,
-      bucket: 'the-dreamer-bucket/user-picture',
-      acl: 'public-read',
+      bucket: "the-dreamer-bucket/user-picture",
+      acl: "public-read",
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: function (req, file, cb) {
         cb(null, `${Date.now()}_${file.originalname}`);
       },
     }),
     fileFilter: imageFilter,
-    limits: { 
-      fileSize: 1000 * 1000 * 10 
-    }
-  })
+    limits: {
+      fileSize: 1000 * 1000 * 10,
+    },
+  });
 
   module.exports = uploadFile;
-}
-
-else {
+} else {
   const imageFilter = (req, file, cb) => {
     if (file.mimetype.startsWith("image")) {
       cb(null, true);
@@ -55,4 +52,3 @@ else {
   const uploadFile = multer({ storage: storage, fileFilter: imageFilter });
   module.exports = uploadFile;
 }
-
