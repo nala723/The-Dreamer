@@ -43,7 +43,6 @@ export const searchDreamAct = (data: string) => {
             link: el['link'],
           })
         })
-
         dispatch({
           type: SEARCH_DREAM_SUCCESS,
           payload: dataArray,
