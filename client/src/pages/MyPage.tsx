@@ -1,28 +1,28 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Route } from 'react-router-dom';
-import MyLikes from '../components/userInfo/MyLikes';
-import MyDream from '../components/userInfo/MyDream';
-import MyAccount from '../components/userInfo/MyAccount';
+import React from 'react'
+import styled from 'styled-components'
+import { Route } from 'react-router-dom'
+import MyLikes from '../components/userInfo/MyLikes'
+import MyDream from '../components/userInfo/MyDream'
+import MyAccount from '../components/userInfo/MyAccount'
 
-function MyPage(){
+function MyPage(): JSX.Element {
   return (
     <Container>
-        <Route path='/mypage/mylikes' component={MyLikes} />
-        <Route path='/mypage/mydream' component={MyDream} />
-        <Route path='/mypage/myaccount' component={MyAccount} />
+      <Route path="/mypage/mylikes" component={MyLikes} />
+      <Route path="/mypage/mydream" component={MyDream} />
+      <Route path="/mypage/myaccount" component={MyAccount} />
     </Container>
-  );
+  )
 }
 
-export default MyPage;
+export default MyPage
 
-const Container = styled.div`            
+const Container = styled.div`
   overflow: hidden;
   display: flex;
   width: 100%;
   height: calc(100vh - 4.375rem);
-  ${props=> props.theme.mobile}{
-   min-height: calc(100vh - 3.6rem);
+  ${(props) => props.theme.mobile} {
+    min-height: calc(100vh - 3.6rem);
   }
-`;
+`
