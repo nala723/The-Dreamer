@@ -53,7 +53,6 @@ function MyLikes(): JSX.Element {
         },
       })
       .then((res) => {
-        console.log(res.data)
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }

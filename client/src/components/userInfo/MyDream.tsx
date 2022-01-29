@@ -50,7 +50,6 @@ function MyDream(): JSX.Element {
 
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
   useEffect(() => {
-    // getPictures(); // 임시 주석
     document.addEventListener('click', handleClickOutside)
     window.addEventListener('resize', getWidth)
     getWidth()
