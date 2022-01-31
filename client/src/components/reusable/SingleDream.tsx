@@ -183,7 +183,7 @@ function SingleDream(props: DreamProps): JSX.Element {
                   <Title>{res.title}</Title>
                   <Text>{res.content}</Text>
                 </Content>
-                <Date>{res.createdAt.split('T')[0].slice(2)}</Date>
+                <Date>{res.createdAt}</Date>
               </Dream>
             )
           }

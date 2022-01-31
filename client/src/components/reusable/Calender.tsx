@@ -105,9 +105,7 @@ function Calender(props: CalenderProps): JSX.Element {
       end.setDate(end.getDate() + 1)
       const dateArr: string[] = []
       while (start <= end) {
-        dateArr.push(
-          start.toISOString().split('T')[0].split('-').join('.').slice(2),
-        )
+        dateArr.push(start.toISOString().split('T')[0].slice(2))
         start.setDate(start.getDate() + 1)
       }
       updateMenu(dateArr)
