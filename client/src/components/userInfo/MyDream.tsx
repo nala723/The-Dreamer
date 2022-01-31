@@ -13,6 +13,7 @@ import Modal from '../reusable/Modal'
 import Calender from '../reusable/Calender'
 import { emotionList } from '../../config/dummyDatas'
 import Dream from '../reusable/SingleDream'
+import Loading from '../../config/Loading'
 
 export interface PicInterface {
   id: number
@@ -47,6 +48,7 @@ function MyDream(): JSX.Element {
   const history = useHistory()
   const dispatch = useDispatch()
   const clickRef = useRef<any | null>(null)
+  const [loading, setLoading] = useState(true)
 
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
   useEffect(() => {
@@ -105,10 +107,12 @@ function MyDream(): JSX.Element {
           ) {
             return handleSortPic(data)
           }
+          setLoading(false)
           setMyPic(data)
         }
       })
       .catch((err) => {
+        setLoading(false)
         console.log(err)
         history.push('/notfound')
       })
@@ -310,6 +314,7 @@ function MyDream(): JSX.Element {
 
   return (
     <Container>
+      {loading && <Loading />}
       {isOpen && (
         <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>
       )}
@@ -369,7 +374,7 @@ function MyDream(): JSX.Element {
         </ResponsiveRight>
       </UpperSection>
       <DreamSection>
-        {!myPic.length ? (
+        {!loading && !myPic.length ? (
           <Dream header="그린 꿈이 없습니다." gallery="gallery">
             꿈 그리기 페이지에서 꿈을 그려주세요.
           </Dream>

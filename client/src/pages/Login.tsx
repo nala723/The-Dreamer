@@ -69,7 +69,7 @@ function Login(): JSX.Element {
   const naverLogin = async () => {
     const loginId = await new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_ID,
-      callbackUrl: 'https://the-dreamer.cf/login', // 나중 수정
+      callbackUrl: 'http://localhost:3000/login', // 나중 수정
       isPopup: false,
       loginButton: { color: 'green', type: 3, height: 40 },
       callbackHandle: true,

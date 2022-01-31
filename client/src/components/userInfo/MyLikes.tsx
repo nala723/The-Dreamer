@@ -9,6 +9,7 @@ import Calender from '../reusable/Calender'
 import { Data } from '../../actions'
 import axios from 'axios'
 import SingleDream from '../reusable/SingleDream'
+import Loading from '../../config/Loading'
 
 function MyLikes(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
@@ -30,6 +31,7 @@ function MyLikes(): JSX.Element {
     selectLike: [],
   })
   const clickRef = useRef<any | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getLikes()
@@ -56,9 +58,11 @@ function MyLikes(): JSX.Element {
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }
+        setLoading(false)
         setDream(res.data.dream)
       })
       .catch((err) => {
+        setLoading(false)
         console.log(err)
       })
   }
@@ -156,13 +160,9 @@ function MyLikes(): JSX.Element {
   const updateMenu = (arg: number | string[]) => {
     if (typeof arg === 'string') {
       if (arg === 'latest') {
-        // getPictures();
         getLikes()
         setSorLike({ latestLike: false, selectLike: [] })
       } else if (arg === 'oldest') {
-        // if(dream[0].likedate >= dream[dream.length-1].likedate){
-        //   return;
-        // }
         setSorLike({ latestLike: true, selectLike: [] })
       }
     } else if (typeof arg === 'object') {
@@ -223,6 +223,7 @@ function MyLikes(): JSX.Element {
   return (
     <>
       <Container>
+        {loading && <Loading />}
         {isOpen && (
           <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>
         )}
@@ -271,7 +272,7 @@ function MyLikes(): JSX.Element {
           </ResponsiveRight>
         </UpperSection>
         <DreamSection>
-          {dream.length === 0 ? (
+          {!loading && dream.length === 0 ? (
             <SingleDream header="좋아하는 꿈이 없습니다.">
               꿈 알아보기 페이지에서 하트 아이콘을 눌러 꿈을 저장할 수 있습니다.
             </SingleDream>

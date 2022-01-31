@@ -48,9 +48,15 @@ function SignUp(): JSX.Element {
     (key: string) => (e: React.FocusEvent<HTMLInputElement>) => {
       const value = e.target.value
       let message
-      if (!signupInfo[key]) {
-        setErrorMessage({ ...errorMessage, [key]: '' })
-        return
+      // if (!signupInfo[key]) {
+      //   setErrorMessage({ ...errorMessage, [key]: '' })
+      //   return
+      // }
+      if (key === 'Username') {
+        if (!value) {
+          setErrorMessage({ ...errorMessage, [key]: '이름을 입력해 주세요.' })
+          return false
+        }
       }
       if (key === 'Email') {
         message = emailIsValid(value)
@@ -85,11 +91,23 @@ function SignUp(): JSX.Element {
   // 회원가입 버튼 클릭
   const handleSubmit = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
-    if (!signupInfo.Username) {
-      setErrorMessage({ ...errorMessage, Username: '이름을 입력해 주세요.' })
+    if (
+      errorMessage.Username ||
+      errorMessage.Email ||
+      errorMessage.Password ||
+      errorMessage.PasswordCheck
+    ) {
+      setErrorMessage({
+        ...errorMessage,
+        PasswordCheck: '입력을 완료해 주세요',
+      })
       return
     }
     if (!valid) {
+      setErrorMessage({
+        ...errorMessage,
+        PasswordCheck: '입력을 완료해 주세요',
+      })
       return
     }
     axios
