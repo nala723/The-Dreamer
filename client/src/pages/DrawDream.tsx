@@ -409,8 +409,12 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
         </Modal>
       )}
       {open && (
-        <Modal handleClick={confirmModal} handleSignOut={handleOkDown}>
-          그림이 저장되었습니다. <br></br>파일을 다운로드하시겠어요?{' '}
+        <Modal
+          handleClick={confirmModal}
+          handleSignOut={handleOkDown}
+          header="파일을 다운로드하시겠어요?"
+        >
+          그림이 저장되었습니다.
         </Modal>
       )}
       <Title>

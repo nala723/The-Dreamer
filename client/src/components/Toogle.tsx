@@ -24,6 +24,7 @@ const ToggleDiv = styled.div<{ t: string }>`
   border: 1px solid #898989;
   border-radius: 2rem;
   background-color: ${(props) => props.theme.toggle};
+  cursor: pointer;
   > p {
     position: absolute;
     font-size: 14px;
@@ -51,7 +52,6 @@ const Circle = styled.div<{ t: string }>`
   border-radius: 100%;
   background-color: white;
   transition: all 0.3s ease-in-out;
-  cursor: pointer;
   ${(props) =>
     props.t === 'light'
       ? css`

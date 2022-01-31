@@ -13,6 +13,7 @@ import Modal from '../reusable/Modal'
 import Calender from '../reusable/Calender'
 import { emotionList } from '../../config/dummyDatas'
 import Dream from '../reusable/SingleDream'
+import Loading from '../../config/Loading'
 
 export interface PicInterface {
   id: number
@@ -33,13 +34,14 @@ function MyDream(): JSX.Element {
   const [input, setInput] = useState('')
   const [selected, setSelected] = useState(-1)
   const [hasText, sethasText] = useState(false)
-  const [myPic, setMyPic] = useState<PicInterface[]>([])
+  const [originalPic, setOriginalPic] = useState<PicInterface[]>([])
+  const [tempPic, setTempPic] = useState<PicInterface[]>([])
   const [sortPic, setSortPic] = useState<{
-    latest: boolean
+    oldest: boolean
     selectDate: string[]
     sortEmotion: string
   }>({
-    latest: false,
+    oldest: false,
     selectDate: [],
     sortEmotion: '',
   })
@@ -47,13 +49,14 @@ function MyDream(): JSX.Element {
   const history = useHistory()
   const dispatch = useDispatch()
   const clickRef = useRef<any | null>(null)
+  const [loading, setLoading] = useState(true)
 
   // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
   useEffect(() => {
-    // getPictures(); // 임시 주석
     document.addEventListener('click', handleClickOutside)
     window.addEventListener('resize', getWidth)
     getWidth()
+    getPictures()
     return () => {
       document.removeEventListener('click', handleClickOutside)
       window.removeEventListener('resize', getWidth)
@@ -69,7 +72,15 @@ function MyDream(): JSX.Element {
   }
 
   useEffect(() => {
-    getPictures()
+    if (
+      sortPic.oldest ||
+      sortPic.selectDate.length > 0 ||
+      sortPic.sortEmotion
+    ) {
+      return handleSortPic(originalPic)
+    } else {
+      setTempPic([...originalPic])
+    }
   }, [sortPic])
 
   const getPictures = () => {
@@ -82,34 +93,26 @@ function MyDream(): JSX.Element {
       .then((res) => {
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
-          console.log('?', res.headers.accessToken)
         }
         if (res.status === 200) {
-          const data = res.data.arr.map((re: any) => {
-            re.createdAt = re.createdAt
-              .split('T')[0]
-              .slice(2)
-              .split('-')
-              .join('.')
-            re.picture =
-              typeof re.picture !== 'object' && typeof re.picture === 'string'
-                ? re.picture
-                : 'data:image/png;base64, ' +
-                  Buffer.from(re.picture, 'binary').toString('base64')
-            // 밑에 렌더링할때 날짜 문자열 자름 처리한것 수정 (위에서 이미 처리햇으므로)
-            return re
-          })
-          if (
-            sortPic.latest ||
-            sortPic.selectDate.length > 0 ||
-            sortPic.sortEmotion
-          ) {
-            return handleSortPic(data)
-          }
-          setMyPic(data)
+          const data = res.data.arr
+            .map((re: any) => {
+              re.createdAt = re.createdAt.split('T')[0].slice(2)
+              re.picture =
+                typeof re.picture !== 'object' && typeof re.picture === 'string'
+                  ? re.picture
+                  : 'data:image/png;base64, ' +
+                    Buffer.from(re.picture, 'binary').toString('base64')
+              return re
+            })
+            .reverse()
+          setLoading(false)
+          setOriginalPic(data)
+          setTempPic(data)
         }
       })
       .catch((err) => {
+        setLoading(false)
         console.log(err)
         history.push('/notfound')
       })
@@ -131,10 +134,10 @@ function MyDream(): JSX.Element {
     // 정규식으로 괄호 제거
     search = search.replace(/[[(){}]/gi, '')
     const regex = new RegExp(search, 'gi')
-    const searched = myPic.filter((el) => {
+    const searched = originalPic.filter((el) => {
       return el.title.replace(/[[(){}]/gi, '').match(regex)
     })
-    setMyPic(searched)
+    setTempPic(searched)
     sethasText(false)
   }
 
@@ -150,7 +153,7 @@ function MyDream(): JSX.Element {
     // 정규식으로 괄호 제거
     search = search.replace(/[[(){}]/gi, '')
     const regex = new RegExp(search, 'gi')
-    const searched = myPic
+    const searched = originalPic
       .filter((el) => {
         return el.title.replace(/[[(){}]/gi, '').match(regex)
       })
@@ -195,13 +198,12 @@ function MyDream(): JSX.Element {
           setSelected(-1)
         }
       }
-      console.log('hh', selected)
     },
     [selected, options],
   )
   // 전체 목록 조회
   const handleAllsearch = () => {
-    setSortPic({ ...sortPic, latest: false, selectDate: [], sortEmotion: '' })
+    setSortPic({ ...sortPic, oldest: false, selectDate: [], sortEmotion: '' })
   }
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault()
@@ -215,9 +217,7 @@ function MyDream(): JSX.Element {
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }
-        if (res.status === 200) {
-          getPictures()
-        }
+        getPictures()
       })
       .catch((err) => {
         console.log(err)
@@ -230,26 +230,24 @@ function MyDream(): JSX.Element {
 
   const updateMenu = (arg: string | string[]) => {
     if (typeof arg === 'string') {
-      if (arg === 'oldest') {
-        // getPictures();
-        // setMyPic(dummyPics);
+      if (arg === 'latest') {
         setSortPic({
           ...sortPic,
-          latest: false,
+          oldest: false,
           selectDate: [],
           sortEmotion: '',
         })
-      } else if (arg === 'latest') {
+      } else if (arg === 'oldest') {
         setSortPic({
           ...sortPic,
-          latest: true,
+          oldest: true,
           selectDate: [],
           sortEmotion: '',
         })
       } else {
         setSortPic({
           ...sortPic,
-          latest: false,
+          oldest: false,
           selectDate: [],
           sortEmotion: arg,
         })
@@ -257,19 +255,18 @@ function MyDream(): JSX.Element {
     } else if (typeof arg === 'object') {
       setSortPic({
         ...sortPic,
-        latest: false,
+        oldest: false,
         selectDate: arg,
         sortEmotion: '',
       })
     }
-    // getPictures();
   }
 
   let newState: PicInterface[]
 
   const handleSortPic = (data: PicInterface[]) => {
     if (
-      sortPic.latest &&
+      sortPic.oldest &&
       sortPic.selectDate.length <= 0 &&
       !sortPic.sortEmotion
     ) {
@@ -277,7 +274,7 @@ function MyDream(): JSX.Element {
       newState = newState.reverse()
     } else if (
       sortPic.selectDate.length > 0 &&
-      !sortPic.latest &&
+      !sortPic.oldest &&
       !sortPic.sortEmotion
     ) {
       newState = data.filter((el: any) => {
@@ -285,22 +282,22 @@ function MyDream(): JSX.Element {
       })
     } else if (
       sortPic.sortEmotion &&
-      !sortPic.latest &&
+      !sortPic.oldest &&
       sortPic.selectDate.length <= 0
     ) {
       newState = data.filter((el: any) => {
         return sortPic.sortEmotion === el.emotion
       })
     }
-    setMyPic(newState)
-    // setSorPic({latestPic: false, selectPic: [], sortEmotion: ''});
+    setTempPic(newState)
   }
 
   const handleClick = () => {
     setIsOpen(false)
   }
 
-  const handlePicOpen = (pic: PicInterface) => {
+  const handlePicOpen = (e: any, pic: PicInterface) => {
+    e.stopPropagation()
     setOpenedPic(pic)
     setPicOpenModal(true)
   }
@@ -311,6 +308,7 @@ function MyDream(): JSX.Element {
 
   return (
     <Container>
+      {loading && <Loading />}
       {isOpen && (
         <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>
       )}
@@ -370,16 +368,16 @@ function MyDream(): JSX.Element {
         </ResponsiveRight>
       </UpperSection>
       <DreamSection>
-        {!myPic.length ? (
+        {!loading && !originalPic.length ? (
           <Dream header="그린 꿈이 없습니다." gallery="gallery">
             꿈 그리기 페이지에서 꿈을 그려주세요.
           </Dream>
         ) : (
           <CardBox>
-            {myPic.map((pic) => {
+            {tempPic.map((pic) => {
               return (
                 <Card key={pic.id}>
-                  <Picture onClick={() => handlePicOpen(pic)}>
+                  <Picture onClick={(e) => handlePicOpen(e, pic)}>
                     <div>
                       <Delete onClick={(e) => handleDislike(e, pic.id)} />
                       <p>{pic.createdAt}</p>

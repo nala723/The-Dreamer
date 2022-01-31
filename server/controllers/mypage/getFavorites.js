@@ -27,9 +27,10 @@ module.exports = async (req, res) => {
           {
             model: Dream,
             required: true,
-            attributes: ["id", "title", "url", "content", "createdAt"],
+            attributes: ["id", "title", "url", "content"],
           },
         ],
+        attributes: ["createdAt"],
         where: {
           user_id: userId,
         },
@@ -40,7 +41,7 @@ module.exports = async (req, res) => {
         obj["dream_id"] = likeList[i].dataValues.Dream.dataValues.id;
         obj["url"] = likeList[i].dataValues.Dream.dataValues.url;
         obj["content"] = likeList[i].dataValues.Dream.dataValues.content;
-        obj["createdAt"] = likeList[i].dataValues.Dream.dataValues.createdAt;
+        obj["createdAt"] = likeList[i].dataValues.createdAt;
         sendArr.push(obj);
         obj = {};
       }

@@ -96,7 +96,6 @@ function SearchDream(): JSX.Element {
       })
   }
 
-  console.log('data??', data)
   const handleDislike = async (e: React.MouseEvent, id: number) => {
     e.preventDefault()
     const dreamId = id

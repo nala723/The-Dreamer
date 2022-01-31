@@ -274,21 +274,17 @@ function MyAccount(): JSX.Element {
           authorization: `Bearer ` + accessToken,
         },
       })
-      .then((res) => {
-        if (res.status === 200) {
-          dispatch(
-            withDrawlAct({
-              accessToken: '',
-              email: '',
-              username: '',
-              profile: '',
-              isSocial: false,
-            }),
-          )
-          history.push('/')
-        } else {
-          history.push('/notfound')
-        }
+      .then(() => {
+        dispatch(
+          withDrawlAct({
+            accessToken: '',
+            email: '',
+            username: '',
+            profile: '',
+            isSocial: false,
+          }),
+        )
+        history.push('/')
       })
       .catch((err) => {
         console.log(err, '에러러러러')

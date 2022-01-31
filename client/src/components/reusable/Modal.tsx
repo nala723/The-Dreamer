@@ -62,8 +62,8 @@ function Modal(props: ModalProps): JSX.Element {
         )}
         {handleSignOut ? (
           <OkBtn signout="signout">
-            <button onClick={() => handleSignOut(true)}>확인</button>
-            <button onClick={handleClick}>취소</button>
+            <button onClick={() => handleSignOut(true)}>예</button>
+            <button onClick={handleClick}>아니오</button>
           </OkBtn>
         ) : (
           <OkBtn signout="">

@@ -9,6 +9,7 @@ import Calender from '../reusable/Calender'
 import { Data } from '../../actions'
 import axios from 'axios'
 import SingleDream from '../reusable/SingleDream'
+import Loading from '../../config/Loading'
 
 function MyLikes(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
@@ -16,7 +17,8 @@ function MyLikes(): JSX.Element {
   const { accessToken } = useSelector(
     (state: RootState) => state.usersReducer.user,
   )
-  const [dream, setDream] = useState<Data[]>([])
+  const [originalDream, setOriginalDream] = useState<Data[]>([])
+  const [tempDream, setTempDream] = useState<Data[]>([])
   const [options, setOptions] = useState<string[]>([])
   const [input, setInput] = useState('')
   const [selected, setSelected] = useState(-1)
@@ -30,6 +32,7 @@ function MyLikes(): JSX.Element {
     selectLike: [],
   })
   const clickRef = useRef<any | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     getLikes()
@@ -41,7 +44,9 @@ function MyLikes(): JSX.Element {
 
   useEffect(() => {
     if (sortLike.latestLike || sortLike.selectLike.length > 0) {
-      return handleSortLike(dream)
+      return handleSortLike(originalDream)
+    } else {
+      setTempDream([...originalDream])
     }
   }, [sortLike])
 
@@ -53,13 +58,21 @@ function MyLikes(): JSX.Element {
         },
       })
       .then((res) => {
-        console.log(res.data)
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }
-        setDream(res.data.dream)
+        setLoading(false)
+        res.data.dream = res.data.dream
+          .map((dream: any) => {
+            dream.createdAt = dream.createdAt.split('T')[0].slice(2)
+            return dream
+          })
+          .reverse()
+        setOriginalDream(res.data.dream)
+        setTempDream(res.data.dream)
       })
       .catch((err) => {
+        setLoading(false)
         console.log(err)
       })
   }
@@ -80,13 +93,13 @@ function MyLikes(): JSX.Element {
     // 정규식으로 괄호 제거
     search = search.replace(/[[(){}]/gi, '')
     const regex = new RegExp(search, 'gi')
-    const searched = dream.filter((el) => {
+    const searched = originalDream.filter((el) => {
       return (
         el.title.replace(/[[(){}]/gi, '').match(regex) ||
         el.content.replace(/[[(){}]/gi, '').match(regex)
       )
     })
-    setDream(searched)
+    setTempDream(searched)
     sethasText(false)
   }
 
@@ -101,7 +114,7 @@ function MyLikes(): JSX.Element {
 
     search = search.replace(/[[(){}]/gi, '')
     const regex = new RegExp(search, 'gi')
-    const searched = dream
+    const searched = originalDream
       .filter((el) => {
         return (
           el.title.replace(/[[(){}]/gi, '').match(regex) ||
@@ -157,13 +170,8 @@ function MyLikes(): JSX.Element {
   const updateMenu = (arg: number | string[]) => {
     if (typeof arg === 'string') {
       if (arg === 'latest') {
-        // getPictures();
-        getLikes()
         setSorLike({ latestLike: false, selectLike: [] })
       } else if (arg === 'oldest') {
-        // if(dream[0].likedate >= dream[dream.length-1].likedate){
-        //   return;
-        // }
         setSorLike({ latestLike: true, selectLike: [] })
       }
     } else if (typeof arg === 'object') {
@@ -183,7 +191,7 @@ function MyLikes(): JSX.Element {
         return sortLike.selectLike.includes(el.createdAt)
       })
     }
-    setDream(newState)
+    setTempDream(newState)
   }
 
   // 꿈 모달 닫기
@@ -205,10 +213,11 @@ function MyLikes(): JSX.Element {
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }
-        const deleted = dream.filter((el) => {
-          return el.dream_id !== id
-        })
-        setDream(deleted)
+        getLikes()
+        // const deleted = originalDream.filter((el) => {
+        //   return el.dream_id !== id
+        // })
+        // setOriginalDream(deleted)
       })
       .catch((err) => {
         console.log(err)
@@ -224,6 +233,7 @@ function MyLikes(): JSX.Element {
   return (
     <>
       <Container>
+        {loading && <Loading />}
         {isOpen && (
           <Modal handleClick={handleClick}>검색하실 꿈을 입력해주세요.</Modal>
         )}
@@ -272,13 +282,13 @@ function MyLikes(): JSX.Element {
           </ResponsiveRight>
         </UpperSection>
         <DreamSection>
-          {dream.length === 0 ? (
+          {!loading && tempDream.length === 0 ? (
             <SingleDream header="좋아하는 꿈이 없습니다.">
               꿈 알아보기 페이지에서 하트 아이콘을 눌러 꿈을 저장할 수 있습니다.
             </SingleDream>
           ) : (
             <SingleDream
-              data={dream}
+              data={tempDream}
               handleDislike={handleDislike}
               handleWidth={handleWidth}
             />
