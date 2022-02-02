@@ -1,8 +1,7 @@
 import { Dispatch } from 'redux'
 import axios from 'axios'
+
 // 액션 타입을 선언
-// 뒤에 as const 를 붙여줌으로써 나중에 액션 객체를 만들게 action.type 의 값을 추론하는 과정에서
-// action.type 이 string 으로 추론되지 않고 'counter/INCREASE' 와 같이 실제 문자열 값으로 추론 되도록 해줍니다.
 const SEARCH_DREAM = 'SEARCH_DREAM' as const
 const SEARCH_DREAM_SUCCESS = 'SEARCH_DREAM_SUCCESS' as const
 const SEARCH_DREAM_ERROR = 'SEARCH_DREAM_ERROR' as const
@@ -17,7 +16,6 @@ const DISLIKE_DREAM = 'DISLIKE_DREAM' as const
 const REMOVE_DREAM = 'REMOVE_DREAM' as const
 
 // 액션 생성함수 선언
-
 export const searchDreamAct = (data: string) => {
   return async (dispatch: Dispatch<Action>) => {
     dispatch({
@@ -131,8 +129,6 @@ interface UserInfo {
 }
 
 // 모든 액션 겍체들에 대한 타입을 준비해줍니다.
-// ReturnType<typeof _____> 는 특정 함수의 반환값을 추론해줍니다
-
 interface SearchDrm_Action {
   type: typeof SEARCH_DREAM
 }
