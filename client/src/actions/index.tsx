@@ -112,6 +112,7 @@ export const removeDreamAct = () => {
   }
 }
 
+// 액션 생성 함수가 받는 인수들에 대한 타입 인터페이스
 export interface Data {
   [index: string]: any
   description: string
@@ -128,7 +129,7 @@ interface UserInfo {
   isSocial: boolean
 }
 
-// 모든 액션 겍체들에 대한 타입을 준비해줍니다.
+// 모든 액션 겍체들에 대한 타입
 interface SearchDrm_Action {
   type: typeof SEARCH_DREAM
 }
@@ -155,7 +156,7 @@ type Action =
   | ReturnType<typeof disLikeDreamAct>
   | ReturnType<typeof removeDreamAct>
 
-// 이 리덕스 모듈에서 관리 할 상태의 타입을 선언합니다
+// 이 리덕스 모듈에서 관리 할 상태의 타입을 선언
 type ActionState = {
   search: {
     loading: boolean
@@ -172,7 +173,7 @@ type ActionState = {
   dream: Data[]
 }
 
-// 초기상태를 선언합니다.
+// 초기상태를 선언
 const initialState: ActionState = {
   search: {
     loading: false,

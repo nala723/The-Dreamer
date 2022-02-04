@@ -40,7 +40,7 @@ function Calender(props: CalenderProps): JSX.Element {
     gsap.set(openRef.current, { height: 'auto', opacity: 1 }) // 메뉴박스 세팅
 
     openRefTimeline.current = gsap
-      .timeline() //  타임라인 객체를 open~에 저장
+      .timeline() //  타임라인 객체를 openRefTimeline.current에 저장
       .to(startlineRef.current, {
         width: '100%',
         opacity: 0.7,
