@@ -31,7 +31,7 @@ function App(): JSX.Element {
         <GlobalStyle />
         <Router>
           <Suspense fallback={<Loading></Loading>}>
-            <Header themeToggler={themeToggler} t={theme} />
+            <Header themeToggler={themeToggler} themeValue={theme} />
             <Switch>
               <Route exact path="/" component={Landing} />
               <Route path="/searchdream" component={SearchDream} />
@@ -41,7 +41,7 @@ function App(): JSX.Element {
               <Route path="/mypage" component={MyPage} />
               <Route path="*" component={NotFound} />
             </Switch>
-            <ParticlesConfig t={theme} />
+            <ParticlesConfig themeValue={theme} />
           </Suspense>
         </Router>
       </ThemeProvider>

@@ -11,16 +11,16 @@ import Toggle from './Toogle'
 import axios from 'axios'
 import { ReactComponent as Hamburger } from '../assets/hamburger.svg'
 
-function Header(props: { themeToggler: () => void; t: string }): JSX.Element {
+function Header(props: { themeToggler: () => void; themeValue: string }): JSX.Element {
   const { accessToken, username, profile } = useSelector(
     (state: RootState) => state.usersReducer.user,
   )
   const dispatch = useDispatch()
   const history = useHistory()
   const [isOpen, setIsOpen] = useState(false)
-  const { themeToggler, t } = props
+  const { themeToggler, themeValue } = props
   const [dropdown, setDropdown] = useState(false)
-  const [button, setButton] = useState(false) // 미디어 쿼리로만 해도 될지 보기
+  const [button, setButton] = useState(false)
   const menulist = [
     { menu: '꿈 알아보기', url: '/searchdream' },
     { menu: '꿈 그리기', url: '/drawdream' },
@@ -28,7 +28,6 @@ function Header(props: { themeToggler: () => void; t: string }): JSX.Element {
   ]
 
   let profileImg: any
-  // 액세스 토큰 만료되거나 문제가 생기면 다시 로그인 하도록
 
   if (profile === null) {
     dispatch(
@@ -55,6 +54,7 @@ function Header(props: { themeToggler: () => void; t: string }): JSX.Element {
       setButton(false)
     }
   }
+
   useEffect(() => {
     window.addEventListener('resize', showButton)
     showButton()
@@ -66,23 +66,22 @@ function Header(props: { themeToggler: () => void; t: string }): JSX.Element {
   const handleClick = () => {
     setIsOpen(!isOpen)
   }
+
   const closeDropbox = () => {
     setDropdown(false)
   }
 
   const handleSignOut = async (choice: boolean) => {
     if (choice) {
-      setIsOpen(false) // 모달 닫고
+      setIsOpen(false)
       await axios
         .get(process.env.REACT_APP_URL + '/sign/signout', {
-          // 요청하기
           headers: {
             'Content-Type': 'application/json',
             authorization: `Bearer ` + accessToken,
           },
         })
-        .then((res) => {
-          if (res.status === 200) {
+        .then(() => {
             dispatch(
               signInAct({
                 email: '',
@@ -93,11 +92,8 @@ function Header(props: { themeToggler: () => void; t: string }): JSX.Element {
               }),
             )
             history.push('/')
-          } else {
-            history.push('/notfound')
-          }
         })
-        .catch((err) => history.push('/notfound'))
+        .catch(() => history.push('/notfound'))
     } else {
       return
     }
@@ -158,7 +154,7 @@ function Header(props: { themeToggler: () => void; t: string }): JSX.Element {
               })}
             </Menu>
           )}
-          <Toggle themeToggler={themeToggler} t={t} />
+          <Toggle themeToggler={themeToggler} themeValue={themeValue} />
         </RightBox>
       </Container>
     </>
@@ -183,7 +179,6 @@ const Container = styled.div`
   }
 `
 const LogoBox = styled(Link)`
-  // 뷰포인트 보기
   ${(props) => props.theme.tablet} {
     transform: scale(0.8);
   }
@@ -231,7 +226,6 @@ const StyledHambgr = styled(Hamburger)`
     width: 90%;
   }
 `
-
 const LinkMenu = styled(Link)`
   color: ${(props) => props.theme.text};
   font-size: ${(props) => props.theme.fontS};

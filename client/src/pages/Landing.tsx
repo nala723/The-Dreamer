@@ -20,7 +20,7 @@ function Landing(): JSX.Element {
   const [scrollY, setScrollY] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
 
-  //타이핑 효과 function
+  //타이핑 효과
   useEffect(() => {
     const interval = setInterval(() => {
       setText(text + txt[count])
@@ -129,7 +129,6 @@ const ScrollAni = (start: string, end: string) => keyframes`
     opacity: 0;
   }
 `
-
 const Container = styled.div`
   position: relative;
   overflow: hidden;
@@ -145,7 +144,6 @@ const Container = styled.div`
     height: 660rem;
   }
 `
-
 const MainSection = styled.section`
   position: absolute;
   ${(props) => props.theme.flexRow};
@@ -171,7 +169,6 @@ const ContentsBox = styled.div`
     }
   }
 `
-
 const SearchBox = styled.div`
   position: relative;
   width: 40%;
@@ -196,7 +193,6 @@ const SearchBox = styled.div`
     min-width: 90vw;
   }
 `
-
 const ScrollDown = styled.span`
   position: absolute;
   bottom: 5%;
@@ -246,7 +242,6 @@ const ScrollDown = styled.span`
     }
   }
 `
-
 const ScrollTop = styled(ScrollDown)<{ active: boolean }>`
   position: fixed;
   right: 40px;

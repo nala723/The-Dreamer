@@ -93,10 +93,8 @@ function Calender(props: CalenderProps): JSX.Element {
     },
   )
   CustomInput.displayName = 'CustomInput'
-  // 함수 컴포넌트의 ref는 애초에 존재하지 않기 때문입니다.-> forward.Ref로 모 컴포넌트로부터 하위 컴포넌트로 ref를 전달
-  //https://merrily-code.tistory.com/121
 
-  //  캘린더의 날짜범위 배열로 담는 함수
+  //  캘린더의 날짜범위를 배열로 담는 함수
   const getSelectDate = (arg: Date[]) => {
     if (Array.isArray(arg)) {
       const start = new Date(startDate)
@@ -232,7 +230,6 @@ const DateMenu = styled.ul`
     border-radius: 5px;
   }
 `
-
 const MenuList = styled.li<{ selected?: boolean }>`
   display: absolute;
   width: 100%;
@@ -255,11 +252,9 @@ const MenuList = styled.li<{ selected?: boolean }>`
     }
   }
 `
-
 const StyledDate = styled(DatePicker)`
   width: 100%;
 `
-
 const CustomBtn = styled.button`
   border: none;
   background-color: transparent;
@@ -275,12 +270,10 @@ const CustomBtn = styled.button`
     font-size: 15px;
   }
 `
-
 const StartLine = styled.div`
   left: 0;
   width: 0;
   height: 1.4px;
   background-color: ${(props) => props.theme.transp};
 `
-
 const EndLine = styled(StartLine)``

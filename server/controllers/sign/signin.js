@@ -11,19 +11,19 @@ module.exports = async (req, res) => {
       attributes: ["id", "username", "email", "password", "profile"],
       where: { email: req.body.email },
     });
-    const userProfile = userInfo.dataValues.profile;
     if (!userInfo) {
-      return res
-        .status(401)
-        .json({ message: "Invalid user or wrong password" });
+      return res.status(401).json({
+        message: "존재하지 않는 계정이거나 이메일을 잘못 입력하셨습니다.",
+      });
     } else {
+      const userProfile = userInfo.dataValues.profile;
       bcrypt
         .compare(req.body.password, userInfo.dataValues.password)
         .then(isMatch => {
           if (!isMatch) {
             return res
               .status(401)
-              .json({ message: "Invalid user or wrong password" });
+              .json({ message: "비밀번호를 다시 확인해주세요." });
           } else {
             delete userInfo.dataValues.password;
             delete userInfo.dataValues.profile;

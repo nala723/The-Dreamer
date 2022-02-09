@@ -59,7 +59,6 @@ const Container = styled.div`
     top: 3rem;
   }
 `
-
 const PageList = styled.ul`
   height: 100%;
   padding: 0.3rem;
@@ -68,9 +67,7 @@ const PageList = styled.ul`
   gap: 1.5rem;
   text-align: center;
   font-size: ${(props) => props.theme.fontS};
-  /* font-size: 18px; */
 `
-
 const Page = styled(Link)`
   width: 85%;
   cursor: pointer;
@@ -84,7 +81,6 @@ const Line = styled.div`
   height: 1px;
   background-color: ${(props) => props.theme.transp};
 `
-
 const Login = styled(Link)`
   width: 85%;
   cursor: pointer;
@@ -93,7 +89,6 @@ const Login = styled(Link)`
     text-shadow: 4px 4px 10px ${(props) => props.theme.point};
   }
 `
-
 const Logout = styled.li`
   width: 85%;
   color: ${(props) => props.theme.point};

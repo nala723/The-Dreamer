@@ -307,7 +307,6 @@ const Blank = styled.p`
     display: block;
   }
 `
-
 const CircleScrollBox = styled(ScrollBox)`
   top: 210rem;
 `
@@ -322,7 +321,6 @@ const Circle = styled.div`
   border-radius: 100%;
   background: ${(props) => props.theme.circle};
 `
-
 const GifBox = styled.div`
   position: relative;
   height: 220vh;

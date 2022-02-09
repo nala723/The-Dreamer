@@ -26,7 +26,6 @@ const RotateAni = keyframes`
     transform: rotate(360deg);
   }
 `
-
 const StarAni = (sc: number, tsc: number, opacity: number) => keyframes`
   0% {
     transform : ${`scale(${sc})`};
@@ -37,7 +36,6 @@ const StarAni = (sc: number, tsc: number, opacity: number) => keyframes`
     opacity : ${opacity};
   }
 `
-
 const Container = styled.div`
   ${(props) => props.theme.flexColumn};
   justify-content: flex-start;

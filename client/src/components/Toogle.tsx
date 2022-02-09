@@ -1,21 +1,23 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
-function Toggle(props: { themeToggler: () => void; t: string }): JSX.Element {
-  const { themeToggler, t } = props
-  const toggleicon = ['🌞', '🌙']
+function Toggle(props: {
+  themeToggler: () => void
+  themeValue: string
+}): JSX.Element {
+  const { themeToggler, themeValue } = props
 
   return (
-    <ToggleDiv onClick={themeToggler} t={t}>
-      <Circle t={t} />
-      <p>{t === 'light' ? toggleicon[1] : toggleicon[0]}</p>
+    <ToggleDiv onClick={themeToggler} themeValue={themeValue}>
+      <Circle themeValue={themeValue} />
+      <p>{themeValue === 'light' ? '🌙' : '🌞'}</p>
     </ToggleDiv>
   )
 }
 
 export default Toggle
 
-const ToggleDiv = styled.div<{ t: string }>`
+const ToggleDiv = styled.div<{ themeValue: string }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -29,7 +31,7 @@ const ToggleDiv = styled.div<{ t: string }>`
     position: absolute;
     font-size: 14px;
     ${(props) =>
-      props.t === 'dark'
+      props.themeValue === 'dark'
         ? css`
             right: 3px;
           `
@@ -45,7 +47,7 @@ const ToggleDiv = styled.div<{ t: string }>`
     height: 1.1rem;
   }
 `
-const Circle = styled.div<{ t: string }>`
+const Circle = styled.div<{ themeValue: string }>`
   position: absolute;
   width: 1.275rem;
   height: 1.275rem;
@@ -53,7 +55,7 @@ const Circle = styled.div<{ t: string }>`
   background-color: white;
   transition: all 0.3s ease-in-out;
   ${(props) =>
-    props.t === 'light'
+    props.themeValue === 'light'
       ? css`
           left: 1.8rem;
           right: 1px;
@@ -65,7 +67,7 @@ const Circle = styled.div<{ t: string }>`
     width: 1.1rem;
     height: 1.1rem;
     ${(props) =>
-      props.t === 'light'
+      props.themeValue === 'light'
         ? css`
             left: 1.55rem;
             right: 1px;

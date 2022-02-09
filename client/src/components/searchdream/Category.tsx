@@ -81,7 +81,6 @@ function CateGory(): JSX.Element {
   }
 
   const handleCategory = (index: number) => {
-    // useEffect보다 순서대로 실행됨
     let selected: boolean
 
     cateGoryRef.current.forEach((el: HTMLDivElement | any, idx: number) => {
@@ -122,8 +121,6 @@ function CateGory(): JSX.Element {
           for (const props in dum) {
             return (
               <CateGroup key={idx}>
-                {' '}
-                {/*일단 그룹만들었음 */}
                 <Category
                   ref={addStagerRef}
                   onClick={() => handleCategory(idx)}
@@ -173,7 +170,6 @@ const CategoryBox = styled.div`
     top: 2rem;
     left: 2.5%;
     width: 7rem;
-    /* font-size: 15px; */
   }
   ${(props) => props.theme.mobile} {
     top: 4.9rem;
@@ -185,8 +181,7 @@ const CateHeader = styled.div`
   color: ${(props) => props.theme.text};
   display: flex;
   justify-content: space-between;
-  padding: 0 1rem; // 임시 ***
-  /* justify-content: space-evenly; //일단. 주석- */
+  padding: 0 1rem;
   > svg {
     fill: ${(props) => props.theme.transp};
     width: 1.125rem;
@@ -226,8 +221,8 @@ const CateGroup = styled.div`
 const Category = styled.div`
   ${(props) => props.theme.flexColumn}
   align-items: flex-start;
-  padding-left: 2.3rem; // 임시!***
-  color: ${(props) => props.theme.text}; // 왜 justify-content: center가 안되지
+  padding-left: 2.3rem;
+  color: ${(props) => props.theme.text}; 
   overflow: hidden;
   height: auto;
   opacity: 0;

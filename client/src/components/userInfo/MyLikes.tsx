@@ -131,6 +131,7 @@ function MyLikes(): JSX.Element {
     setInput(clickedOption)
     handleSearch(clickedOption)
   }
+
   const handleKeyUp = (event: React.KeyboardEvent) => {
     event.preventDefault()
     if (
@@ -141,13 +142,7 @@ function MyLikes(): JSX.Element {
       event.getModifierState('Win')
     )
       return
-    // if (
-    //   event.getModifierState("Control") +
-    //     event.getModifierState("Alt") +
-    //     event.getModifierState("Meta") >
-    //   1
-    // )
-    //   return;
+
     if (hasText) {
       if (event.code === 'ArrowDown' && options.length - 1 > selected) {
         setSelected(selected + 1)
@@ -198,6 +193,7 @@ function MyLikes(): JSX.Element {
   const handleClick = () => {
     setIsOpen(false)
   }
+  
   // 꿈 삭제
   const handleDislike = (e: React.MouseEvent, id?: number) => {
     e.preventDefault()
@@ -214,10 +210,6 @@ function MyLikes(): JSX.Element {
           dispatch(getTokenAct(res.headers.accessToken))
         }
         getLikes()
-        // const deleted = originalDream.filter((el) => {
-        //   return el.dream_id !== id
-        // })
-        // setOriginalDream(deleted)
       })
       .catch((err) => {
         console.log(err)
@@ -312,7 +304,6 @@ const Container = styled.div`
     display: none; /* Chrome, Safari, Opera */
   }
 `
-
 const Title = styled.div`
   width: 100%;
   height: 5.5rem;
@@ -335,7 +326,6 @@ const Title = styled.div`
     height: 2.2rem;
   }
 `
-
 const UpperSection = styled.div`
   width: 100%;
   height: 5.688rem;
@@ -366,7 +356,6 @@ const UpperSection = styled.div`
     height: auto;
   }
 `
-
 const ResponsiveRight = styled.div`
   ${(props) => props.theme.flexRow};
   height: 5.688rem;
@@ -384,7 +373,6 @@ const ResponsiveRight = styled.div`
     height: 4.5rem;
   }
 `
-
 const SearchSection = styled.div`
   max-width: 100%;
   width: auto;
@@ -399,7 +387,6 @@ const SearchSection = styled.div`
     height: 4.5rem;
   }
 `
-
 const DropDownContainer = styled.ul`
   background-color: ${(props) => props.theme.transp};
   display: block;
@@ -430,7 +417,6 @@ const DropDownContainer = styled.ul`
     }
   }
 `
-
 const Allsearch = styled.div`
   min-width: 3.521rem;
   text-align: center;
@@ -438,7 +424,6 @@ const Allsearch = styled.div`
   ${(props) => props.theme.laptop} {
     min-width: 3.521rem;
     width: auto;
-    /* margin-left:1rem; */
   }
   ${(props) => props.theme.tablet} {
     min-width: 15%;
@@ -448,7 +433,6 @@ const Allsearch = styled.div`
     display: none;
   }
 `
-
 const ResponsiveLeft = styled.div`
   display: flex;
   position: relative;
@@ -459,16 +443,12 @@ const ResponsiveLeft = styled.div`
   ${(props) => props.theme.laptop} {
     gap: 2rem;
   }
-  ${(props) => props.theme.midTablet} {
-    /* width: 16rem; */
-  }
   ${(props) => props.theme.mobile} {
     width: 100%;
     height: 1.5rem;
     align-items: center;
   }
 `
-
 const RspAllsearch = styled(Allsearch)`
   display: none;
   ${(props) => props.theme.mobile} {
@@ -479,7 +459,6 @@ const RspAllsearch = styled(Allsearch)`
     justify-content: flex-end;
   }
 `
-
 const DreamSection = styled.div`
   width: 100%;
   height: calc(100vh - 4.375rem - 5.5rem - 5.688rem);

@@ -62,7 +62,6 @@ export default React.memo(HashTag)
 const HashSection = styled.div`
   position: absolute;
   max-width: 100%;
-  /* height: auto; */
   top: 5.5rem;
   margin-top: 0.3rem;
   display: flex;
@@ -88,7 +87,6 @@ const HashSection = styled.div`
     right: 5%;
   }
 `
-
 const Tag = styled.div`
   width: auto;
   height: auto;

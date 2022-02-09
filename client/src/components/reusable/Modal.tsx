@@ -92,7 +92,6 @@ const Background = styled.div`
   background-color: rgba(247, 241, 255, 0.8);
   z-index: 500;
 `
-
 const ModalSection = styled.div<{ size: string }>`
   position: relative;
   background: ${(props) => props.theme.default};
