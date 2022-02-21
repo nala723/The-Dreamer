@@ -31,7 +31,6 @@ function SearchDream(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
   const [banGuest, setBanGuest] = useState(false)
 
-  // // 처음 한번 이벤트 걸어볼까? 그러고 이 안에서 함수만들고 그에 따라 상태값변하게
   useEffect(() => {
     return () => {
       dispatch(removeDreamAct())
@@ -76,16 +75,14 @@ function SearchDream(): JSX.Element {
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }
-        if (res.status === 200) {
-          if (res.data.likeId) {
-            const likeData = [
-              {
-                ...data[idx],
-                id: res.data.likeId,
-              },
-            ]
-            dispatch(likeDreamAct(likeData))
-          }
+        if (res.data.likeId) {
+          const likeData = [
+            {
+              ...data[idx],
+              id: res.data.likeId,
+            },
+          ]
+          dispatch(likeDreamAct(likeData))
         }
       })
       .catch((error) => {
@@ -109,13 +106,12 @@ function SearchDream(): JSX.Element {
         if (res.headers.accessToken) {
           dispatch(getTokenAct(res.headers.accessToken))
         }
-        if (res.status === 200) {
-          dispatch(disLikeDreamAct(dreamId))
-        } else {
-          history.push('/notfound')
-        }
+        dispatch(disLikeDreamAct(dreamId))
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        console.log(error)
+        history.push('/notfound')
+      })
   }
 
   const banGuestLike = () => {

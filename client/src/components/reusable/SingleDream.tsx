@@ -17,7 +17,6 @@ interface DreamProps {
 
 function SingleDream(props: DreamProps): JSX.Element {
   const [width, setWidth] = useState('')
-  // const loadRef = useRef<HTMLHeadingElement | null>(null);
   const dreamRef = useRef<HTMLDivElement[]>([])
   dreamRef.current = []
   const {
@@ -29,22 +28,14 @@ function SingleDream(props: DreamProps): JSX.Element {
     handleWidth,
     gallery,
   } = props
-  // useEffect 속에 타임라인 만들어두고, 저 배열을 loop하며 함수에 전달-> 함수에서 타임라인 -
 
-  // 해결할것 :  드림 애니메이션 자연스럽게 돌아가는것 + /useLayoutEffect-깜박임수정
   let Position = []
   let quotient: number
   let Xposition: number
   let Yposition: number
 
   useEffect(() => {
-    // if(data.length > 0 && dreams.length < 9) {
-    //   setDreams(data.slice(0,9));
-    // }
-    // 처음에 렌더링 + 첫렌더링 이후에 데이터가 없으므로 데이터 받아온 이후에 채워줘야 한다.
-    // 데이터를 받아온 이후엔 당연히 기존 스테이트 업데이트하고,
     let floatTimeline: gsap.core.Timeline
-    // const tl = gsap.timeline({repeat: -1,  ease: 'Power1.easeInOut'});
     function random(min: number, max: number) {
       return parseFloat((Math.random() * (max - min) + min).toFixed(2))
     }
@@ -63,7 +54,7 @@ function SingleDream(props: DreamProps): JSX.Element {
           duration: random(5, 10),
         })
         .to(dream, {
-          x: random(-size, size), // 원래 위치를 변수에 담아놨다 다시 오게하던지
+          x: random(-size, size), 
           y: random(size, size),
           duration: random(5, 10),
         })
@@ -75,7 +66,7 @@ function SingleDream(props: DreamProps): JSX.Element {
       floatTimeline && floatTimeline.kill()
     }
   }, [data])
-  // 처음 한번 이벤트 걸어볼까? 그러고 이 안에서 함수만들고 그에 따라 상태값변하게
+
   useEffect(() => {
     window.addEventListener('resize', getWidth)
     getWidth()
@@ -83,23 +74,6 @@ function SingleDream(props: DreamProps): JSX.Element {
       window.removeEventListener('resize', getWidth)
     }
   }, [])
-
-  // const handleObserver = useCallback((entries)=>{ // 인피니트 스크롤하려햇는데
-  //   if(data.length <= 9) return;
-  //   if(data.length === dreams.length) return;
-  //   const target = entries[0];
-  //   if(target.isIntersecting) {
-  //     // 애초에 결과물, data의 길이가 9이하라면 그냥 리턴
-  //     // data의 길이 === 현 dreams 길이 라면 리턴
-  //      // dreams의 마지막 index + 1에서 마지막 index + 10한 것까지
-  //      setDreams([...dreams, ...data.slice(dreams.length, dreams.length + 9)])
-  //   }
-  // },[])
-
-  //  useEffect(()=>{
-  //   const observer = new IntersectionObserver(handleObserver);
-  //   if (loadRef.current) observer.observe(loadRef.current);
-  // },[ handleObserver])
 
   function getWidth() {
     if (window.innerWidth <= 960 && window.innerWidth > 425) {
@@ -224,7 +198,6 @@ const bounceHeart = keyframes`
     transform: scale(1.0);
   }
 `
-
 const cancleHeart = keyframes`
   0% {
     transform: scale(1.0);
@@ -236,7 +209,6 @@ const cancleHeart = keyframes`
     transform: scale(0.8);
   }
 `
-
 const Dream = styled.div<{ top?: string; left?: string; delete?: string }>`
   position: absolute;
   ${(props) => props.theme.flexColumn};

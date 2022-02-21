@@ -63,11 +63,17 @@ function MyAccount(): JSX.Element {
 
   useEffect(() => {
     if (isWithDraw) {
-      setConfirmWdOpen(true) // 모달부터 부르고
+      setConfirmWdOpen(true)
     }
   }, [isWithDraw])
 
-  // 유저 정보 요청 함수 - 통과
+  useEffect(() => {
+   if(currentInput.imgFile && currentInput.Password && currentInput.PasswordCheck && !errorMessage.Password && !errorMessage.PasswordCheck){
+     setValid(true);
+   }
+  }, [currentInput.imgFile && currentInput.Password && currentInput.PasswordCheck])
+
+  // 유저 정보 요청 함수 
   const getUserInfo = () => {
     axios
       .get(process.env.REACT_APP_URL + `/mypage/user-info`, {
@@ -98,7 +104,7 @@ function MyAccount(): JSX.Element {
       })
   }
 
-  // 카메라아이콘 커스텀
+  // 카메라 아이콘 커스텀
   const handlePhotoClick = (e: React.MouseEvent) => {
     if (isSocial) {
       return handleSocial()
@@ -174,12 +180,10 @@ function MyAccount(): JSX.Element {
         }
       }
       setErrorMessage({ ...errorMessage, [key]: '' })
-      setValid(true)
     }
 
-  //회원정보 수정
-
-  const onSubmitHandler = async (e: React.MouseEvent) => {
+  //회원 정보 수정
+  const onSubmitHandler = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
 
     if (!valid) {
@@ -214,10 +218,7 @@ function MyAccount(): JSX.Element {
           const formData = new FormData()
           imgforaxios && formData.append('profile', imgforaxios)
           formData.append('password', currentInput.Password)
-          // 잘 가는지 확인
-          for (const pair of formData.entries()) {
-            console.log(pair[0] + ', ' + pair[1])
-          }
+
           axios
             .patch(
               `${process.env.REACT_APP_URL}` + `/mypage/user-info`,
@@ -237,7 +238,10 @@ function MyAccount(): JSX.Element {
               setIsChanged(true)
               confirmUpdate()
             })
-            .catch((error) => console.log(error))
+            .catch((err) => {
+              console.log(err)
+              history.push('/notfound')
+            })
         },
         MIME_TYPE,
         QUALITY,
@@ -265,8 +269,9 @@ function MyAccount(): JSX.Element {
       }
       return [width, height]
     }
-  }
+  },[valid, currentInput.imgFile])
 
+  // 회원 탈퇴 요청
   const withdrawalRequest = async () => {
     await axios
       .delete(`${process.env.REACT_APP_URL}` + `/sign/withdrawal`, {
@@ -427,7 +432,6 @@ const Container = styled.div`
   ${(props) => props.theme.flexColumn};
   justify-content: flex-start;
 `
-
 const Title = styled.div`
   width: 100%;
   height: 6.438rem;
@@ -446,7 +450,6 @@ const Title = styled.div`
     height: auto;
   }
 `
-
 const ContentBox = styled.div`
   ${(props) => props.theme.flexColumn};
   height: 78%;
@@ -454,7 +457,6 @@ const ContentBox = styled.div`
     height: calc(100% - 2.099rem);
   }
 `
-
 const Content = styled.div`
   width: 29rem;
   height: 37.563rem;
@@ -468,11 +470,9 @@ const Content = styled.div`
     height: auto;
   }
   ${(props) => props.theme.mobile} {
-    //여기?
     gap: 1.5rem;
   }
 `
-
 const PhotoBox = styled.div`
   position: relative;
   width: 100%;
@@ -480,7 +480,6 @@ const PhotoBox = styled.div`
   display: flex;
   justify-content: center;
 `
-
 const CanclePhoto = styled.div`
   position: absolute;
   color: ${(props) => props.theme.point};
@@ -527,7 +526,6 @@ const Camera = styled.img`
   left: 80px;
   cursor: pointer;
 `
-
 const InfoBox = styled.div`
   width: 100%;
   height: 22.813rem;
@@ -541,7 +539,6 @@ const InfoBox = styled.div`
     gap: 1rem;
   }
 `
-
 const InfoUl = styled.ul`
   width: 100%;
   height: 18.1rem;
@@ -552,13 +549,11 @@ const InfoUl = styled.ul`
     height: auto;
   }
 `
-
 const InputWrapper = styled.li`
   display: flex;
   flex-direction: column;
   height: calc(100% / 4);
 `
-
 const InfoList = styled.div`
   height: 3.5rem;
   width: 100%;
@@ -618,7 +613,6 @@ const InfoList = styled.div`
     height: auto;
   }
 `
-
 const Error = styled.div`
   ${(props) => props.theme.flexRow};
   font-size: ${(props) => props.theme.fontS};
@@ -626,7 +620,6 @@ const Error = styled.div`
   height: 1.2rem;
   color: ${(props) => props.theme.point};
 `
-
 const SubmitBtn = styled.button`
   width: 9.063rem;
   height: 2.5rem;
@@ -646,7 +639,6 @@ const SubmitBtn = styled.button`
     color: ${(props) => props.theme.text};
   }
 `
-
 const WithDrawl = styled.div`
   height: 2.875rem;
   border-bottom: 1px solid ${(props) => props.theme.transp};

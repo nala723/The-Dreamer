@@ -52,7 +52,4 @@ const Container = styled.div`
   ${(props) => props.theme.mobile} {
     min-height: calc(100vh - 3.6rem);
   }
-  /* >img{
-    z-index: 5;
-  } */
 `

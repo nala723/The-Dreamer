@@ -1,7 +1,11 @@
 import React from 'react'
 import Particles from 'react-tsparticles'
 
-export default function ParticlesConfig({ t }: { t: string }): JSX.Element {
+export default function ParticlesConfig({
+  themeValue,
+}: {
+  themeValue: string
+}): JSX.Element {
   return (
     <Particles
       options={{
@@ -36,7 +40,7 @@ export default function ParticlesConfig({ t }: { t: string }): JSX.Element {
         },
         particles: {
           color: {
-            value: `${t === 'light' ? '#ffdb3c' : '#ffdf6b'}`,
+            value: `${themeValue === 'light' ? '#ffd92f' : '#ffdf6b'}`,
           },
           links: {
             color: {

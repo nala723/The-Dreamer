@@ -1,9 +1,7 @@
-// import original module declarations
 import 'styled-components'
 
-// and extend them!
 declare module 'styled-components' {
-  // 1. 인터페이스 지정
+
   export interface DefaultTheme {
     imgsrc: string
     textBlur: string

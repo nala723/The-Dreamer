@@ -58,18 +58,18 @@ function Login(): JSX.Element {
       })
       .catch((err) => {
         if (err.response.status === 401) {
-          setErrorMessage('이메일 또는 비밀번호를 잘못 입력하셨습니다.')
+          setErrorMessage(err.response.data.message)
         } else {
           history.push('/notfound')
         }
       })
   }
 
-  /* 네이버 로그인, 커스텀 버튼, 누르면 컴ㅍ넌트 상태 true로 렌더링 */
+  /* 네이버 로그인 */
   const naverLogin = async () => {
     const loginId = await new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_ID,
-      callbackUrl: 'https://the-dreamer.cf/login', // 나중 수정
+      callbackUrl: 'https://the-dreamer.cf/login',
       isPopup: false,
       loginButton: { color: 'green', type: 3, height: 40 },
       callbackHandle: true,
@@ -189,7 +189,6 @@ const Container = styled.div`
     min-height: calc(100vh - 3.6rem);
   }
 `
-
 const LogInBox = styled.div`
   ${(props) => props.theme.flexColumn};
   margin-top: -2rem;
@@ -211,7 +210,6 @@ const LogInBox = styled.div`
     height: auto;
   }
 `
-
 const Title = styled.div`
   width: 100%;
   height: auto;
@@ -223,7 +221,6 @@ const Title = styled.div`
     }
   }
 `
-
 const Content = styled.div`
   ${(props) => props.theme.flexColumn};
   width: 28.063rem;
@@ -241,7 +238,6 @@ const Content = styled.div`
     width: 100%;
   }
 `
-
 const InputBox = styled.div`
   width: 100%;
   height: 15.813rem;
@@ -249,7 +245,6 @@ const InputBox = styled.div`
     height: 70%;
   }
 `
-
 const SingleInput = styled.div`
   ${(props) => props.theme.flexRow};
   justify-content: space-around;
@@ -324,7 +319,6 @@ const Button = styled.div`
     font-weight: 500;
   }
 `
-
 const OrBox = styled.div`
   width: 100%;
   height: auto;
@@ -336,7 +330,6 @@ const OrBox = styled.div`
     height: 3rem;
   }
 `
-
 const SocialBox = styled.div`
   height: 3.75rem;
   ${(props) => props.theme.flexRow};
@@ -385,7 +378,6 @@ const GoogleBtn = styled(GoogleLogin)`
     }
   }
 `
-
 const HideBtn = styled.div`
   display: none;
 `
@@ -414,7 +406,6 @@ const NaverBtn = styled.button`
     }
   }
 `
-
 const HaveAccount = styled.div`
   ${(props) => props.theme.flexRow};
   height: 1rem;
@@ -424,7 +415,6 @@ const HaveAccount = styled.div`
     margin-top: 0.7rem;
   }
 `
-
 const LinkedP = styled(Link)`
   color: ${(props) => props.theme.point};
   cursor: pointer;

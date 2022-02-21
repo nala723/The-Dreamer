@@ -9,6 +9,7 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import SearchBar from '../reusable/SearchBar'
 
+// 스크롤트리거 플러그인을 불러온다.
 gsap.registerPlugin(ScrollTrigger)
 
 function SecondSection(): JSX.Element {
@@ -49,7 +50,7 @@ function SecondSection(): JSX.Element {
         textBoxRef.current[index],
         { opacity: 1, y: 0 },
         { opacity: 0, y: -100, duration: 1, delay: 0.1 },
-        '>', //- The end of the previous animation**. Think of > as a pointer to the end of the previous animation.
+        '>',
       )
     }
 
@@ -66,7 +67,7 @@ function SecondSection(): JSX.Element {
     }
 
     textBoxRef.current.forEach((_, index) => {
-      // 첫번째 섹션은 그냥 hide하고
+      // 첫번째 섹션은 스크롤 내리면 바로 hide
       if (index === 0) {
         hide(index)
       } else if (index === 1) {
@@ -77,6 +78,7 @@ function SecondSection(): JSX.Element {
       }
     })
 
+    // textBoxRef.current 엘리먼트들에 각각 스크롤트리거 인스턴스 생성
     textBoxRef.current.forEach(() => {
       ScrollTrigger.create({
         trigger: mainRef.current,
@@ -88,7 +90,8 @@ function SecondSection(): JSX.Element {
         pinSpacing: false,
       })
     })
-
+    
+    // circleTimeline에 스크롤트리거 인스턴스 생성
     const circleTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: secondRef.current,
@@ -126,7 +129,6 @@ function SecondSection(): JSX.Element {
   }
   const handleSearch = (search: string) => {
     if (search === '') {
-      //something.. 모달?
       return
     }
     dispatch(searchDreamAct(search))
@@ -174,8 +176,6 @@ function SecondSection(): JSX.Element {
             </Pin>
           </CircleScrollBox>
           <GifBox>
-            {/*ref={GifBoxRef}*/}
-            {/* <Pin> */}
             <GifContent>
               <Gif
                 src="/images/search-ani.gif"
@@ -198,8 +198,6 @@ function SecondSection(): JSX.Element {
                 </p>
               </Introdct>
             </GifContent>
-            {/* </Pin> */}
-            {/* <Pin> */}
             <GifContent>
               <Introdct>
                 <p data-aos="fade-up">
@@ -219,7 +217,6 @@ function SecondSection(): JSX.Element {
                 alt="gif"
               />
             </GifContent>
-            {/* </Pin> */}
           </GifBox>
           <FinalBox>
             <ContentsBox>
@@ -310,7 +307,6 @@ const Blank = styled.p`
     display: block;
   }
 `
-
 const CircleScrollBox = styled(ScrollBox)`
   top: 210rem;
 `
@@ -325,23 +321,8 @@ const Circle = styled.div`
   border-radius: 100%;
   background: ${(props) => props.theme.circle};
 `
-// const GifBox = styled.div`      //######################### 타임라인 3 위한
-//   position: relative; //pin 고정시키기 위해
-//   width: 100vw;
-//   height: 200vh;
-//   top: 120rem;
-//   z-index:5;
-//   border: 1px solid black;
-// `;
-// const Gif = styled.div`
-//   /* position: absolute; */
-//   width: 200px;
-//   height: 200px;
-//   background-color: yellow;
-// `;
-
 const GifBox = styled.div`
-  position: relative; //pin 고정시키기 위해
+  position: relative;
   height: 220vh;
   top: 160rem;
   z-index: 5;

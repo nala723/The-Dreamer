@@ -29,7 +29,6 @@ const Container = styled.footer`
   ${(props) => props.theme.flexRow};
   height: 25.25rem;
 `
-
 const MidBox = styled.div`
   ${(props) => props.theme.flexRow};
   height: auto;

@@ -48,10 +48,6 @@ function SignUp(): JSX.Element {
     (key: string) => (e: React.FocusEvent<HTMLInputElement>) => {
       const value = e.target.value
       let message
-      // if (!signupInfo[key]) {
-      //   setErrorMessage({ ...errorMessage, [key]: '' })
-      //   return
-      // }
       if (key === 'Username') {
         if (!value) {
           setErrorMessage({ ...errorMessage, [key]: '이름을 입력해 주세요.' })
@@ -59,15 +55,15 @@ function SignUp(): JSX.Element {
         }
       }
       if (key === 'Email') {
+        // email 유효성 검사 후 메세지 할당
         message = emailIsValid(value)
         if (typeof message === 'string') {
-          // email 타입 검사
-          setErrorMessage({ ...errorMessage, [key]: message }) // 올바른 형식 아닐때
+          setErrorMessage({ ...errorMessage, [key]: message })
           return false
         }
       }
       if (key === 'Password') {
-        // 비번 검사
+        // 비번 유효성 검사 후 메세지 할당
         message = pwIsValid(value)
         if (typeof message === 'string') {
           setErrorMessage({ ...errorMessage, [key]: message })
@@ -116,7 +112,7 @@ function SignUp(): JSX.Element {
         email: signupInfo.Email,
         password: signupInfo.Password,
       })
-      .then((res) => {
+      .then(() => {
         setSignupInfo({
           Email: '',
           Username: '',
@@ -193,7 +189,6 @@ const Container = styled.div`
     min-height: calc(100vh - 3.6rem);
   }
 `
-
 const SignupBox = styled.div`
   ${(props) => props.theme.flexColumn};
   margin-top: -2rem;
@@ -212,7 +207,6 @@ const SignupBox = styled.div`
     height: auto;
   }
 `
-
 const Title = styled.div`
   width: 100%;
   height: auto;
@@ -224,7 +218,6 @@ const Title = styled.div`
     }
   }
 `
-
 const Content = styled.div`
   ${(props) => props.theme.flexColumn};
   width: 28.063rem;
@@ -242,7 +235,6 @@ const Content = styled.div`
     width: 100%;
   }
 `
-
 const InputBox = styled.div`
   width: 100%;
   height: 17.938rem;
@@ -259,7 +251,6 @@ const InputWrapper = styled.div`
     height: 4rem;
   }
 `
-
 const SingleInput = styled.div`
   ${(props) => props.theme.flexRow};
   justify-content: space-around;
@@ -271,7 +262,6 @@ const SingleInput = styled.div`
   text-indent: 0.5rem;
   > div {
     width: 4.875rem;
-    /* font-size: 16px; */
   }
   > input {
     width: 21.813rem;
@@ -300,7 +290,6 @@ const SingleInput = styled.div`
     }
   }
 `
-
 const Error = styled.div<{ err: string }>`
   ${(props) => props.theme.flexRow};
   font-size: ${(props) => props.theme.fontS};
@@ -311,7 +300,6 @@ const Error = styled.div<{ err: string }>`
     display: ${(props) => (props.err ? 'flex' : 'none')};
   }
 `
-
 const Button = styled.div`
   ${(props) => props.theme.flexRow};
   height: 3.75rem;
@@ -328,15 +316,11 @@ const Button = styled.div`
     color: ${(props) => props.theme.text};
     transition: all 0.3s ease-in-out;
   }
-  /* @media only screen and (max-width: 550px){
-    height: 3.4rem;
-  } */
   ${(props) => props.theme.mobile} {
     height: 3rem;
     font-weight: 500;
   }
 `
-
 const HaveAccount = styled.div`
   ${(props) => props.theme.flexRow};
   height: 1rem;
@@ -351,7 +335,6 @@ const HaveAccount = styled.div`
     margin: 0;
   }
 `
-
 const LinkedP = styled(Link)`
   color: ${(props) => props.theme.point};
   cursor: pointer;

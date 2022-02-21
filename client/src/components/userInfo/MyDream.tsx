@@ -51,7 +51,6 @@ function MyDream(): JSX.Element {
   const clickRef = useRef<any | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // 나중에 갤러리 애니메이션 이미지 랜덤한 타이밍으로 나오는 것 구현
   useEffect(() => {
     document.addEventListener('click', handleClickOutside)
     window.addEventListener('resize', getWidth)
@@ -179,13 +178,7 @@ function MyDream(): JSX.Element {
         event.getModifierState('Win')
       )
         return
-      // if (
-      //   event.getModifierState("Control") +
-      //     event.getModifierState("Alt") +
-      //     event.getModifierState("Meta") >
-      //   1
-      // )
-      //   return;
+
       if (hasText) {
         if (event.code === 'ArrowDown' && options.length - 1 > selected) {
           setSelected(selected + 1)
@@ -201,10 +194,13 @@ function MyDream(): JSX.Element {
     },
     [selected, options],
   )
+
   // 전체 목록 조회
   const handleAllsearch = () => {
     setSortPic({ ...sortPic, oldest: false, selectDate: [], sortEmotion: '' })
   }
+
+  // 그림 삭제 요청
   const handleDislike = (e: React.MouseEvent, id: number) => {
     e.preventDefault()
     axios
@@ -224,10 +220,8 @@ function MyDream(): JSX.Element {
         history.push('/notfound')
       })
   }
-  // 최신 순: 전체보기와 같음
-  // 마지막 순: 받은 것들 거꾸로
-  // 날짜 받은 날짜 보고..일치하는 범위 혹은 날짜.
 
+  // 카테고리 별 분류됨 여부 업데이트
   const updateMenu = (arg: string | string[]) => {
     if (typeof arg === 'string') {
       if (arg === 'latest') {
@@ -264,6 +258,7 @@ function MyDream(): JSX.Element {
 
   let newState: PicInterface[]
 
+   // 새로운 TempPic 상태 생성
   const handleSortPic = (data: PicInterface[]) => {
     if (
       sortPic.oldest &&
@@ -296,6 +291,7 @@ function MyDream(): JSX.Element {
     setIsOpen(false)
   }
 
+  // 그림 원본 사이즈 보여주는 모달
   const handlePicOpen = (e: any, pic: PicInterface) => {
     e.stopPropagation()
     setOpenedPic(pic)
@@ -463,7 +459,6 @@ const UpperSection = styled.div`
     height: auto;
   }
 `
-
 const ResponsiveRight = styled.div`
   ${(props) => props.theme.flexRow};
   height: 5.688rem;
@@ -481,7 +476,6 @@ const ResponsiveRight = styled.div`
     height: 4.5rem;
   }
 `
-
 const SearchSection = styled.div`
   max-width: 100%;
   width: auto;
@@ -496,7 +490,6 @@ const SearchSection = styled.div`
     height: 4.5rem;
   }
 `
-
 const DropDownContainer = styled.ul`
   background-color: ${(props) => props.theme.transp};
   display: block;
@@ -533,7 +526,6 @@ const DropDownContainer = styled.ul`
     top: 59px;
   }
 `
-
 const Allsearch = styled.div`
   min-width: 3.8rem;
   cursor: pointer;
@@ -550,7 +542,6 @@ const Allsearch = styled.div`
     display: none;
   }
 `
-
 const ResponsiveLeft = styled.div`
   display: flex;
   position: relative;
@@ -571,7 +562,6 @@ const ResponsiveLeft = styled.div`
     align-items: center;
   }
 `
-
 const RspAllsearch = styled(Allsearch)`
   display: none;
   ${(props) => props.theme.mobile} {
@@ -595,7 +585,6 @@ const DreamSection = styled.div`
     padding: 2rem;
   }
 `
-
 const CardBox = styled.div`
   display: grid;
   width: 100%;
@@ -608,7 +597,6 @@ const CardBox = styled.div`
   gap: 1.688rem 2rem;
   color: ${(props) => props.theme.text};
 `
-
 const Card = styled.div`
   display: flex;
   border-radius: 0.5rem;

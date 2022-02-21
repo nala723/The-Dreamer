@@ -12,7 +12,6 @@ module.exports = async (req, res) => {
     headers: {
       "X-Naver-Client-Id": client_id,
       "X-Naver-Client-Secret": client_secret,
-      "Content-Type": "application/json; charset=utf-8",
     },
     params: {
       query: qu,
@@ -28,17 +27,16 @@ module.exports = async (req, res) => {
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
+      // 요청 받고 서버는 200이 아닌 스태터스 응답
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
     } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
+      // 요청 받았지만 응답을 받지 못함
+      // `error.request`는 브라우저의 XMLHttpRequest 인스턴스, node.js의 http.ClientRequest의 인스턴스
       console.log(error.request);
     } else {
-      // Something happened in setting up the request that triggered an Error
+      // 요청 중에 에러 발생
       console.log("Error", error.message);
     }
     console.log(error.config);

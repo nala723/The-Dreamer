@@ -25,17 +25,17 @@ interface Coordinate {
   x: number
   y: number
 }
-// 미디어 쿼리 : 타블렛 사이즈 부분 보면서 비율 조정할것
+
 function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
   const { accessToken } = useSelector(
     (state: RootState) => state.usersReducer.user,
   )
   const history = useHistory()
   const dispatch = useDispatch()
-  const canvasRef = useRef<HTMLCanvasElement>(null) // useRef 활용 - <canvas>와 같은 DOM노드에 쉽게 접근
-  const [mousePosition, setMousePosition] = useState<Coordinate>() // 마우스포인터(x,y)
-  const [isPainting, setIsPainting] = useState(false) //페인팅상태 선 긋는 상태
-  const [lineWeight, setLineWeight] = useState<number>(2.5) // 타입수정
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [mousePosition, setMousePosition] = useState<Coordinate>()
+  const [isPainting, setIsPainting] = useState(false)
+  const [lineWeight, setLineWeight] = useState<number>(2.5)
   const [selectColor, setSelectColor] = useState('#000000')
   const [cursor, setCursor] = useState(cursors[0])
   const [eraser, setEraser] = useState(false)
@@ -57,7 +57,7 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
   // 색 선택
   const handleColor = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
-    const newColor = (e.target as HTMLDivElement).style.backgroundColor
+    const newColor = e.currentTarget.style.backgroundColor
     setSelectColor(newColor)
     setEraser(false)
     if (!fill) {
@@ -67,7 +67,7 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
 
   // 굵기 조절
   const handleLineWeight = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLineWeight(e.target.valueAsNumber) // 새롭게 알았다?
+    setLineWeight(e.target.valueAsNumber)
   }
 
   // 브러쉬 선택
@@ -116,18 +116,15 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
     const blobBin = Buffer.from(image, 'base64').toString('binary')
     const array = []
     for (let i = 0; i < blobBin.length; i += 1) {
-      array.push(blobBin.charCodeAt(i)) //인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장한다. (UTF-16 코드를 나타내는 0부터 65535 사이의 정수를 반환)
+      array.push(blobBin.charCodeAt(i)) //인코드된 문자들을 0번째부터 끝까지 해독하여 유니코드 값을 array 에 저장
     }
-    const u8arr = new Uint8Array(array) //8비트의 형식화 배열을 생성한다.
+    const u8arr = new Uint8Array(array) //8비트의 형식화 배열을 생성
     const file = new Blob([u8arr], { type: 'image/png' }) // Blob 객체 생성
     const formdata = new FormData() // formData 생성
     formdata.append('picture', file) // formdata에 file data 추가
     formdata.append('title', title)
     formdata.append('emotion', emotion)
 
-    //   for(const pair of formdata.entries()) {
-    //     console.log(pair[0]+ ', '+ pair[1]);
-    //  }
     await axios
       .post(process.env.REACT_APP_URL + '/picture/save-pic', formdata, {
         headers: {
@@ -233,7 +230,6 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
     context.current = canvas.getContext('2d')
     if (context.current) {
       //선 스타일지정
-
       context.current.lineJoin = 'round'
       context.current.lineWidth = lineWeight
       if (eraser) {
@@ -243,9 +239,9 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
         canvas.style.cursor = cursors[0]
         context.current.strokeStyle = selectColor
       }
-      context.current.beginPath() // 라인 그리기 할거다
-      context.current.moveTo(originalMousePosition.x, originalMousePosition.y) // 라인 시작 위치
-      context.current.lineTo(newMousePosition.x, newMousePosition.y) // 라인 끝 위치
+      context.current.beginPath() // 선 그리기 시작
+      context.current.moveTo(originalMousePosition.x, originalMousePosition.y) // 라인 시작 좌표
+      context.current.lineTo(newMousePosition.x, newMousePosition.y) // 라인 끝 좌표
       context.current.closePath() // 그은 라인들을 이어줌(ex: 삼각형)
 
       context.current.stroke() // 선 긋는 메소드 이것 불러줘야 선 그어짐
@@ -281,7 +277,6 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
     const canvas: HTMLCanvasElement = canvasRef.current
     context.current = canvas.getContext('2d')
     if (context.current) {
-      //선 스타일지정
       context.current.fillStyle = selectColor
       if (fill) {
         canvas.style.cursor = cursors[2]
@@ -303,22 +298,16 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
       context.current.fillRect(0, 0, canvas.width, canvas.height)
       context.current.fillStyle = selectColor
     }
-    // canvas.getContext('2d')!!.clearRect(0, 0, canvas.width, canvas.height);
   }, [])
 
-  // const undo1 = () => {  // 뒤로가기 만들수 있다!
-  // 	firstCanvas.current.undo();
-  // };
-
-  /*모바일에서 선 그릴때, https://basketdeveloper.tistory.com/79 참고 */
+  // #################################### 모바일 터치 이벤트용 함수들 #################################
   const startTouch = (event: TouchEvent) => {
-    // MouseEvent인터페이스를 TouchEvent로
     event.preventDefault()
     if (!canvasRef.current) {
       return
     }
     const canvas: HTMLCanvasElement = canvasRef.current
-    const touch = event.touches[0] // event로 부터 touch 좌표를 얻어낼수 있습니다.
+    const touch = event.touches[0]
     if (fill) {
       const mouseEvent = new MouseEvent('click', {})
       return canvas.dispatchEvent(mouseEvent)
@@ -327,7 +316,7 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
         clientX: touch.clientX,
         clientY: touch.clientY,
       })
-      return canvas.dispatchEvent(mouseEvent) // 앞서 만든 마우스 이벤트를 디스패치해줍니다
+      return canvas.dispatchEvent(mouseEvent)
     }
   }
 
@@ -355,8 +344,7 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
     const mouseEvent = new MouseEvent('mouseup', {})
     canvas.dispatchEvent(mouseEvent)
   }, [])
-
-  /* ######################################## 여기까지 모바일 터치 */
+  // ###################################### 여기까지 모바일 터치 이벤트용 함수들 ###################################
 
   useEffect(() => {
     if (!canvasRef.current) {
@@ -397,9 +385,10 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
 
     return year + '년 ' + month + '월 ' + date + '일 ' + day
   }
+
   const handleEmotion = (idx: number) => {
     setEmotion(emotionList[idx].name)
-  } // emotion을 props로 전달, 스타일드컴포넌트에서 그 값 확인 해당하면 fill변경
+  }
 
   return (
     <Container>
@@ -621,7 +610,6 @@ const UpperBox = styled.div<{ slider?: boolean }>`
     display: none;
   }
 `
-
 const Emotions = styled.div`
   ${(props) => props.theme.mobile} {
     margin-top: 0.7rem;
@@ -635,7 +623,6 @@ const Emotions = styled.div`
     transform: scale(0.6);
   }
 `
-
 const StyledSoso = styled(Soso)<{ fill: string }>`
   ${(props) =>
     props.fill === 'soso'
@@ -696,7 +683,6 @@ const StyledWhat = styled(What)<{ fill: string }>`
           opacity: 0.5;
         `};
 `
-
 const TextBox = styled.div`
   ${(props) => props.theme.tablet} {
     font-size: 13px;
@@ -746,7 +732,6 @@ const Input = styled.input.attrs({
     color: #9e7d8a;
   }
 `
-
 const Canvas = styled.canvas`
   ${(props) => props.theme.midTablet} {
     width: 95vw;
