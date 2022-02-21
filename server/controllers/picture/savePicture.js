@@ -41,7 +41,6 @@ module.exports = async (req, res) => {
             emotion: req.body.emotion,
             user_id: userData.id,
           });
-          console.log("dd", newPicture);
           if (newPicture) {
             res.status(200).json({ message: "업로드 성공" });
           }

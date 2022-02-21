@@ -57,7 +57,7 @@ function DrawDream({ width = 601, height = 447 }: CanvasProps): JSX.Element {
   // 색 선택
   const handleColor = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
-    const newColor = (e.target as HTMLDivElement).style.backgroundColor
+    const newColor = e.currentTarget.style.backgroundColor
     setSelectColor(newColor)
     setEraser(false)
     if (!fill) {

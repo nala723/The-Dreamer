@@ -20,7 +20,6 @@ module.exports = async (req, res) => {
       accessToken = checkAuthorizaed();
 
       const userData = isAuthorized(accessToken);
-      console.log("userData?", userData);
       const userInfo = await User.findOne({
         attributes: ["username", "profile", "email"],
         where: { email: userData.email },

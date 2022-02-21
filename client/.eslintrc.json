@@ -1,41 +1,38 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true,
-        "node": true
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": [
-        "eslint:recommended",
-        "prettier",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:jsx-a11y/recommended",
-        "plugin:prettier/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 13,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react",
-        "@typescript-eslint",
-        "prettier"
-    ],
-    "rules": {
-        "@typescript-eslint/no-extra-non-null-assertion": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "prettier/prettier": 0, // Means error
-        "react/prop-types": [
-            0,
-            {
-                "ignore": ["ignore"],
-                "customVacustomValidators" : ["customValidator"], 
-                "skipUndeclared": true
-            }
-        ]
-    }
+    "ecmaVersion": 13,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint", "prettier"],
+  "rules": {
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-extra-non-null-assertion": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "prettier/prettier": 0, // Means error
+    "react/prop-types": [
+      0,
+      {
+        "ignore": ["ignore"],
+        "customVacustomValidators": ["customValidator"],
+        "skipUndeclared": true
+      }
+    ]
+  }
 }

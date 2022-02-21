@@ -57,7 +57,6 @@ function Login(): JSX.Element {
         history.push('./searchdream')
       })
       .catch((err) => {
-        console.log(err.request, 'req?', err.response, 'res??')
         if (err.response.status === 401) {
           setErrorMessage(err.response.data.message)
         } else {

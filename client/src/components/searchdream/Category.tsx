@@ -222,7 +222,7 @@ const Category = styled.div`
   ${(props) => props.theme.flexColumn}
   align-items: flex-start;
   padding-left: 2.3rem;
-  color: ${(props) => props.theme.text}; 
+  color: ${(props) => props.theme.text};
   overflow: hidden;
   height: auto;
   opacity: 0;
