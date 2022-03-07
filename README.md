@@ -30,6 +30,8 @@
 
 ![paint-ani](https://user-images.githubusercontent.com/70471734/151712451-c5f753d8-10ce-4fb8-9cb4-2b05d55ec830.gif)
 
+[...더보기](https://github.com/nala723/The-Dreamer/wiki/Feautres)
+
 # 🔨 Stacks
 
 ### Front-end
